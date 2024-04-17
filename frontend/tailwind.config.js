@@ -15,6 +15,9 @@ const config = {
 		},
 		extend: {
 			colors: {
+				'flutter-blue': '#1C83E5',
+				'flutter-gray': '#394e6a',
+				'flutter-white': '#f8fafc',
 				border: 'hsl(var(--border) / <alpha-value>)',
 				input: 'hsl(var(--input) / <alpha-value>)',
 				ring: 'hsl(var(--ring) / <alpha-value>)',
@@ -56,10 +59,6 @@ const config = {
 			},
 			fontFamily: {
 				sans: [...fontFamily.sans]
-			},
-			animation: {
-				'button-load': 'pop 0.25s ease-out',
-				'button-active': 'pop 0 ease-out'
 			}
 		}
 	}
