@@ -18,17 +18,22 @@ class IsManagerOrMemberOrMentorOfStartUpPermission(IsAuthenticated):
         )
 
 
-class IsMentorPermission(IsAuthenticated):
-    message = "User must be a Mentor of the startup."
+class IsMentorOrManagerPermission(IsAuthenticated):
+    message = "User must be Manager or a Mentor of the startup."
 
     def has_object_permission(self, request, view, obj: startups_models.Startup):
         user = request.user
         user_id = user.id
 
-        return obj.mentors.filter(id=user_id).exists()
+        return (
+            user.user_type == users_models.BaseUser.UserType.MANAGER
+            or obj.mentors.filter(id=user_id).exists()
+        )
 
 
-class IsMentorThroughReadinessLevelCriterionAnswerPermission(IsMentorPermission):
+class IsMentorThroughReadinessLevelCriterionAnswerPermission(
+    IsMentorOrManagerPermission
+):
     def has_object_permission(
         self, request, view, obj: startups_models.ReadinessLevelCriterionAnswer
     ):

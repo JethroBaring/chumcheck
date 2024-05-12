@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "readinesslevel",
     "startups",
     "users",
+    "tasks",
 ]
 
 MIDDLEWARE = [
@@ -84,7 +85,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "launchlab",
+        "NAME": "chumcheck",
         "USER": "root",
         "PASSWORD": "",
         "HOST": "127.0.0.1",
@@ -131,7 +132,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
-    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.base.MyTokenObtainPairSerializer"
+    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.base.MyTokenObtainPairSerializer",
 }
 
 CORS_ALLOWED_ORIGINS = [
