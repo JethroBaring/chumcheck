@@ -28,9 +28,6 @@ class StartupViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        if viewset_action == "create":
-            return []
-
         if viewset_action in [
             "approve_applicant",
             "rate_applicant",
@@ -87,19 +84,21 @@ class StartupViewSet(
 
         Creates a new Startup Instance with its members.
         """
+        user = request.user
+
         serializer = startups_serializers.request.StartupRequestSerializer(
             data=request.data
         )
         serializer.is_valid(raise_exception=True)
 
-        members_email = serializer.validated_data.pop("set_members", [])
+        members = serializer.validated_data.pop("set_members", [])
 
-        startup = startups_models.Startup.objects.create(**serializer.validated_data)
+        startup = startups_models.Startup.objects.create(
+            user=user, **serializer.validated_data
+        )
 
-        for member_email in members_email:
-            startups_models.StartupMember.objects.create(
-                email=member_email, startup=startup
-            )
+        for member in members:
+            startups_models.StartupMember.objects.create(user=member, startup=startup)
 
         return Response(self.serializer_class(startup).data, status=status.HTTP_200_OK)
 
@@ -120,20 +119,11 @@ class StartupViewSet(
         """
         startup = self.get_object()
 
-        member_1_email = startup.member_1_email
-        members = startup.members.all()
+        email = startup.user.email
 
-        for member in members:
-            user = startups_utils.send_approval_email(member.email)
-            member.user = user
-            member.save(update_fields=["user"])
-
-        user = startups_utils.send_approval_email(
-            member_1_email, first_name=startup.member_1_name
-        )
-        startup.user = user
+        startups_utils.send_approval_email(email, startup.name)
         startup.qualification_status = 3
-        startup.save(update_fields=["qualification_status", "user"])
+        startup.save(update_fields=["qualification_status"])
 
         return Response("sent email successfully", status=status.HTTP_200_OK)
 
@@ -392,7 +382,7 @@ class StartupViewSet(
                     "competitive_landscape": calculator_values[5],
                     "team": calculator_values[6],
                     "go_to_market": calculator_values[7],
-                    "supply_chain": calculator_values[8]
+                    "supply_chain": calculator_values[8],
                 }
             ).data
         )
@@ -503,7 +493,6 @@ class UratQuestionAnswerViewSet(
         return Response(
             self.serializer_class(urat_question_answer).data, status=status.HTTP_200_OK
         )
-
 
     @swagger_auto_schema(auto_schema=None)
     def update(self, request, *args, **kwargs):

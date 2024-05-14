@@ -6,7 +6,10 @@ from users import models as users_models
 
 class StartupRequestSerializer(startups_base_serializers.StartupBaseSerializer):
     qualification_status = serializers.IntegerField(read_only=True)
-    set_members = serializers.ListField(child=serializers.CharField(), write_only=True)
+    set_members = serializers.PrimaryKeyRelatedField(
+        queryset=users_models.StartupUser.objects, write_only=True, many=True
+    )
+    user_id = serializers.PrimaryKeyRelatedField(source="user", read_only=True)
 
     class Meta:
         model = startups_models.Startup
@@ -19,9 +22,6 @@ class StartupRequestSerializer(startups_base_serializers.StartupBaseSerializer):
             "capsule_proposal",
             "links",
             "group_name",
-            "member_1_name",
-            "member_1_number",
-            "member_1_email",
             "university_name",
             "eligibility",
             "set_members",

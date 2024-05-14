@@ -15,6 +15,9 @@ class TaskStatus(models.IntegerChoices):
     COMPLETED = 6, _("Completed")
 
 
+# NOTE: If possible add comments
+
+
 class Task(BaseModel):
     class TaskType(models.IntegerChoices):
         SHORT_TERM = 1, _("Short Term")
@@ -46,6 +49,8 @@ class Task(BaseModel):
         startups_models.Startup, on_delete=models.CASCADE, related_name="tasks"
     )
     task_type = models.IntegerField(choices=TaskType.choices)
+    due_date = models.DateTimeField(default=None, null=True)
+    # output = ??
 
     class Meta:
         db_table = "tasks"

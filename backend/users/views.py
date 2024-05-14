@@ -3,6 +3,9 @@ from generic.views import BaseViewSet
 from users import models
 from users import serializers as users_serializers
 from users import permissions as users_permissions
+from django.db import transaction
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, BaseViewSet):
@@ -49,3 +52,23 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, BaseViewSet)
         Gets a collection of Users instances.
         """
         return super().list(request, *args, **kwargs)
+
+    @transaction.atomic
+    @action(url_path="signup", detail=False, methods=["POST"], permission_classes=[])
+    def signup(self, request):
+        serializer = users_serializers.request.SignupUserRequestSerializer(
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        # Account Information
+        email = serializer.validated_data.pop("email")
+        password = serializer.validated_data.pop("password")
+        serializer.validated_data.pop("confirm_password")
+
+        user = models.BaseUser.objects.create_user(
+            email, "S", password, **serializer.validated_data
+        )
+
+        return Response(users_serializers.base.UserBaseSerializer(user).data)

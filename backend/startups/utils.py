@@ -5,21 +5,12 @@ from django.template.loader import render_to_string
 from startups import models as startups_models
 
 
-def send_approval_email(email, **other_fields):
-    password = generic_utils.generate_random_password()
-
-    user = users_models.StartupUser.objects.create_user(
-        email=email, password=password, **other_fields
-    )
-
-    mydic = {"email": email, "password": password}
+def send_approval_email(email, startup_name):
     subject = "LaunchLab Application Approved – Welcome aboard!"
     html_template = "emailtemplate.html"
-    message = render_to_string(html_template, context=mydic)
+    message = render_to_string(html_template, context={"startup_name": startup_name})
     recipient_list = [email]
     send_email(subject, message, recipient_list)
-
-    return user
 
 
 def send_rejection_email(email):

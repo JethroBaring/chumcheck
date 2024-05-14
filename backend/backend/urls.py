@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include, re_path
 from startups.urls import urlpatterns as startups_urlpatterns
@@ -37,7 +38,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include(startups_urlpatterns)),
-    path("user/", include(users_urlpatterns)),
+    path("users/", include(users_urlpatterns)),
     path("readinesslevel/", include(readinesslevels_urlpatterns)),
     path("tasks/", include(tasks_urlpatterns)),
     path("tokens/acquire/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
