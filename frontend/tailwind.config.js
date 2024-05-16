@@ -59,6 +59,19 @@ const config = {
 			},
 			fontFamily: {
 				sans: [...fontFamily.sans]
+			},
+			keyframes: {
+				fade: {
+					'0%': {
+						opacity: '0'
+					},
+					'100%': {
+						opacity: '100'
+					}
+				}
+			},
+			animation: {
+				'fade': 'fade 1s linear'
 			}
 		}
 	}

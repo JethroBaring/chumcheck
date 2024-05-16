@@ -1,0 +1,26 @@
+{
+	"/(auth)": [],
+	"/(app)": [
+		"src/routes/(app)/+page.server.ts",
+		"src/routes/(app)/+layout.server.ts",
+		"src/routes/(app)/+layout.server.ts"
+	],
+	"/": [],
+	"/(auth)/forgotpassword": [],
+	"/(auth)/login": [
+		"src/routes/(auth)/login/+page.server.ts"
+	],
+	"/(auth)/register": [
+		"src/routes/(auth)/register/+page.server.ts"
+	],
+	"/(app)/startups": [
+		"src/routes/(app)/+layout.server.ts"
+	],
+	"/(app)/startups/[startup]": [
+		"src/routes/(app)/startups/[startup]/+page.server.ts",
+		"src/routes/(app)/+layout.server.ts"
+	],
+	"/(app)/test": [
+		"src/routes/(app)/+layout.server.ts"
+	]
+}

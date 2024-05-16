@@ -6,23 +6,19 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	let isBlurred = false;
 
+	function handleScroll() {
+		const scrollY = window.scrollY;
+
+		isBlurred = scrollY > 100;
+	}
+
 	onMount(() => {
-		// Listen for the scroll event
 		window.addEventListener('scroll', handleScroll);
 
-		// Cleanup the event listener when the component is destroyed
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
 		};
 	});
-
-	function handleScroll() {
-		// Check the scroll position
-		const scrollY = window.scrollY;
-
-		// Set the 'isBlurred' variable based on the scroll position
-		isBlurred = scrollY > 100;
-	}
 </script>
 
 <header

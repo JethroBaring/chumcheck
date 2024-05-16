@@ -3,12 +3,13 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import Spinner from 'lucide-svelte/icons/loader-circle';
 	import { superForm } from 'sveltekit-superforms';
+	import Spinner from 'lucide-svelte/icons/loader-circle';
 
 	export let data: PageData;
 
 	let isLoading = false;
+	
 	async function onSubmit() {
 		isLoading = true;
 
@@ -25,11 +26,11 @@
 </svelte:head>
 
 <div
-	class="text-flutter-gray dark:text-flutter-white relative flex h-full flex-1 flex-col items-center rounded-bl-xl rounded-tl-xl bg-transparent"
+	class="bg-muted/40 text-flutter-gray dark:text-flutter-white relative flex h-full flex-1 flex-col items-center rounded-bl-xl rounded-tl-xl"
 >
 	<div class="absolute flex w-full cursor-pointer items-center gap-2 p-5">
-		<img src="launchlab_logo.png" alt="citeams_logo" class="w-8" />
-		<a href="/" class="cursor-pointer text-2xl font-black normal-case">ChumCheck</a>
+		<img src="launchlab_logo.png" alt="citeams_logo" class="h-7 w-7" />
+		<a href="/" class="cursor-pointer text-xl font-black normal-case">ChumCheck</a>
 	</div>
 
 	<div class="flex flex-1 items-center justify-center">
@@ -55,7 +56,7 @@
 				<div class="grid gap-2">
 					<div class="flex items-center">
 						<Label for="password">Password</Label>
-						<a href="##" class="ml-auto inline-block text-sm underline"> Forgot your password? </a>
+						<a href="/forgotpassword" class="ml-auto inline-block text-sm underline"> Forgot your password? </a>
 					</div>
 					<Input name="password" id="password" type="password" required bind:value={$form.password}/>
 				</div>

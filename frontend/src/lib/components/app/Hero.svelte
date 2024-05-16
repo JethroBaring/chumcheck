@@ -17,15 +17,15 @@
 			<p class="text-xl font-medium" transition:flip>
 				Your startup's path to empowerment <br /> and success
 			</p>
-			<a data-sveltekit-reload href="/application">
-				<Button class="shadow-lg shadow-flutter-blue/50 text-white">Apply Now!</Button>
+			<a data-sveltekit-reload href="/register">
+				<Button class="shadow-lg shadow-flutter-blue/50 text-white">Get Started!</Button>
 			</a>
 		</div>
 		<div class="relative flex-1">
 			<div
 				class="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-flutter-blue opacity-20 blur-[100px]"
 			></div>
-			<img src="startup.svg" alt="startup" class="w-full" />
+			<img src="startup.svg" alt="startup" class="w-full animate-fade"/>
 		</div>
 	</div>
 </div>

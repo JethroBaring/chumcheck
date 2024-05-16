@@ -25,11 +25,11 @@
 </svelte:head>
 
 <div
-	class="bg-muted text-flutter-gray dark:text-flutter-white relative flex h-full flex-1 flex-col items-center rounded-bl-xl rounded-tl-xl"
+	class="bg-muted/40 text-flutter-gray dark:text-flutter-white relative flex h-full flex-1 flex-col items-center rounded-bl-xl rounded-tl-xl"
 >
 	<div class="absolute flex w-full cursor-pointer items-center gap-2 p-5">
-		<img src="launchlab_logo.png" alt="citeams_logo" class="w-8" />
-		<a href="/" class="cursor-pointer text-2xl font-black normal-case">ChumCheck</a>
+		<img src="launchlab_logo.png" alt="citeams_logo" class="h-7 w-7" />
+		<a href="/" class="cursor-pointer text-xl font-black normal-case">ChumCheck</a>
 	</div>
 
 	<div class="flex flex-1 items-center justify-center">

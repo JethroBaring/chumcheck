@@ -25,7 +25,7 @@
     import * as Tooltip from "$lib/components/ui/tooltip/index.js";
   </script>
 
-<aside class="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
+<aside class="w-14 h-screen flex-col border-r bg-background sm:flex">
     <nav class="flex flex-col items-center gap-4 px-2 py-4">
       <a
         href="/"
