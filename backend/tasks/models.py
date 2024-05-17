@@ -23,7 +23,7 @@ class Task(BaseModel):
         SHORT_TERM = 1, _("Short Term")
         LONG_TERM = 2, _("Long Term")
 
-    priority_number = models.SmallIntegerField()
+    priority_number = models.SmallIntegerField(null=True, default=None)
     readiness_type = models.ForeignKey(
         readinesslevel_models.ReadinessType,
         on_delete=models.CASCADE,
@@ -58,7 +58,7 @@ class Task(BaseModel):
 
 
 class Initiative(BaseModel):
-    initiative_number = models.SmallIntegerField()
+    initiative_number = models.SmallIntegerField(null=True, default=None)
     description = models.CharField(max_length=500, blank=True)
     measures = models.CharField(max_length=200, blank=True)
     targets = models.CharField(max_length=200, blank=True)
@@ -74,7 +74,7 @@ class Initiative(BaseModel):
 
 
 class Roadblock(BaseModel):
-    risk_number = models.SmallIntegerField()
+    risk_number = models.SmallIntegerField(null=True, default=None)
     description = models.CharField(max_length=500, blank=True)
     fix = models.CharField(max_length=500, blank=True)
     assignee = models.ForeignKey(

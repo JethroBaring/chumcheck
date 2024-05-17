@@ -110,7 +110,7 @@ class TaskViewSet(
             "no_of_tasks_to_create"
         )
 
-        base_prompt = tasks_uitls.create_base_prompt(startup)
+        base_prompt = tasks_utils.create_base_prompt(startup)
 
         if not base_prompt:
             return Response(
@@ -122,8 +122,8 @@ class TaskViewSet(
             + f"""
         TASK: Create me {no_of_tasks_to_create} {term} tasks for the startup's personalized learning path.
         Requirement: The response should be in a JSON format.
-        It should consist of priority number, readiness level type, target level, description
-        JSON format: [{{"priority_number": (int), "readiness_level_type": "", "target_level": (int), "description": ""}}]
+        It should consist of readiness level type, target level, description
+        JSON format: [{{"readiness_level_type": "", "target_level": (int), "description": ""}}]
         NOTE:
         - target_level is from 1-8
         - make sure that the tasks will increase the level(target_level) of the specified readiness level type from the initial readiness level type
@@ -134,7 +134,6 @@ class TaskViewSet(
 
         tasks = []
         for task_data in explaination:
-            priority_number = task_data.get("priority_number")
             rl_type = task_data.get("readiness_level_type")
             target_level = task_data.get("target_level")
             description = task_data.get("description")
@@ -151,7 +150,6 @@ class TaskViewSet(
 
             tasks.append(
                 tasks_models.Task.objects.create(
-                    priority_number=priority_number,
                     readiness_type=readiness_type,
                     target_level=target_readiness_level,
                     description=description,
@@ -237,9 +235,9 @@ class InitiativeViewSet(
     @transaction.atomic
     @action(detail=False, methods=["POST"], url_path="create-initial-initiatives")
     def initial_initiatives(self, request):
-        """Generate Tasks Using AI
+        """Generate Initatives Using AI
 
-        generate tasks based on capsule proposal,
+        generate initatives based on capsule proposal,
         initial readiness level, and task.
         """
         request_serializer = (
@@ -270,8 +268,8 @@ class InitiativeViewSet(
 
         Task: Create me {no_of_initiatives_to_create} initiatives for the startup's personalized task.
         Requirement: The response should be in a JSON format.
-        It should consist of initiative number, description, measures, targets, remarks
-        JSON format: [{{"initiative_number": (int), "description": "", "measures": "", "targets": "", "remarks":""}}]
+        It should consist of description, measures, targets, remarks
+        JSON format: [{{"description": "", "measures": "", "targets": "", "remarks":""}}]
         NOTE:
         - description have 400 max length
         - measures, targets, and remarks have 150 max length
@@ -280,7 +278,6 @@ class InitiativeViewSet(
 
         initiatives = []
         for initiative_data in explaination:
-            initiative_number = initiative_data.get("initiative_number")
             description = initiative_data.get("description")
             measures = initiative_data.get("measures")
             targets = initiative_data.get("targets")
@@ -288,7 +285,6 @@ class InitiativeViewSet(
 
             initiatives.append(
                 tasks_models.Initiative.objects.create(
-                    initiative_number=initiative_number,
                     description=description,
                     measures=measures,
                     targets=targets,
@@ -433,8 +429,8 @@ class RoadblockViewSet(
 
         Task: Create me {no_of_roadblocks_to_create} roadblocks for the startup's personalized tasks, and initiatives.
         Requirement: The response should be in a JSON format.
-        It should consist of risk number, description, fix
-        JSON format: [{{"risk_number": (int), "description": "", "fix": ""}}]
+        It should consist of description, and fix
+        JSON format: [{{"description": "", "fix": ""}}]
         NOTE:
         - description and fix have 500 max length
         """
@@ -443,13 +439,11 @@ class RoadblockViewSet(
 
         roadblocks = []
         for roadblock_data in explaination:
-            risk_number = roadblock_data.get("risk_number")
             description = roadblock_data.get("description")
             fix = roadblock_data.get("fix")
 
             roadblocks.append(
                 tasks_models.Roadblock.objects.create(
-                    risk_number=risk_number,
                     description=description,
                     fix=fix,
                     startup_id=startup.id,
