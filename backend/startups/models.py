@@ -103,3 +103,20 @@ class CalculatorQuestionAnswer(BaseModel):
 
     class Meta:
         unique_together = ["startup", "calculator_question"]
+
+
+class CapsuleProposalInfo(BaseModel):
+    title = models.CharField(max_length=50)
+    startup_description = models.CharField(max_length=100)
+    problem_statement = models.CharField(max_length=200)
+    target_market = models.CharField(max_length=100)
+    solution_description = models.CharField(max_length=500)
+    objectives = models.CharField(max_length=50)
+    scope = models.CharField(max_length=50)
+    methodology = models.CharField(max_length=300)
+    startup = models.OneToOneField(
+        Startup, on_delete=models.CASCADE, related_name="capsule_proposal_info"
+    )
+
+    class Meta:
+        db_table = "capsule_proposals_info"

@@ -796,3 +796,46 @@ class CalculatorQuestionAnswerViewSet(BaseViewSet):
         )
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CapsuleProposalInfoViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.CreateModelMixin,
+    BaseViewSet,
+):
+    queryset = startups_models.CapsuleProposalInfo.objects
+    serializer_class = startups_serializers.base.CapsuleProposalInfoBaseSerializer
+
+    def get_permissions(self):
+        viewset_action = self.action
+
+        if viewset_action == "create":
+            return [startups_permissions.IsMentorOrManagerPermission()]
+
+        elif viewset_action in ["create", "retrieve", "partial_update"]:
+            return [
+                startups_permissions.IsMemberOfStartupPermissionThroughCapsuleProposalInfoPermission()
+            ]
+
+        return super().get_permissions()
+
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @transaction.atomic
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        serializer = startups_serializers.base.CapsuleProposalInfoBaseSerializer(
+            data=request.data
+        )
+        serializer.is_valid(raise_exception=True)
+
+        startup = serializer.validated_data.get("startup")
+
+        self.check_object_permissions(request, startup)
+
+        return super().create(request, *args, **kwargs)

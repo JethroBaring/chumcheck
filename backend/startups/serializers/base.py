@@ -129,3 +129,28 @@ class CalculatorQuestionAnswerBaseSerializer(serializers.ModelSerializer):
             "startup_id",
             "calculator_question_id",
         ]
+
+
+class CapsuleProposalInfoBaseSerializer(serializers.ModelSerializer):
+    startup = serializers.PrimaryKeyRelatedField(
+        source="startup", queryset=startups_models.Startup.objects
+    )
+
+    class Meta:
+        model = startups_models.CapsuleProposalInfo
+        fields = [
+            "id",
+            "title",
+            "startup_description",
+            "problem_statement",
+            "target_market",
+            "solution_description",
+            "objectives",
+            "scope",
+            "methodology",
+            "startup_id",
+        ]
+
+    def update(self, instance, validated_data):
+        validated_data.pop("startup", None)
+        return super().update(instance, validated_data)
