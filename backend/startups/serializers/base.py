@@ -132,7 +132,7 @@ class CalculatorQuestionAnswerBaseSerializer(serializers.ModelSerializer):
 
 
 class CapsuleProposalInfoBaseSerializer(serializers.ModelSerializer):
-    startup = serializers.PrimaryKeyRelatedField(
+    startup_id = serializers.PrimaryKeyRelatedField(
         source="startup", queryset=startups_models.Startup.objects
     )
 

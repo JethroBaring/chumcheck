@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from users import serializers as users_serializers
+from startups import serializers as startups_serializers
 
 
 class CalculatorFinalScoresResponseSerializer(serializers.Serializer):
@@ -18,3 +19,20 @@ class GetMentorsResponseSerializer(users_serializers.base.UserBaseSerializer):
     class Meta:
         model = users_serializers.base.UserBaseSerializer.Meta.model
         fields = ["id", "first_name", "last_name", "email"]
+
+
+class ExtractCapsuleProposalDataResponseSerializer(
+    startups_serializers.base.CapsuleProposalInfoBaseSerializer
+):
+    class Meta:
+        model = startups_serializers.base.CapsuleProposalInfoBaseSerializer.Meta.model
+        fields = [
+            "title",
+            "startup_description",
+            "problem_statement",
+            "target_market",
+            "solution_description",
+            "objectives",
+            "scope",
+            "methodology",
+        ]

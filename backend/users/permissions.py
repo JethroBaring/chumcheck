@@ -11,6 +11,15 @@ class IsManagerPermission(IsAuthenticated):
         return user.user_type == users_models.BaseUser.UserType.MANAGER
 
 
+class IsStartupPermission(IsAuthenticated):
+    message = "User should be a startup type."
+
+    def has_permission(self, request, view):
+        user = request.user
+
+        return user.user_type == users_models.BaseUser.UserType.STARTUP
+
+
 class IsOwnerOfUserPermission(IsAuthenticated):
     message = "Caller must be the owner of User."
 

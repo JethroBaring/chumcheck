@@ -27,15 +27,10 @@ class TaskViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        if viewset_action == "list":
-            return [
-                tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughTaskPermission()
-            ]
-
-        elif viewset_action in ["partial_update", "destroy"]:
+        if viewset_action in ["partial_update", "destroy"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
 
-        elif viewset_action == "create":
+        elif viewset_action in ["create", "initial_tasks"]:
             return [startups_permissions.IsMentorOrManagerPermission()]
 
         return super().get_permissions()
@@ -67,14 +62,34 @@ class TaskViewSet(
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=tasks_serializers.base.TaskBaseSerializer,
+        responses={
+            200: tasks_serializers.base.TaskBaseSerializer(),
+            403: tasks_permissions.IsMentorThroughTaskPermission.message,
+        },
+    )
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        responses={
+            204: "",
+            403: tasks_permissions.IsMentorThroughTaskPermission.message,
+        },
+    )
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=tasks_serializers.base.TaskBaseSerializer,
+        responses={
+            200: tasks_serializers.base.TaskBaseSerializer(),
+            403: startups_permissions.IsMentorOrManagerPermission.message,
+        },
+    )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = tasks_serializers.base.TaskBaseSerializer(data=request.data)
@@ -88,7 +103,11 @@ class TaskViewSet(
 
     @swagger_auto_schema(
         request_body=tasks_serializers.request.CreateInitialTaskRequestSerializer,
-        responses={200: serializer_class(many=True), 400: "No capsule proposal found."},
+        responses={
+            200: tasks_serializers.base.TaskBaseSerializer(many=True),
+            400: "No capsule proposal found.",
+            403: startups_permissions.IsMentorOrManagerPermission.message,
+        },
     )
     @transaction.atomic
     @action(detail=False, methods=["POST"], url_path="create-initial-tasks")
@@ -177,15 +196,10 @@ class InitiativeViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        if viewset_action == "list":
-            return [
-                tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughInitiativePermission()
-            ]
-
-        elif viewset_action in ["partial_update", "destroy"]:
+        if viewset_action in ["partial_update", "destroy"]:
             return [tasks_permissions.IsMentorThroughInitiativePermission()]
 
-        elif viewset_action == "create":
+        elif viewset_action in ["create", "initial_initiatives"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
 
         return super().get_permissions()
@@ -213,14 +227,34 @@ class InitiativeViewSet(
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=tasks_serializers.base.InitiativeBaseSerializer,
+        responses={
+            200: tasks_serializers.base.InitiativeBaseSerializer(),
+            403: tasks_permissions.IsMentorThroughInitiativePermission.message,
+        },
+    )
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        responses={
+            204: "",
+            403: tasks_permissions.IsMentorThroughInitiativePermission.message,
+        },
+    )
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=tasks_serializers.base.InitiativeBaseSerializer,
+        responses={
+            200: tasks_serializers.base.InitiativeBaseSerializer(many=True),
+            403: tasks_permissions.IsMentorThroughTaskPermission.message,
+        },
+    )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = tasks_serializers.base.InitiativeBaseSerializer(data=request.data)
@@ -232,6 +266,13 @@ class InitiativeViewSet(
 
         return super().create(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=tasks_serializers.request.CreateInitialInitiativeRequestSerializer,
+        responses={
+            200: tasks_serializers.base.InitiativeBaseSerializer(many=True),
+            403: tasks_permissions.IsMentorThroughTaskPermission.message,
+        },
+    )
     @transaction.atomic
     @action(detail=False, methods=["POST"], url_path="create-initial-initiatives")
     def initial_initiatives(self, request):
@@ -314,15 +355,10 @@ class RoadblockViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        if viewset_action == "list":
-            return [
-                tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughInitiativePermission()
-            ]
-
-        elif viewset_action in ["partial_update", "destroy"]:
+        if viewset_action in ["partial_update", "destroy"]:
             return [tasks_permissions.IsMentorThroughInitiativePermission()]
 
-        elif viewset_action == "create":
+        elif viewset_action in ["create", "initial_roadblocks"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
 
         return super().get_permissions()
@@ -350,14 +386,34 @@ class RoadblockViewSet(
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=tasks_serializers.base.RoadblockBaseSerializer,
+        responses={
+            200: tasks_serializers.base.RoadblockBaseSerializer(),
+            403: tasks_permissions.IsMentorThroughInitiativePermission.message,
+        },
+    )
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        responses={
+            204: "",
+            403: tasks_permissions.IsMentorThroughInitiativePermission.message,
+        },
+    )
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=tasks_serializers.base.RoadblockBaseSerializer,
+        responses={
+            200: tasks_serializers.base.RoadblockBaseSerializer(),
+            403: tasks_permissions.IsMentorThroughTaskPermission.message,
+        },
+    )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = tasks_serializers.base.RoadblockBaseSerializer(data=request.data)
@@ -369,6 +425,13 @@ class RoadblockViewSet(
 
         return super().create(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=tasks_serializers.request.CreateInitialRoadblockRequestSerializer,
+        responses={
+            200: tasks_serializers.base.RoadblockBaseSerializer(many=True),
+            403: tasks_permissions.IsMentorThroughTaskPermission.message,
+        },
+    )
     @transaction.atomic
     @action(detail=False, methods=["POST"], url_path="create-initial-roadblocks")
     def initial_roadblocks(self, request):

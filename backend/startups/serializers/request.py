@@ -81,3 +81,7 @@ class ApproveApplicantsWithMentorRequestSerializer(serializers.Serializer):
         )
 
     startups_with_mentors = StartupWithMentorSerializer(many=True)
+
+
+class ExtractCapsuleProposalDataRequestSerializer(serializers.Serializer):
+    capsule_proposal = serializers.FileField()

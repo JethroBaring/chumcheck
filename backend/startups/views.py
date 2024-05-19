@@ -1,3 +1,4 @@
+from generic.utils import call_gemini_api
 from generic.views import BaseViewSet
 from rest_framework import status, mixins
 from rest_framework.response import Response
@@ -14,6 +15,7 @@ from startups import utils as startups_utils
 from drf_yasg import openapi
 from users import permissions as users_permissions
 from startups import permissions as startups_permissions
+import pymupdf
 
 
 class StartupViewSet(
@@ -839,3 +841,65 @@ class CapsuleProposalInfoViewSet(
         self.check_object_permissions(request, startup)
 
         return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        request_body=startups_serializers.request.ExtractCapsuleProposalDataRequestSerializer,
+        responses={
+            200: startups_serializers.response.ExtractCapsuleProposalDataResponseSerializer()
+        },
+    )
+    @action(url_path="extract-info", detail=False, methods=["POST"])
+    def extract_capsule_proposal_info(self, request):
+        """Extract Capsule Proposal Info
+
+        Extract Capsule Proposal Info using AI.
+        """
+        request_serializer = (
+            startups_serializers.request.ExtractCapsuleProposalDataRequestSerializer(
+                data=request.data
+            )
+        )
+        request_serializer.is_valid(raise_exception=True)
+
+        capsule_proposal_pdf_file = request_serializer.validated_data.get(
+            "capsule_proposal"
+        )
+
+        pdf_document = pymupdf.open(
+            stream=capsule_proposal_pdf_file.read(), filetype="pdf"
+        )
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+
+        history = [
+            {
+                "role": "user",
+                "parts": [text],
+            }
+        ]
+        prompt = """
+        Given this pdf file:
+        Task: extract the text for:
+        -Acceleration Proposal Title ( can be found above the Duration: 3 month)
+        - Startup Description
+        - Problem Statement
+        - Target Market
+        - Solution Description
+        - Objectives
+        - Scope of The Proposal
+        - Methodology and Expected Outputs
+
+        Requirement: The response should be in a JSON format.
+        It should consist of title, startup_description, problem_statement, target_market, solution_description, objectives, scope, and methodology
+        JSON format: {"title": "", "startup_description": "", "problem_statement": (int), "target_market": "", "solution_description": "", "objectives": "", "scope": "", "methodology": ""}
+        """
+
+        explaination, _ = call_gemini_api(prompt, history)
+
+        return Response(
+            startups_serializers.response.ExtractCapsuleProposalDataResponseSerializer(
+                explaination
+            ).data,
+            status=status.HTTP_200_OK,
+        )

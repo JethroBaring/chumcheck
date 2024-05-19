@@ -6,11 +6,15 @@ from users import permissions as users_permissions
 from django.db import transaction
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import filters
 
 
 class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, BaseViewSet):
     queryset = models.BaseUser.objects
     serializer_class = users_serializers.base.UserBaseSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["email", "first_name", "last_name"]
 
     def get_permissions(self):
         viewset_action = self.action
