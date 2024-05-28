@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { dev } from '$app/environment';
 import type { PageServerLoad } from './$types';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -17,7 +18,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions = {
-	default: async ({ fetch, request }) => {
+	default: async ({ fetch, request, cookies }) => {
 		const form = await superValidate(request, zod(loginSchema));
 
 		if (!form.valid) {
@@ -26,17 +27,37 @@ export const actions = {
 			});
 		}
 
-		const response = await fetch('', {
+		const { email, password } = form.data
+
+		const response = await fetch('http://127.0.0.1:8000/tokens/acquire/', {
 			method: 'POST',
 			headers: {
 				'Content-type': 'application/json'
 			},
-			body: JSON.stringify(form)
+			body: JSON.stringify({
+				email: email,
+				password: password
+			})
 		});
 
 		const data = await response.json();
 
 		if (response.ok) {
+			cookies.set('Refresh', data.refresh, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'strict',
+				maxAge: 60 * 60 * 24,
+				secure: !dev
+			});
+
+			cookies.set('Access', data.access, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'strict',
+				maxAge: 5 * 60,
+				secure: !dev
+			});
 			throw redirect(302, '/');
 		}
 

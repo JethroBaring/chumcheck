@@ -4,6 +4,6 @@
 </script>
 
 <ModeWatcher />
-<div class="h-screen w-screen">
+<div class="font-Inter h-screen w-screen">
 	<slot />
 </div>

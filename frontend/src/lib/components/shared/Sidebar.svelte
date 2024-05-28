@@ -1,27 +1,6 @@
 <script lang="ts">
-    import File from "lucide-svelte/icons/file";
     import Home from "lucide-svelte/icons/home";
-    import LineChart from "lucide-svelte/icons/line-chart";
-    import ListFilter from "lucide-svelte/icons/list-filter";
-    import Ellipsis from "lucide-svelte/icons/ellipsis";
-    import Package from "lucide-svelte/icons/package";
-    import Package2 from "lucide-svelte/icons/package-2";
-    import PanelLeft from "lucide-svelte/icons/panel-left";
-    import CirclePlus from "lucide-svelte/icons/circle-plus";
-    import Search from "lucide-svelte/icons/search";
     import Settings from "lucide-svelte/icons/settings";
-    import ShoppingCart from "lucide-svelte/icons/shopping-cart";
-    import UsersRound from "lucide-svelte/icons/users-round";
-  
-    import { Badge } from "$lib/components/ui/badge/index.js";
-    import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
-    import { Button } from "$lib/components/ui/button/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
-    import * as Sheet from "$lib/components/ui/sheet/index.js";
-    import * as Table from "$lib/components/ui/table/index.js";
-    import * as Tabs from "$lib/components/ui/tabs/index.js";
     import * as Tooltip from "$lib/components/ui/tooltip/index.js";
   </script>
 
@@ -31,79 +10,22 @@
         href="/"
         class="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
       >
-        <!-- <Package2 class="h-4 w-4 transition-all group-hover:scale-110" /> -->
-        <img src="logo.png" alt="chumcheck logo" class="h-7 w-7"/>
+        <img src="/logo.png" alt="chumcheck logo" class="h-7 w-7"/>
         <span class="sr-only">ChumCheck</span>
       </a>
       <Tooltip.Root>
         <Tooltip.Trigger asChild let:builder>
           <a
-            href="##"
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-            use:builder.action
-            {...builder}
-          >
-            <Home class="h-5 w-5" />
-            <span class="sr-only">Dashboard</span>
-          </a>
-        </Tooltip.Trigger>
-        <Tooltip.Content side="right">Dashboard</Tooltip.Content>
-      </Tooltip.Root>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild let:builder>
-          <a
-            href="##"
-            class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
-            use:builder.action
-            {...builder}
-          >
-            <ShoppingCart class="h-5 w-5" />
-            <span class="sr-only">Orders</span>
-          </a>
-        </Tooltip.Trigger>
-        <Tooltip.Content side="right">Orders</Tooltip.Content>
-      </Tooltip.Root>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild let:builder>
-          <a
-            href="##"
+            href="/"
             class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
             use:builder.action
             {...builder}
           >
-            <Package class="h-5 w-5" />
-            <span class="sr-only">Products</span>
+            <Home class="h-5 w-5" />
+            <span class="sr-only">Home</span>
           </a>
         </Tooltip.Trigger>
-        <Tooltip.Content side="right">Products</Tooltip.Content>
-      </Tooltip.Root>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild let:builder>
-          <a
-            href="##"
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-            use:builder.action
-            {...builder}
-          >
-            <UsersRound class="h-5 w-5" />
-            <span class="sr-only">Customers</span>
-          </a>
-        </Tooltip.Trigger>
-        <Tooltip.Content side="right">Customers</Tooltip.Content>
-      </Tooltip.Root>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild let:builder>
-          <a
-            href="##"
-            class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-            use:builder.action
-            {...builder}
-          >
-            <LineChart class="h-5 w-5" />
-            <span class="sr-only">Analytics</span>
-          </a>
-        </Tooltip.Trigger>
-        <Tooltip.Content side="right">Analytics</Tooltip.Content>
+        <Tooltip.Content side="right">Home</Tooltip.Content>
       </Tooltip.Root>
     </nav>
     <nav class="mt-auto flex flex-col items-center gap-4 px-2 py-4">

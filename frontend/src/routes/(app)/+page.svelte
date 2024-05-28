@@ -7,7 +7,7 @@
 </svelte:head>
 
 <div class="bg-grid">
-	<div class="mx-auto w-4/5">
+	<div class="mx-auto w-full">
 		<Header />
 		<Hero />
 		<HowItWork />

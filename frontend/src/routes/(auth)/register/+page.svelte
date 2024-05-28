@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-	<title>Login</title>
+	<title>Register</title>
 </svelte:head>
 
 <div
@@ -33,17 +33,17 @@
 	</div>
 
 	<div class="flex flex-1 items-center justify-center">
-		<img src="login.png" alt="" class="h-96 w-96" />
+		<img src="register.svg" alt="" class="h-3/4 w-3/4" />
 	</div>
 </div>
 <div
 	class="bg-background text-flutter-gray dark:text-flutter-white flex h-full flex-1 items-center justify-center rounded-br-xl rounded-tr-xl"
 >
-	<form on:submit|preventDefault={onSubmit} class="flex items-center justify-center py-12">
+	<form method="post" class="flex items-center justify-center py-12">
 		<div class="mx-auto grid w-[350px] gap-6">
 			<div class="grid gap-2 text-center">
 				<h1 class="text-3xl font-bold">Register</h1>
-				<p class="text-muted-foreground text-balance">
+				<p class="text-[15px] text-muted-foreground text-balance">
 					Enter all information below to create an account
 				</p>
 			</div>
@@ -105,7 +105,7 @@
 					{#if isLoading}
 						<Spinner class="mr-2 h-4 w-4 animate-spin" />
 					{/if}
-					Login
+					Create Account
 				</Button>
 			</div>
 			<div class="mt-4 text-center text-sm">

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { PageServerLoad } from './$types';
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 
 const registerSchema = z.object({
 	firstName: z.string(),
@@ -30,22 +30,30 @@ export const actions = {
 			});
 		}
 
-		if (form.data.password !== form.data.repeatPassword) {
+		const { firstName, lastName, email, password, repeatPassword } = form.data;
+
+		if (password !== repeatPassword) {
 			return message(form, { text: 'Password do not match' });
 		}
 
-		const response = await fetch('', {
+		const response = await fetch('http://127.0.0.1:8000/users/signup/', {
 			method: 'POST',
 			headers: {
 				'Content-type': 'application/json'
 			},
-			body: JSON.stringify(form)
+			body: JSON.stringify({
+				first_name: firstName,
+				last_name: lastName,
+				email: email,
+				password: password,
+				confirm_password: repeatPassword
+			})
 		});
 
 		const data = await response.json();
 
 		if (response.ok) {
-			throw redirect(302, '/');
+			return message(form, { text: 'Account created successfully' });
 		}
 
 		return message(form, { text: data.message });

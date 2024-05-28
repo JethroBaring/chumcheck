@@ -9,7 +9,7 @@
 	import Package2 from 'lucide-svelte/icons/package-2';
 	import Search from 'lucide-svelte/icons/search';
 	import Users from 'lucide-svelte/icons/users';
-
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
@@ -17,12 +17,40 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import { fade } from 'svelte/transition';
+	import { toast } from 'svelte-sonner';
+	import Sun from 'svelte-radix/Sun.svelte';
+	import Moon from 'svelte-radix/Moon.svelte';
+	import { toggleMode } from 'mode-watcher';
+	import ApplicationForm from '$lib/components/application/ApplicationForm.svelte';
+	import { browser } from '$app/environment';
 	let showStartups = true;
-
+	let showApplication = false;
+	export let data;
 	function toggleStartups() {
 		showStartups = !showStartups;
 	}
+
+	function toggleShowApplication() {
+		showApplication = !showApplication;
+	}
+
+	$: if (data.showToast) {
+		toggleShowApplication();
+		toast.success('Application submitted.', {
+			description: 'An email will be sent once the manager has reviewed your application.'
+		});
+		
+		if (browser) {
+			const url = new URL(window.location.href);
+			url.searchParams.delete('toast');
+			history.replaceState(null, '', url.toString());
+		}
+	}
 </script>
+
+<svelte:head>
+	<title>ChumCheck</title>
+</svelte:head>
 
 <div class="grid min-h-screen w-full">
 	<div class="flex w-full flex-col bg-muted/40">
@@ -45,39 +73,9 @@
 							class="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
 						>
 							<Home class="h-5 w-5" />
-							Dashboard
+							Home
 						</a>
-						<a
-							href="##"
-							class="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
-						>
-							<ShoppingCart class="h-5 w-5" />
-							Orders
-							<Badge class="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-								6
-							</Badge>
-						</a>
-						<a
-							href="##"
-							class="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-						>
-							<Package class="h-5 w-5" />
-							Products
-						</a>
-						<a
-							href="##"
-							class="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-						>
-							<Users class="h-5 w-5" />
-							Customers
-						</a>
-						<a
-							href="##"
-							class="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-						>
-							<LineChart class="h-5 w-5" />
-							Analytics
-						</a>
+						
 					</nav>
 				</Sheet.Content>
 			</Sheet.Root>
@@ -91,6 +89,20 @@
 					class="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
 				/>
 			</div>
+			<Button
+				on:click={toggleMode}
+				variant="ghost"
+				size="icon"
+				class="hover:bg-transparent hover:text-flutter-blue"
+			>
+				<Sun
+					class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+				/>
+				<Moon
+					class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+				/>
+				<span class="sr-only">Toggle theme</span>
+			</Button>
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger asChild let:builder>
 					<Button
@@ -100,7 +112,7 @@
 						class="overflow-hidden rounded-full"
 					>
 						<img
-							src="/images/placeholder-user.jpg"
+							src="/images/placeholder.jpg"
 							width={36}
 							height={36}
 							alt="Avatar"
@@ -114,7 +126,9 @@
 					<DropdownMenu.Item>Settings</DropdownMenu.Item>
 					<DropdownMenu.Item>Support</DropdownMenu.Item>
 					<DropdownMenu.Separator />
-					<DropdownMenu.Item>Logout</DropdownMenu.Item>
+					<form action="/logout" method="post">
+						<button type="submit"> <DropdownMenu.Item>Logout</DropdownMenu.Item> </button>
+					</form>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		</header>
@@ -136,7 +150,14 @@
 					{/if}
 					<h1 class="text-sm">Your startups</h1>
 				</button>
-				<Button class="absolute right-0 h-8">Create</Button>
+				<Dialog.Root open={showApplication} onOpenChange={toggleShowApplication}>
+					<Dialog.Trigger class="absolute right-0 h-8">
+						<Button class="text-white">Apply</Button>
+					</Dialog.Trigger>
+					<Dialog.Content class="h-4/5 max-w-[700px]">
+						<ApplicationForm />
+					</Dialog.Content>
+				</Dialog.Root>
 			</div>
 
 			<!-- <div class="flex-1 justify-center flex flex-col items-center gap-1 text-center">
@@ -145,10 +166,28 @@
 			</div> -->
 			{#if showStartups}
 				<div class="grid grid-cols-5 gap-5" transition:fade>
-					<Card.Root class="h-44 flex justify-center items-center text-xl font-semibold cursor-pointer">Hello world</Card.Root>
-					<Card.Root class="h-44 flex justify-center items-center text-xl font-semibold cursor-pointer">Hello world</Card.Root>
-					<Card.Root class="h-44 flex justify-center items-center text-xl font-semibold cursor-pointer">Hello world</Card.Root>
-					<Card.Root class="h-44 flex justify-center items-center text-xl font-semibold cursor-pointer">Hello world</Card.Root>
+					<a href="/user/startup/1/rns" data-sveltekit-preload-data="tap">
+						<Card.Root
+							class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
+							>Hello world</Card.Root
+						>
+					</a>
+					<a href="/user/startup/1/rns" data-sveltekit-preload-data="tap">
+						<Card.Root
+							class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
+							>Hello world</Card.Root
+						>
+					</a><a href="/user/startup/1" data-sveltekit-preload-data="tap">
+						<Card.Root
+							class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
+							>Hello world</Card.Root
+						>
+					</a><a href="/user/startup/1" data-sveltekit-preload-data="tap">
+						<Card.Root
+							class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
+							>Hello world</Card.Root
+						>
+					</a>
 				</div>
 			{/if}
 		</main>

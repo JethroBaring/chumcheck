@@ -1,26 +1,100 @@
 {
 	"/(auth)": [],
 	"/(app)": [
-		"src/routes/(app)/+page.server.ts",
-		"src/routes/(app)/+layout.server.ts",
-		"src/routes/(app)/+layout.server.ts"
+		"src/routes/(app)/+page.server.ts"
 	],
 	"/": [],
 	"/(auth)/forgotpassword": [],
 	"/(auth)/login": [
 		"src/routes/(auth)/login/+page.server.ts"
 	],
+	"/(auth)/logout": [
+		"src/routes/(auth)/logout/+page.server.ts"
+	],
+	"/(protected)/manager": [
+		"src/routes/(protected)/manager/+page.server.ts",
+		"src/routes/(protected)/manager/+layout.server.ts",
+		"src/routes/(protected)/manager/+layout.server.ts"
+	],
+	"/(protected)/manager/pending": [
+		"src/routes/(protected)/manager/pending/+page.server.ts",
+		"src/routes/(protected)/manager/+layout.server.ts"
+	],
+	"/(protected)/manager/qualified": [
+		"src/routes/(protected)/manager/qualified/+page.server.ts",
+		"src/routes/(protected)/manager/+layout.server.ts"
+	],
+	"/(protected)/manager/rated": [
+		"src/routes/(protected)/manager/rated/+page.server.ts",
+		"src/routes/(protected)/manager/+layout.server.ts"
+	],
+	"/(protected)/mentor": [
+		"src/routes/(protected)/mentor/+page.server.ts",
+		"src/routes/(protected)/mentor/+layout.server.ts",
+		"src/routes/(protected)/mentor/+layout.server.ts"
+	],
+	"/(protected)/mentor/startup/[startup]": [
+		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/mentor/+layout.server.ts"
+	],
+	"/(protected)/mentor/startup/[startup]/i": [
+		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/mentor/+layout.server.ts"
+	],
+	"/(protected)/mentor/startup/[startup]/rb": [
+		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/mentor/+layout.server.ts"
+	],
+	"/(protected)/mentor/startup/[startup]/rl": [
+		"src/routes/(protected)/mentor/startup/[startup]/rl/+page.server.ts",
+		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/mentor/+layout.server.ts"
+	],
+	"/(protected)/mentor/startup/[startup]/rna": [
+		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/mentor/+layout.server.ts"
+	],
+	"/(protected)/mentor/startup/[startup]/rns": [
+		"src/routes/(protected)/mentor/startup/[startup]/rns/+page.server.ts",
+		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/mentor/+layout.server.ts"
+	],
 	"/(auth)/register": [
 		"src/routes/(auth)/register/+page.server.ts"
 	],
-	"/(app)/startups": [
-		"src/routes/(app)/+layout.server.ts"
-	],
+	"/(app)/startups": [],
 	"/(app)/startups/[startup]": [
-		"src/routes/(app)/startups/[startup]/+page.server.ts",
-		"src/routes/(app)/+layout.server.ts"
+		"src/routes/(app)/startups/[startup]/+page.server.ts"
 	],
-	"/(app)/test": [
-		"src/routes/(app)/+layout.server.ts"
+	"/(app)/test": [],
+	"/(protected)/user": [
+		"src/routes/(protected)/user/+page.server.ts",
+		"src/routes/(protected)/user/+layout.server.ts",
+		"src/routes/(protected)/user/+layout.server.ts"
+	],
+	"/(protected)/user/startup/[startup]": [
+		"src/routes/(protected)/user/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/user/+layout.server.ts"
+	],
+	"/(protected)/user/startup/[startup]/i": [
+		"src/routes/(protected)/user/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/user/+layout.server.ts"
+	],
+	"/(protected)/user/startup/[startup]/rb": [
+		"src/routes/(protected)/user/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/user/+layout.server.ts"
+	],
+	"/(protected)/user/startup/[startup]/rl": [
+		"src/routes/(protected)/user/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/user/+layout.server.ts"
+	],
+	"/(protected)/user/startup/[startup]/rna": [
+		"src/routes/(protected)/user/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/user/+layout.server.ts"
+	],
+	"/(protected)/user/startup/[startup]/rns": [
+		"src/routes/(protected)/user/startup/[startup]/rns/+page.server.ts",
+		"src/routes/(protected)/user/startup/[startup]/+layout.server.ts",
+		"src/routes/(protected)/user/+layout.server.ts"
 	]
 }

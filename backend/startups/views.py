@@ -95,8 +95,9 @@ class StartupViewSet(
 
         members = serializer.validated_data.pop("set_members", [])
 
+        startup_user = users_models.StartupUser.objects.filter(id=user.id).first()
         startup = startups_models.Startup.objects.create(
-            user=user, **serializer.validated_data
+            user=startup_user, **serializer.validated_data
         )
 
         for member in members:
