@@ -3,6 +3,7 @@ from generic.email import send_email
 from generic import utils as generic_utils
 from django.template.loader import render_to_string
 from startups import models as startups_models
+from readinesslevel import models as readinesslevel_models
 
 
 def send_approval_email(email, startup_name):
@@ -116,3 +117,55 @@ def calculate_levels(startup_id):
         go_to_market,
         supply_chain,
     )
+
+
+def get_first_readiness_levels(startup_id):
+    startup_readiness_levels = readinesslevel_models.ReadinessLevel.objects.filter(
+        startups_level__startup_id=startup_id
+    )
+
+    trl = None
+    irl = None
+    mrl = None
+    rrl = None
+    arl = None
+    orl = None
+
+    for startup_readiness_level in startup_readiness_levels:
+        readiness_type = startup_readiness_level.readiness_type.rl_type
+        if (
+            not trl
+            and readiness_type == readinesslevel_models.ReadinessType.RLType.TECHNOLOGY
+        ):
+            trl = startup_readiness_level
+        elif (
+            not irl
+            and readiness_type == readinesslevel_models.ReadinessType.RLType.INVESTMENT
+        ):
+            irl = startup_readiness_level
+        elif (
+            not mrl
+            and readiness_type == readinesslevel_models.ReadinessType.RLType.MARKET
+        ):
+            mrl = startup_readiness_level
+        elif (
+            not rrl
+            and readiness_type == readinesslevel_models.ReadinessType.RLType.REGULATORY
+        ):
+            rrl = startup_readiness_level
+        elif (
+            not arl
+            and readiness_type == readinesslevel_models.ReadinessType.RLType.ACCEPTANCE
+        ):
+            arl = startup_readiness_level
+        elif (
+            not orl
+            and readiness_type
+            == readinesslevel_models.ReadinessType.RLType.ORGANIZATIONAL
+        ):
+            orl = startup_readiness_level
+
+        if all([trl, irl, mrl, rrl, arl, orl]):
+            break
+
+    return trl, irl, mrl, rrl, arl, orl

@@ -1,3 +1,4 @@
+from tasks import models as tasks_models
 from generic.utils import call_gemini_api
 from generic.views import BaseViewSet
 from rest_framework import status, mixins
@@ -10,12 +11,14 @@ from users import models as users_models
 from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
 from django.utils import timezone
-from django.db.models import Q, Sum, Subquery, OuterRef
+from django.db.models import Q, Sum, Subquery, OuterRef, F
 from startups import utils as startups_utils
 from drf_yasg import openapi
 from users import permissions as users_permissions
 from startups import permissions as startups_permissions
 import pymupdf
+from tasks import utils as tasks_utils
+from readinesslevel import models as readinesslevel_models
 
 
 class StartupViewSet(
@@ -43,6 +46,15 @@ class StartupViewSet(
 
         if viewset_action in ["retrieve", "get_mentors"]:
             return [startups_permissions.IsManagerOrMemberOrMentorOfStartUpPermission()]
+
+        if viewset_action in [
+            "allow_rnas",
+            "allow_tasks",
+            "allow_initatives",
+            "allow_roadblocks",
+            "generate_rna",
+        ]:
+            return [startups_permissions.IsMentorOrManagerPermission()]
 
         return super().get_permissions()
 
@@ -94,7 +106,6 @@ class StartupViewSet(
         serializer.is_valid(raise_exception=True)
 
         members = serializer.validated_data.pop("set_members", [])
-
         startup_user = users_models.StartupUser.objects.filter(id=user.id).first()
         startup = startups_models.Startup.objects.create(
             user=startup_user, **serializer.validated_data
@@ -411,6 +422,120 @@ class StartupViewSet(
             startups_serializers.response.GetMentorsResponseSerializer(
                 mentors, many=True
             ).data
+        )
+
+    @swagger_auto_schema(
+        query_serializer=None,
+        responses={
+            200: startups_serializers.response.GenerateRNAResponseSerializer,
+        },
+    )
+    @action(url_path="generate-rna", detail=True, methods=["GET"])
+    def generate_rna(self, request, pk):
+        """Generate RNA
+
+        Generates the RNA for the startup.
+        """
+        startup = self.get_object()
+
+        base_prompt = tasks_utils.create_base_prompt(startup)
+
+        readiness_levels = startups_utils.get_first_readiness_levels(startup.id)
+
+        level_criterion_answers = (
+            startups_models.ReadinessLevelCriterionAnswer.objects.filter(
+                startup_id=startup.id, criterion__readiness_level__in=readiness_levels
+            )
+            .values("criterion__readiness_level")
+            .annotate(
+                total_score=Sum("score"),
+                rl_type=F("criterion__readiness_level__readiness_type__rl_type"),
+            )
+        )
+
+        readiness_level_interpretation_prompt = "Heres the interpretation of the readiness levels based on a set of rubrics to know the level of the readiness type for the startup:\n"
+        for level_criterion_answer in level_criterion_answers:
+            level_id = level_criterion_answer.get("criterion__readiness_level")
+            total_score = level_criterion_answer.get("total_score")
+            rl_type = level_criterion_answer.get("rl_type")
+
+            scoring_guide = readinesslevel_models.ScoringGuide.objects.filter(
+                readiness_level_id=level_id,
+                start_range__lte=total_score,
+                end_range__gte=total_score,
+            ).first()
+            readiness_level_interpretation_prompt += (
+                f"{rl_type.lower()}rl: {scoring_guide.description}\n\n"
+            )
+
+        prompt = f"""
+        {base_prompt}
+
+        {readiness_level_interpretation_prompt}
+
+        TASK: Generate a RNA(Readiness and Needs Assessment) for each readiness level.
+        Requirement: The response should be in a JSON format.
+        It should consist of trl, irl, mrl, rrl, arl, and orl
+        JSON format: {{"trl": "", "irl": "", "mrl": "", "rrl": "", "arl": "", "orl": ""}}
+        """
+
+        explaination, _ = call_gemini_api(prompt)
+
+        return Response(
+            startups_serializers.response.GenerateRNAResponseSerializer(
+                explaination
+            ).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @action(url_path="allow-rnas", detail=True, methods=["GET"])
+    def allow_rnas(self, request, pk):
+        """Check Allow RNAs
+
+        Checks if manager can create RNAs.
+        """
+        return Response(
+            startups_models.ReadinessLevelCriterionAnswer.objects.filter(
+                startup_id=pk
+            ).exists(),
+            status=status.HTTP_200_OK,
+        )
+
+    @action(url_path="allow-tasks", detail=True, methods=["GET"])
+    def allow_tasks(self, request, pk):
+        """Check Allow Tasks
+
+        Checks if manager can create tasks.
+        """
+        return Response(
+            startups_models.StartupRNA.objects.filter(startup_id=pk).exists(),
+            status=status.HTTP_200_OK,
+        )
+
+    @action(url_path="allow-initatives", detail=True, methods=["GET"])
+    def allow_initatives(self, request, pk):
+        """Check Allow Initatives
+
+        Checks if manager can create initatives.
+        """
+        return Response(
+            tasks_models.Task.objects.filter(startup_id=pk)
+            .exclude(status=tasks_models.TaskStatus.FOR_REVIEW)
+            .exists(),
+            status=status.HTTP_200_OK,
+        )
+
+    @action(url_path="allow-roadblocks", detail=True, methods=["GET"])
+    def allow_roadblocks(self, request, pk):
+        """Check Allow Roadblocks
+
+        Checks if manager can create roadblocks.
+        """
+        return Response(
+            tasks_models.Initiative.objects.filter(task__startup_id=pk)
+            .exclude(status=tasks_models.TaskStatus.FOR_REVIEW)
+            .exists(),
+            status=status.HTTP_200_OK,
         )
 
 
@@ -849,6 +974,7 @@ class CapsuleProposalInfoViewSet(
             200: startups_serializers.response.ExtractCapsuleProposalDataResponseSerializer()
         },
     )
+    @transaction.atomic
     @action(url_path="extract-info", detail=False, methods=["POST"])
     def extract_capsule_proposal_info(self, request):
         """Extract Capsule Proposal Info
@@ -904,3 +1030,44 @@ class CapsuleProposalInfoViewSet(
             ).data,
             status=status.HTTP_200_OK,
         )
+
+
+class StartupRNAViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
+    queryset = startups_models.StartupRNA.objects
+    serializer_class = startups_serializers.base.StartupRNABaseSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        request = self.request
+
+        serializer = startups_serializers.query.StartupRNAQuerySerializer(
+            data=request.query_params
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        startup_id = serializer.validated_data.get("startup_id")
+        if startup_id:
+            queryset = queryset.filter(startup_id=startup_id)
+
+        return queryset.all()
+
+    def list(self, request, *args, **kwargs):
+        """List Startup RNAs
+
+        List collections of Startup RNA instances.
+        """
+        return super().list(request, *args, **kwargs)
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        serializer = startups_serializers.base.StartupRNABaseSerializer(
+            data=request.data
+        )
+        serializer.is_valid(raise_exception=True)
+
+        startup = serializer.validated_data.get("startup")
+
+        self.check_object_permissions(request, startup)
+
+        return super().create(request, *args, **kwargs)

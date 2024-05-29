@@ -43,6 +43,18 @@ class StartupMember(BaseModel):
         default=None,
     )
 
+    @property
+    def first_name(self):
+        return self.user.first_name if self.user else ""
+
+    @property
+    def last_name(self):
+        return self.user.last_name if self.user else ""
+
+    @property
+    def email(self):
+        return self.user.email if self.user else ""
+
 
 class StartupReadinessLevel(BaseModel):
     startup = models.ForeignKey(
@@ -120,3 +132,17 @@ class CapsuleProposalInfo(BaseModel):
 
     class Meta:
         db_table = "capsule_proposals_info"
+
+
+class StartupRNA(BaseModel):
+    startup = models.ForeignKey(Startup, on_delete=models.CASCADE, related_name="rnas")
+
+    readiness_level = models.ForeignKey(
+        readinesslevel_models.ReadinessLevel,
+        on_delete=models.CASCADE,
+        related_name="startup_rnas",
+    )
+    rna = models.TextField()
+
+    class Meta:
+        db_table = "startup_rnas"

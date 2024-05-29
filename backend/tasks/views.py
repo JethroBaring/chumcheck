@@ -12,6 +12,7 @@ from rest_framework import status
 from readinesslevel import models as readinesslevel_models
 from generic.utils import call_gemini_api
 from tasks import utils as tasks_utils
+from startups import models as startups_models
 
 
 class TaskViewSet(
@@ -136,9 +137,22 @@ class TaskViewSet(
                 "No capusle proposal found.", status=status.HTTP_400_BAD_REQUEST
             )
 
-        prompt = (
-            base_prompt
-            + f"""
+        startup_rnas = startups_models.StartupRNA.objects.filter(startup_id=startup.id)
+        startup_rna_prompt = "These are the RNA for each Readiness Level Of Startup:\n"
+        for startup_rna in startup_rnas:
+            readiness_level = startup_rna.readiness_level
+            rl_type_label = readinesslevel_models.ReadinessType.RLType(
+                readiness_level.readiness_type.rl_type
+            ).label
+            startup_rna_prompt += f"{rl_type_label} Readiness Level {readiness_level.level}: {startup_rna.rna}\n"
+
+        prompt = f"""
+        {base_prompt}
+
+
+        {startup_rna_prompt}
+
+
         TASK: Create me {no_of_tasks_to_create} {term} tasks for the startup's personalized learning path.
         Requirement: The response should be in a JSON format.
         It should consist of readiness level type, target level, description
@@ -148,7 +162,7 @@ class TaskViewSet(
         - make sure that the tasks will increase the level(target_level) of the specified readiness level type from the initial readiness level type
         - description has a max length of 500
         """
-        )
+
         explaination, _ = call_gemini_api(prompt)
 
         tasks = []

@@ -36,3 +36,11 @@ class ExtractCapsuleProposalDataResponseSerializer(
             "scope",
             "methodology",
         ]
+
+class GenerateRNAResponseSerializer(serializers.Serializer):
+    trl = serializers.CharField()
+    irl = serializers.CharField()
+    mrl = serializers.CharField()
+    rrl = serializers.CharField()
+    arl = serializers.CharField()
+    orl = serializers.CharField()

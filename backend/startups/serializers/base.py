@@ -11,7 +11,7 @@ class StartupMemberBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = startups_models.StartupMember
-        fields = ["id", "user_id", "startup_id"]
+        fields = ["id", "user_id", "startup_id", 'first_name', "last_name", "email"]
 
 
 class StartupBaseSerializer(serializers.ModelSerializer):
@@ -154,3 +154,21 @@ class CapsuleProposalInfoBaseSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         validated_data.pop("startup", None)
         return super().update(instance, validated_data)
+
+
+class StartupRNABaseSerializer(serializers.ModelSerializer):
+    startup_id = serializers.PrimaryKeyRelatedField(
+        source="startup", queryset=startups_models.Startup.objects
+    )
+    readiness_level_id = serializers.PrimaryKeyRelatedField(
+        source="readiness_level", queryset=readinesslevel_models.ReadinessLevel.objects
+    )
+
+    class Meta:
+        model = startups_models.StartupRNA
+        fields = [
+            "id",
+            "startup_id",
+            "readiness_level_id",
+            "rna",
+        ]

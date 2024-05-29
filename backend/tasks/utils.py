@@ -1,5 +1,6 @@
 from readinesslevel import models as readinesslevel_models
 from tasks import models as tasks_models
+from startups import utils as startups_utils
 
 
 def create_base_prompt(startup):
@@ -12,53 +13,7 @@ def create_base_prompt(startup):
     if not capsule_proposal_info:
         return None
 
-    startup_readiness_levels = readinesslevel_models.ReadinessLevel.objects.filter(
-        startups_level__id=startup.id
-    )
-
-    trl = None
-    irl = None
-    mrl = None
-    rrl = None
-    arl = None
-    orl = None
-
-    for startup_readiness_level in startup_readiness_levels:
-        readiness_type = startup_readiness_level.readiness_type.rl_type
-        if (
-            not trl
-            and readiness_type == readinesslevel_models.ReadinessType.RLType.TECHNOLOGY
-        ):
-            trl = startup_readiness_level.level
-        elif (
-            not irl
-            and readiness_type == readinesslevel_models.ReadinessType.RLType.INVESTMENT
-        ):
-            irl = startup_readiness_level.level
-        elif (
-            not mrl
-            and readiness_type == readinesslevel_models.ReadinessType.RLType.MARKET
-        ):
-            mrl = startup_readiness_level.level
-        elif (
-            not rrl
-            and readiness_type == readinesslevel_models.ReadinessType.RLType.REGULATORY
-        ):
-            rrl = startup_readiness_level.level
-        elif (
-            not arl
-            and readiness_type == readinesslevel_models.ReadinessType.RLType.ACCEPTANCE
-        ):
-            arl = startup_readiness_level.level
-        elif (
-            not orl
-            and readiness_type
-            == readinesslevel_models.ReadinessType.RLType.ORGANIZATIONAL
-        ):
-            orl = startup_readiness_level.level
-
-        if all([trl, irl, mrl, rrl, arl, orl]):
-            break
+    trl, irl, mrl, rrl, arl, orl = startups_utils.get_first_readiness_levels(startup.id)
 
     prompt = f"""
     Given these data:
@@ -81,12 +36,12 @@ def create_base_prompt(startup):
     C. Methodology and Expected Outputs
     {capsule_proposal_info.methodology}
     Initial Readiness Level:
-    TRL {trl}
-    IRL {irl}
-    MRL {mrl}
-    RRL {rrl}
-    ARL {arl}
-    ORL {orl}
+    TRL {trl.level}
+    IRL {irl.level}
+    MRL {mrl.level}
+    RRL {rrl.level}
+    ARL {arl.level}
+    ORL {orl.level}
     """
 
     return prompt

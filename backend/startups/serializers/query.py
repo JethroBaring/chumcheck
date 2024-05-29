@@ -15,5 +15,10 @@ class ReadinessLevelCriterionAnswerQuerySerializer(serializers.Serializer):
     startup_id = serializers.IntegerField(required=False)
     criterion_id = serializers.IntegerField(required=False)
 
+
 class StartupReadinessLevelQuerySerializer(serializers.Serializer):
+    startup_id = serializers.IntegerField(required=False)
+
+
+class StartupRNAQuerySerializer(serializers.Serializer):
     startup_id = serializers.IntegerField(required=False)

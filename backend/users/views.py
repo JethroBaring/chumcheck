@@ -19,9 +19,6 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, BaseViewSet)
     def get_permissions(self):
         viewset_action = self.action
 
-        if viewset_action == "list":
-            return [users_permissions.IsManagerPermission()]
-
         if viewset_action == "retrieve":
             return [users_permissions.IsOwnerOfUserPermission()]
 
@@ -30,6 +27,7 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, BaseViewSet)
     def get_queryset(self):
         queryset = super().get_queryset()
         request = self.request
+        viewset_action = self.action
 
         serializer = users_serializers.query.UserQuerySerializer(
             data=request.query_params
@@ -40,6 +38,12 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, BaseViewSet)
         user_type = serializer.validated_data.get("user_type")
         if user_type:
             queryset = queryset.filter(user_type=user_type)
+
+        if (
+            viewset_action == "list"
+            and request.user.user_type == models.BaseUser.UserType.STARTUP
+        ):
+            queryset = queryset.filter(user_type=models.BaseUser.UserType.STARTUP)
 
         return queryset.all()
 
