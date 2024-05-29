@@ -30,6 +30,18 @@ class Startup(BaseModel):
     eligibility = models.BooleanField(default=False)
     mentors = models.ManyToManyField(users_models.MentorUser, related_name="startups")
 
+    @property
+    def leader_first_name(self):
+        return self.user.first_name if self.user else ""
+
+    @property
+    def leader_last_name(self):
+        return self.user.last_name if self.user else ""
+
+    @property
+    def leader_email(self):
+        return self.user.email if self.user else ""
+
 
 class StartupMember(BaseModel):
     startup = models.ForeignKey(

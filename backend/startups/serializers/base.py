@@ -11,7 +11,7 @@ class StartupMemberBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = startups_models.StartupMember
-        fields = ["id", "user_id", "startup_id", 'first_name', "last_name", "email"]
+        fields = ["id", "user_id", "startup_id", "first_name", "last_name", "email"]
 
 
 class StartupBaseSerializer(serializers.ModelSerializer):
@@ -32,6 +32,9 @@ class StartupBaseSerializer(serializers.ModelSerializer):
             "university_name",
             "eligibility",
             "members",
+            "leader_first_name",
+            "leader_last_name",
+            "leader_email",
         ]
 
     @swagger_serializer_method(StartupMemberBaseSerializer())
