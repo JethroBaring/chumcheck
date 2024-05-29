@@ -158,9 +158,10 @@ class TaskViewSet(
         It should consist of readiness level type, target level, description
         JSON format: [{{"readiness_level_type": "", "target_level": (int), "description": ""}}]
         NOTE:
-        - target_level is from 1-8
+        - target_level is from 1-9
         - readiness_level_type consists of T(Techonology), I(Investment), A(Acceptance), O(Organizational), R(Regulatory), and M(Market)
         - make sure that the tasks will increase the level(target_level) of the specified readiness level type from the initial readiness level type
+        - target_level should not exceed to 9
         - description has a max length of 500
         """
 
