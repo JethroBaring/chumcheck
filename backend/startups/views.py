@@ -479,11 +479,11 @@ class StartupViewSet(
         JSON format: {{"trl": "", "irl": "", "mrl": "", "rrl": "", "arl": "", "orl": ""}}
         """
 
-        explaination, _ = call_gemini_api(prompt)
+        explanation, _ = call_gemini_api(prompt)
 
         return Response(
             startups_serializers.response.GenerateRNAResponseSerializer(
-                explaination
+                explanation
             ).data,
             status=status.HTTP_200_OK,
         )
@@ -1022,11 +1022,11 @@ class CapsuleProposalInfoViewSet(
         JSON format: {"title": "", "startup_description": "", "problem_statement": (int), "target_market": "", "solution_description": "", "objectives": "", "scope": "", "methodology": ""}
         """
 
-        explaination, _ = call_gemini_api(prompt, history)
+        explanation, _ = call_gemini_api(prompt, history)
 
         return Response(
             startups_serializers.response.ExtractCapsuleProposalDataResponseSerializer(
-                explaination
+                explanation
             ).data,
             status=status.HTTP_200_OK,
         )

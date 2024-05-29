@@ -36,6 +36,8 @@ class TaskBaseSerializer(serializers.ModelSerializer):
             "startup_id",
             "task_type",
             "due_date",
+            "readiness_type_rl_type",
+            "target_level_level",
         ]
 
 

@@ -56,6 +56,14 @@ class Task(BaseModel):
         db_table = "tasks"
         ordering = ["priority_number"]
 
+    @property
+    def readiness_type_rl_type(self):
+        return self.readiness_type.rl_type
+
+    @property
+    def target_level_level(self):
+        return self.target_level.level
+
 
 class Initiative(BaseModel):
     initiative_number = models.SmallIntegerField(null=True, default=None)

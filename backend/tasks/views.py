@@ -157,7 +157,7 @@ class TaskViewSet(
         Requirement: The response should be in a JSON format.
         It should consist of readiness level type, target level, description
         JSON format: [{{"readiness_level_type": "", "target_level": (int), "description": ""}}]
-        NOTE:
+        Requirement note:
         - target_level is from 1-9
         - readiness_level_type consists of T(Techonology), I(Investment), A(Acceptance), O(Organizational), R(Regulatory), and M(Market)
         - make sure that the tasks will increase the level(target_level) of the specified readiness level type from the initial readiness level type
@@ -165,10 +165,10 @@ class TaskViewSet(
         - description has a max length of 500
         """
 
-        explaination, _ = call_gemini_api(prompt)
+        explanation, _ = call_gemini_api(prompt)
 
         tasks = []
-        for task_data in explaination:
+        for task_data in explanation:
             rl_type = task_data.get("readiness_level_type")
             target_level = task_data.get("target_level")
             description = task_data.get("description")
@@ -327,14 +327,14 @@ class InitiativeViewSet(
         Requirement: The response should be in a JSON format.
         It should consist of description, measures, targets, remarks
         JSON format: [{{"description": "", "measures": "", "targets": "", "remarks":""}}]
-        NOTE:
+        Requirement note:
         - description have 400 max length
         - measures, targets, and remarks have 150 max length
         """
-        explaination, _ = call_gemini_api(prompt)
+        explanation, _ = call_gemini_api(prompt)
 
         initiatives = []
-        for initiative_data in explaination:
+        for initiative_data in explanation:
             description = initiative_data.get("description")
             measures = initiative_data.get("measures")
             targets = initiative_data.get("targets")
@@ -510,14 +510,14 @@ class RoadblockViewSet(
         Requirement: The response should be in a JSON format.
         It should consist of description, and fix
         JSON format: [{{"description": "", "fix": ""}}]
-        NOTE:
+        Requirement note:
         - description and fix have 500 max length
         """
 
-        explaination, _ = call_gemini_api(prompt)
+        explanation, _ = call_gemini_api(prompt)
 
         roadblocks = []
-        for roadblock_data in explaination:
+        for roadblock_data in explanation:
             description = roadblock_data.get("description")
             fix = roadblock_data.get("fix")
 
