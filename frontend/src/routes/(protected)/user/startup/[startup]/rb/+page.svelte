@@ -25,43 +25,64 @@
 	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
 	import ChevronRight from 'lucide-svelte/icons/chevron-right';
 	import * as Pagination from '$lib/components/ui/pagination/index.js';
-	let x  = [1,2,3,4]
+	import Check from 'lucide-svelte/icons/check';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import Spinner from 'lucide-svelte/icons/loader-circle';
 
+
+	export let data;
+
+	let roadblocks = data.roadblocks;
+
+	
 </script>
 
 <div class="flex items-center">
-	<h1 class="text-lg font-semibold md:text-2xl">Roadblocks</h1>
+	<div class="flex w-full justify-between">
+		<h1 class="text-lg font-semibold md:text-2xl">Roadblocks</h1>
+		
+	</div>
 </div>
 <div class="flex flex-1 flex-col">
-
-			<Card.Root
-				data-x-chunk-name="dashboard-06-chunk-1"
-				data-x-chunk-description="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions."
-			>
-				<Card.Content class="pt-[24px] ">
-					<Table.Root>
-						<Table.Header>
-							<Table.Row>
-								<Table.Head>Risk number</Table.Head>
-								<Table.Head>Description</Table.Head>
-								<Table.Head>Fix/Mitigation</Table.Head>
-								<Table.Head>Assignee</Table.Head>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{#each x as item}
+	{#if roadblocks.length > 0}
+		<Card.Root
+			data-x-chunk-name="dashboard-06-chunk-1"
+			data-x-chunk-description="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions."
+		>
+			<Card.Content class="pt-[24px] ">
+				<Table.Root>
+					<Table.Header>
+						<Table.Row>
+							<Table.Head>Risk Number</Table.Head>
+							<Table.Head>Description</Table.Head>
+							<Table.Head>Fix/Mitigation</Table.Head>
+							<Table.Head>Assignee</Table.Head>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each roadblocks as r, index}
 							<Table.Row class="h-[80px]">
-								<Table.Cell class="font-medium">Laser Lemonade</Table.Cell>
-								<Table.Cell>$499.99</Table.Cell>
+								<Table.Cell class="font-medium">{index + 1}</Table.Cell>
 								<Table.Cell>
-									<Badge variant="outline">Pending</Badge>
+									<div class="flex items-center gap-2">
+										<Textarea value={r.description} />
+									</div>
 								</Table.Cell>
-								<Table.Cell class="hidden md:table-cell">Jethro Baring</Table.Cell>
+								<Table.Cell>
+									<div class="flex items-center gap-2">
+										<Textarea value={r.fix} />
+									</div>
+								</Table.Cell>
+								<Table.Cell></Table.Cell>
 							</Table.Row>
-							{/each}
-							
-						</Table.Body>
-					</Table.Root>
-				</Card.Content>
-			</Card.Root>
+						{/each}
+					</Table.Body>
+				</Table.Root>
+			</Card.Content>
+		</Card.Root>
+	{:else}
+		<div class="flex flex-1 items-center justify-center">
+			Roadblocks will show once your mentor is done finalizing it
+		</div>
+	{/if}
 </div>

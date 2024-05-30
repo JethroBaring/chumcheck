@@ -13,7 +13,8 @@
 </script>
 
 <Tabs.Content value={`${type}`}>
-	{#each questions as question, index}
+	<div class="flex flex-col gap-3">
+		{#each questions as question, index}
 		<div class="flex gap-3">
 			<input
 				type="radio"
@@ -101,4 +102,5 @@
 			</Card.Content>
 		</Card.Root>
 	{/each}
+	</div>
 </Tabs.Content>

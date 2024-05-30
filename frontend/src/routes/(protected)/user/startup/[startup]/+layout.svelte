@@ -24,9 +24,9 @@
 	import Moon from 'svelte-radix/Moon.svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { Plus } from 'svelte-radix';
-	export let data: { startupId: number; token: string };
-
-	let currentTab = 'rns';
+	export let data
+	
+	let currentTab = data.current;
 	let secondarySidebar = true;
 
 	function changeTab(current: string) {

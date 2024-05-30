@@ -78,7 +78,7 @@
 		<canvas id="chart" />
 	{:else}
 		<div class="h-full flex-1">
-			<Tabs.Root value="technology" class="">
+			<Tabs.Root value="technology" class="h-full">
 				<div class="flex items-center">
 					<Tabs.List>
 						<Tabs.Trigger value="technology">Technology</Tabs.Trigger>
@@ -89,33 +89,35 @@
 						<Tabs.Trigger value="investment">Investment</Tabs.Trigger>
 					</Tabs.List>
 				</div>
-				<form method="post">
-					<Rubrics
-						questions={data.questions.filter((q) => q.readiness_type === 'Technology')}
-						type="technology"
-					/>
-					<Rubrics
-						questions={data.questions.filter((q) => q.readiness_type === 'Market')}
-						type="market"
-					/>
-					<Rubrics
-						questions={data.questions.filter((q) => q.readiness_type === 'Acceptance')}
-						type="acceptance"
-					/>
-					<Rubrics
-						questions={data.questions.filter((q) => q.readiness_type === 'Organizational')}
-						type="organizational"
-					/>
-					<Rubrics
-						questions={data.questions.filter((q) => q.readiness_type === 'Regulatory')}
-						type="regulatory"
-					/>
-					<Rubrics
-						questions={data.questions.filter((q) => q.readiness_type === 'Investment')}
-						type="investment"
-					/>
-					<button>Submit</button>
-				</form>
+				<div class="overflow-scroll h-full">
+					<form method="post" class="h-0">
+						<Rubrics
+							questions={data.questions.filter((q) => q.readiness_type === 'Technology')}
+							type="technology"
+						/>
+						<Rubrics
+							questions={data.questions.filter((q) => q.readiness_type === 'Market')}
+							type="market"
+						/>
+						<Rubrics
+							questions={data.questions.filter((q) => q.readiness_type === 'Acceptance')}
+							type="acceptance"
+						/>
+						<Rubrics
+							questions={data.questions.filter((q) => q.readiness_type === 'Organizational')}
+							type="organizational"
+						/>
+						<Rubrics
+							questions={data.questions.filter((q) => q.readiness_type === 'Regulatory')}
+							type="regulatory"
+						/>
+						<Rubrics
+							questions={data.questions.filter((q) => q.readiness_type === 'Investment')}
+							type="investment"
+						/>
+						<Button type="submit" class="mt-3">Submit</Button>
+					</form>
+				</div>
 			</Tabs.Root>
 		</div>
 	{/if}

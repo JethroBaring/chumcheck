@@ -24,7 +24,7 @@
 	import Moon from 'svelte-radix/Moon.svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { Plus } from 'svelte-radix';
-	export let data: { startupId: number; token: string };
+	export let data
 
 	let currentTab = data.cur;
 	let secondarySidebar = true;
@@ -71,7 +71,7 @@
 				<div class="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
 					<a href="/" class="flex items-center gap-2 font-semibold">
 						<Package2 class="h-6 w-6" />
-						<span class="">Acme Inc</span>
+						<span class="">{data.startup.name}</span>
 					</a>
 
 					<div class="ml-auto flex items-center gap-3">
@@ -232,7 +232,7 @@
 					<nav class="grid gap-2 text-lg font-medium">
 						<a href="##" class="flex items-center gap-2 text-lg font-semibold">
 							<Package2 class="h-6 w-6" />
-							<span class="sr-only">Acme Inc</span>
+							<span class="sr-only">{data.startup.name}</span>
 						</a>
 						<a
 							href="##"

@@ -7,7 +7,7 @@ export const load = ({ locals }: Parameters<PageServerLoad>[0]) => {
 		if (locals.user.type === 'S') {
 			throw redirect(302, '/user');
 		} else if (locals.user.type === 'M') {
-			throw redirect(302, '/manager/pending');
+			throw redirect(302, '/manager/dashboard/pending');
 		} else {
 			throw redirect(302, '/mentor');
 		}

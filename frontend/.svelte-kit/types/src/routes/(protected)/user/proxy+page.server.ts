@@ -2,11 +2,23 @@
 import { redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load = async ({ url }: Parameters<PageServerLoad>[0]) => {
+export const load = async ({ url, fetch, cookies }: Parameters<PageServerLoad>[0]) => {
 	const showToast = url.searchParams.get('toast') === 'true';
-	return {
-		showToast: showToast
-	};
+
+	const response = await fetch('http://127.0.0.1:8000/startups/', {
+		method: 'get',
+		headers: {
+			Authorization: `Bearer ${cookies.get('Access')}`
+		}
+	});
+
+	const data = await response.json();
+	if (response.ok) {
+		return {
+			showToast: showToast,
+			startups: data.results
+		};
+	}
 };
 
 export const actions = {
@@ -95,7 +107,6 @@ export const actions = {
 				headers: {
 					'Content-type': 'application/json',
 					Authorization: `Bearer ${cookies.get('Access')}`
-
 				},
 				body: JSON.stringify({
 					urat_question_answers: answers
@@ -109,7 +120,6 @@ export const actions = {
 					headers: {
 						'Content-type': 'application/json',
 						Authorization: `Bearer ${cookies.get('Access')}`
-
 					},
 					body: JSON.stringify({
 						calculator_question_answers: calculatorAnswers

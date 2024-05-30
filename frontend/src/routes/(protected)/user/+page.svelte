@@ -39,7 +39,7 @@
 		toast.success('Application submitted.', {
 			description: 'An email will be sent once the manager has reviewed your application.'
 		});
-		
+
 		if (browser) {
 			const url = new URL(window.location.href);
 			url.searchParams.delete('toast');
@@ -75,7 +75,6 @@
 							<Home class="h-5 w-5" />
 							Home
 						</a>
-						
 					</nav>
 				</Sheet.Content>
 			</Sheet.Root>
@@ -166,28 +165,14 @@
 			</div> -->
 			{#if showStartups}
 				<div class="grid grid-cols-5 gap-5" transition:fade>
-					<a href="/user/startup/1/rns" data-sveltekit-preload-data="tap">
-						<Card.Root
-							class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
-							>Hello world</Card.Root
-						>
-					</a>
-					<a href="/user/startup/1/rns" data-sveltekit-preload-data="tap">
-						<Card.Root
-							class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
-							>Hello world</Card.Root
-						>
-					</a><a href="/user/startup/1" data-sveltekit-preload-data="tap">
-						<Card.Root
-							class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
-							>Hello world</Card.Root
-						>
-					</a><a href="/user/startup/1" data-sveltekit-preload-data="tap">
-						<Card.Root
-							class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
-							>Hello world</Card.Root
-						>
-					</a>
+					{#each data.startups as startup}
+						<a href={`/user/startup/${startup.id}/rns`} data-sveltekit-preload-data="tap">
+							<Card.Root
+								class="flex h-44 cursor-pointer items-center justify-center text-xl font-semibold"
+								>{startup.name}</Card.Root
+							>
+						</a>
+					{/each}
 				</div>
 			{/if}
 		</main>

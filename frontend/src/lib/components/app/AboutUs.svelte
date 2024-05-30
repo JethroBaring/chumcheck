@@ -17,7 +17,7 @@
 				<div
 					class="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-flutter-blue opacity-20 blur-[100px]"
 				></div>
-				<img src="rocketship.png" alt="startup" class="w-full" />
+				<img src="aboutus.svg" alt="startup" class="w-full" />
 			</div>
 		</div>
 	</div>
