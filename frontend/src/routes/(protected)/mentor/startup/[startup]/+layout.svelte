@@ -26,7 +26,7 @@
 	import { Plus } from 'svelte-radix';
 	export let data: { startupId: number; token: string };
 
-	let currentTab = 'rl';
+	let currentTab = data.cur;
 	let secondarySidebar = true;
 
 	function changeTab(current: string) {

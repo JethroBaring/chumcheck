@@ -10,5 +10,5 @@ router.register(
 router.register(r"urat-question-answers", views.UratQuestionAnswerViewSet)
 router.register(r"calculator-question-answers", views.CalculatorQuestionAnswerViewSet)
 router.register(r"capsule-proposal-infos", views.CapsuleProposalInfoViewSet)
-
+router.register(r"startup-rna", views.StartupRNAViewSet)
 urlpatterns = router.urls

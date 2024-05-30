@@ -41,7 +41,7 @@ class Task(BaseModel):
         null=True,
         default=None,
     )
-    description = models.CharField(max_length=500, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
     status = models.IntegerField(
         choices=TaskStatus.choices, default=TaskStatus.FOR_REVIEW
     )
@@ -67,10 +67,10 @@ class Task(BaseModel):
 
 class Initiative(BaseModel):
     initiative_number = models.SmallIntegerField(null=True, default=None)
-    description = models.CharField(max_length=500, blank=True)
-    measures = models.CharField(max_length=200, blank=True)
-    targets = models.CharField(max_length=200, blank=True)
-    remarks = models.CharField(max_length=200, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
+    measures = models.CharField(max_length=1000, blank=True)
+    targets = models.CharField(max_length=1000, blank=True)
+    remarks = models.CharField(max_length=1000, blank=True)
     status = models.IntegerField(
         choices=TaskStatus.choices, default=TaskStatus.FOR_REVIEW
     )
@@ -83,8 +83,8 @@ class Initiative(BaseModel):
 
 class Roadblock(BaseModel):
     risk_number = models.SmallIntegerField(null=True, default=None)
-    description = models.CharField(max_length=500, blank=True)
-    fix = models.CharField(max_length=500, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
+    fix = models.CharField(max_length=1000, blank=True)
     assignee = models.ForeignKey(
         users_models.BaseUser,
         on_delete=models.SET_NULL,

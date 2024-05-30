@@ -9,7 +9,6 @@ export const load = async ({ cookies }: Parameters<PageServerLoad>[0]) => {
 			Authorization: `Bearer ${cookies.get('Access')}`
 		}
 	});
-	console.log('hello world');
 	const data = await response.json();
 
 	if (response.ok) {

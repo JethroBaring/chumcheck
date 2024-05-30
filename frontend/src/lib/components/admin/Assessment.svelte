@@ -4,7 +4,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	const access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MTU1ODEyLCJpYXQiOjE3MTY4OTY2MTIsImp0aSI6IjE3NDRiZGUyYTMwYjRiNTRhN2ZmNTYxNDNiMmE3OTliIiwidXNlcl9pZCI6MywidXNlcl90eXBlIjoiTSJ9.01eNx7NdkvPkXEFg2wCate01ct4zIRQ5dr1XQJjH8TQ';
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyMDQ2LCJpYXQiOjE3MTcwNTI4NDYsImp0aSI6ImM5ZmQ0ODA2MjhkZDRiOWNiMjNhYjU3ZTRjY2I4MzFlIiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.d_W0LM7ljx5NF4NQ4czZzA5I0bWM7-4ux80yJvMzC-w';
 
         const updateScore = async (
 		id: number,

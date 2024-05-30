@@ -939,7 +939,7 @@ class CapsuleProposalInfoViewSet(
         viewset_action = self.action
 
         if viewset_action == "create":
-            return [startups_permissions.IsMemberOfStartupPermission()]
+            return [startups_permissions.IsAuthenticated()]
 
         elif viewset_action in ["retrieve", "partial_update"]:
             return [

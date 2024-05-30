@@ -1,6 +1,7 @@
+// @ts-nocheck
 import type { PageServerLoad } from '../rns/$types';
 
-export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
+export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad>[0]) => {
 	const response = await fetch(`http://127.0.0.1:8000/startups/${params.startup}/allow-tasks/`, {
 		method: 'get',
 		headers: {

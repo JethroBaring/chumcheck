@@ -3,20 +3,20 @@
 	import Chart from 'chart.js/auto';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import ListFilter from 'lucide-svelte/icons/list-filter';
-	import CirclePlus from 'lucide-svelte/icons/circle-plus';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import Rubrics from '$lib/components/mentor/Rubrics.svelte';
-	import { goto } from '$app/navigation';
 	export let data;
 
-	let trl: number = data.readiness.filter((r) => r.readiness_type === 'Technology')[0].readiness_level,
-		orl: number = data.readiness.filter((r) => r.readiness_type === 'Organizational')[0].readiness_level,
-		mrl: number = data.readiness.filter((r) => r.readiness_type === 'Market')[0].readiness_level,
-		rrl: number = data.readiness.filter((r) => r.readiness_type === 'Regulatory')[0].readiness_level,
-		arl: number = data.readiness.filter((r) => r.readiness_type === 'Acceptance')[0].readiness_level,
-		irl: number = data.readiness.filter((r) => r.readiness_type === 'Investment')[0].readiness_level;
+	let trl: number = 0, orl: number = 0, mrl : number = 0, rrl: number = 0, arl: number = 0, irl: number = 0
+
+	if(data.readiness.length > 0) {
+		trl = data.readiness.filter((r) => r.readiness_type === 'Technology')[0].readiness_level,
+		orl = data.readiness.filter((r) => r.readiness_type === 'Organizational')[0].readiness_level,
+		mrl = data.readiness.filter((r) => r.readiness_type === 'Market')[0].readiness_level,
+		rrl = data.readiness.filter((r) => r.readiness_type === 'Regulatory')[0].readiness_level,
+		arl = data.readiness.filter((r) => r.readiness_type === 'Acceptance')[0].readiness_level,
+		irl = data.readiness.filter((r) => r.readiness_type === 'Investment')[0].readiness_level;
+	}
 
 	const redrawChart = () => {
 		let ctx: HTMLCanvasElement;
@@ -64,10 +64,10 @@
 		}
 	};
 	onMount(() => {
-		redrawChart();
+		if (data.readiness.length > 0) {
+			redrawChart();
+		}
 	});
-
-
 </script>
 
 <div class="flex items-center">

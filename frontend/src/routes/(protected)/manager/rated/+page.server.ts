@@ -8,7 +8,6 @@ export const load: PageServerLoad = async ({ cookies }) => {
 			Authorization: `Bearer ${cookies.get('Access')}`
 		}
 	});
-	console.log('hello world');
 	const data = await response.json();
 
 	if (response.ok) {

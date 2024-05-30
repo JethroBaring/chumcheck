@@ -14,9 +14,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
 	const access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MTcxMzQ2LCJpYXQiOjE3MTY5MTIxNDYsImp0aSI6IjdmMTY5M2RjODk2NjRhNjA5ZWM2OGZhOWNlYjI4MWNhIiwidXNlcl9pZCI6MywidXNlcl90eXBlIjoiTSJ9.-oQ9sE-glIG8nOMsFb8IWQ64lPzjAMM6i3S4UzcIR8E';
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyMDQ2LCJpYXQiOjE3MTcwNTI4NDYsImp0aSI6ImM5ZmQ0ODA2MjhkZDRiOWNiMjNhYjU3ZTRjY2I4MzFlIiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.d_W0LM7ljx5NF4NQ4czZzA5I0bWM7-4ux80yJvMzC-w';
 	export let data;
-	console.log(data.mentors);
 	let applicants = data.applicants.filter((d) => d.qualification_status === 2);
 	let showCapsule = false;
 
@@ -80,14 +79,12 @@
 				que = questions_data.results;
 				ans = answers_data.results;
 				calc = calculator_data;
-				console.log(data);
 				toggleRatedDialog();
 			}
 		}
 	}
 
 	async function approveStartup(startupId: number) {
-		console.log("lolol")
 		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/approve-applicant/`, {
 			method: 'post',
 			headers: {
@@ -98,9 +95,8 @@
 
 		
 		if (response.ok) {
-			console.log(selectedMentor)
 			const assignmentor = await fetch(
-				`http://127.0.0.1:8000/startups/6/appoint-mentors/`,
+				`http://127.0.0.1:8000/startups/${selectedMentor}/appoint-mentors/`,
 				{
 					method: 'post',
 					headers: {
@@ -315,7 +311,6 @@
 						selected={selectedMentor.value}
 						onSelectedChange={(v) => {
 							v && (selectedMentor = v.value);
-							console.log(selectedMentor);
 						}}
 					>
 						<Select.Trigger class="w-[180px]">

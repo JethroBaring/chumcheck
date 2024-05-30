@@ -28,8 +28,6 @@ export const actions: Actions = {
 			}
 		}
 
-		console.log(newFormData)
-
 		const response = await fetch('http://127.0.0.1:8000/startups/', {
 			method: 'POST',
 			headers: {
@@ -37,9 +35,9 @@ export const actions: Actions = {
 			},
 			body: newFormData
 		});
+		const data = await response.json();
 
 		if (response.ok) {
-			const data = await response.json();
 			const startupId = data.id;
 
 			const types = [
@@ -91,9 +89,6 @@ export const actions: Actions = {
 				});
 			});
 
-			console.log({
-				urat_question_answers: answers
-			});
 			const urat_answers = await fetch('http://127.0.0.1:8000/urat-question-answers/bulk-create/', {
 				method: 'post',
 				headers: {

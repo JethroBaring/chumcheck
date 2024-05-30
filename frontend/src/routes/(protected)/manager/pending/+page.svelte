@@ -17,7 +17,7 @@
 	import { Info } from 'lucide-svelte';
     import Assessment from '$lib/components/admin/Assessment.svelte'
 	const access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MTU1ODEyLCJpYXQiOjE3MTY4OTY2MTIsImp0aSI6IjE3NDRiZGUyYTMwYjRiNTRhN2ZmNTYxNDNiMmE3OTliIiwidXNlcl9pZCI6MywidXNlcl90eXBlIjoiTSJ9.01eNx7NdkvPkXEFg2wCate01ct4zIRQ5dr1XQJjH8TQ';
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzExNjQ2LCJpYXQiOjE3MTcwNTI0NDYsImp0aSI6ImIyNTliMzg4ZGVhMDQxMmU4OWNlMjg0NmU5MmMzNmE2IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.djNx6qgCuow04--zbDbteb7rp8qkry8RnH0hs1kDGAE';
 	export let data;
     let applicants = data.applicants.filter((d) => d.qualification_status === 1)
 
@@ -35,7 +35,7 @@
 	let inf: any, que: any, ans: any, calc: any;
 
 	async function getStartupInformation(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/`, {
+		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}`, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json',
@@ -77,7 +77,6 @@
 			);
 
 			const calculator_data = await calculator.json();
-
 			if (urat_questions.ok && urat_answers.ok && calculator.ok) {
 				inf = data;
 				que = questions_data.results;

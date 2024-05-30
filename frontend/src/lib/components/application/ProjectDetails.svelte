@@ -30,7 +30,7 @@
 		const response = await fetch('http://127.0.0.1:8000/capsule-proposal-infos/extract-info/', {
 			method: 'POST',
 			headers: {
-				Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MTQ3NzEyLCJpYXQiOjE3MTY4ODg1MTIsImp0aSI6ImQzNmI1NmZkMWY5ZTRjNGM5MmVmMTFjODkxNjIxNjI2IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiUyJ9.qpHPEX-uj-UDDrkkkO_RMH_oRu5qDAq7D2PCtJvVUZs`
+				Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzA3MTA2LCJpYXQiOjE3MTcwNDc5MDYsImp0aSI6ImI0NmQ1NTBiMzk2NDQyMDY5N2VlY2U3ZGIyNTc1YjM1IiwidXNlcl9pZCI6NSwidXNlcl90eXBlIjoiUyJ9.MAurYWvb8pQ_KV6UBajOfj_Bq8-huQjgCohxqo2MJCI`
 			},
 			body: formData
 		});
@@ -98,7 +98,7 @@
 			<input type="hidden" name="solutionDescription" value={information.solution_description} />
 			<input type="hidden" name="objectives" value={information.objectives} />
 			<input type="hidden" name="scope" value={information.scope} />
-			<input type="hidden" name="methodoloy" value={information.methodology} />
+			<input type="hidden" name="methodology" value={information.methodology} />
 		{/if}
 		<div class="grid gap-2">
 			<Label for="links">Links to any supporting materials (e.g., website, explainer video)</Label>

@@ -53,7 +53,6 @@ export const load = async ({ params, fetch, cookies }: Parameters<PageServerLoad
 		const readiness_data = await readiness_level.json();
 
 		if (rubrics.ok && rubrics2.ok && haveScores.ok && readiness_level.ok) {
-			console.log(scores_data.results);
 			return {
 				info: data,
 				questions: rubrics_data.results.concat(rubrics2_data.results),
@@ -70,7 +69,6 @@ export const load = async ({ params, fetch, cookies }: Parameters<PageServerLoad
 export const actions = {
 	default: async ({ request, fetch, params, cookies }) => {
 		const formData = await request.formData();
-		console.log(formData)
 		const types = [
 			'technology',
 			'market',

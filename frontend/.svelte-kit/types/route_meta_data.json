@@ -38,10 +38,12 @@
 		"src/routes/(protected)/mentor/+layout.server.ts"
 	],
 	"/(protected)/mentor/startup/[startup]/i": [
+		"src/routes/(protected)/mentor/startup/[startup]/i/+page.server.ts",
 		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
 		"src/routes/(protected)/mentor/+layout.server.ts"
 	],
 	"/(protected)/mentor/startup/[startup]/rb": [
+		"src/routes/(protected)/mentor/startup/[startup]/rb/+page.server.ts",
 		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
 		"src/routes/(protected)/mentor/+layout.server.ts"
 	],
@@ -51,6 +53,7 @@
 		"src/routes/(protected)/mentor/+layout.server.ts"
 	],
 	"/(protected)/mentor/startup/[startup]/rna": [
+		"src/routes/(protected)/mentor/startup/[startup]/rna/+page.server.ts",
 		"src/routes/(protected)/mentor/startup/[startup]/+layout.server.ts",
 		"src/routes/(protected)/mentor/+layout.server.ts"
 	],
