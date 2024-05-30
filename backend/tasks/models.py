@@ -58,7 +58,9 @@ class Task(BaseModel):
 
     @property
     def readiness_type_rl_type(self):
-        return self.readiness_type.rl_type
+        return readinesslevel_models.ReadinessType.RLType(
+            self.readiness_type.rl_type
+        ).label
 
     @property
     def target_level_level(self):
