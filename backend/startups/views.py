@@ -939,22 +939,42 @@ class CapsuleProposalInfoViewSet(
         viewset_action = self.action
 
         if viewset_action == "create":
-            return [startups_permissions.IsMentorOrManagerPermission()]
+            return [startups_permissions.IsMemberOfStartupPermission()]
 
-        elif viewset_action in ["create", "retrieve", "partial_update"]:
+        elif viewset_action in ["retrieve", "partial_update"]:
             return [
                 startups_permissions.IsMemberOfStartupPermissionThroughCapsuleProposalInfoPermission()
             ]
 
         return super().get_permissions()
 
+    @swagger_auto_schema(
+        responses={
+            200: startups_serializers.base.CapsuleProposalInfoBaseSerializer(),
+            403: startups_permissions.IsMemberOfStartupPermissionThroughCapsuleProposalInfoPermission.message,
+        },
+    )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=startups_serializers.base.CapsuleProposalInfoBaseSerializer,
+        responses={
+            200: startups_serializers.base.CapsuleProposalInfoBaseSerializer(),
+            403: startups_permissions.IsMemberOfStartupPermissionThroughCapsuleProposalInfoPermission.message,
+        },
+    )
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
+    @swagger_auto_schema(
+        request_body=startups_serializers.base.CapsuleProposalInfoBaseSerializer,
+        responses={
+            200: startups_serializers.base.CapsuleProposalInfoBaseSerializer(),
+            403: startups_permissions.IsMemberOfStartupPermission.message,
+        },
+    )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         serializer = startups_serializers.base.CapsuleProposalInfoBaseSerializer(
