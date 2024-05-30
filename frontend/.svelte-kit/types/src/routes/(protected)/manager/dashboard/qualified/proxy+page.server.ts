@@ -11,6 +11,7 @@ export const load = async ({ cookies }: Parameters<PageServerLoad>[0]) => {
 	});
 	const data = await response.json();
 	if (response.ok) {
+		console.log(data)
 		return {
 			applicants: data
 		};

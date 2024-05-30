@@ -89,6 +89,7 @@
 				/>
 				<span class="sr-only">Toggle theme</span>
 			</Button>
+			<Badge>Mentor</Badge>
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger asChild let:builder>
 					<Button
@@ -119,14 +120,6 @@
 			</DropdownMenu.Root>
 		</header>
 		<main class="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-			<!-- <button class="flex w-28 cursor-pointer items-center gap-1" on:click={toggleStartups}>
-				{#if showStartups}
-					<Down class="h-4 w-4" />
-				{:else}
-					<Up class="h-4 w-4" />
-				{/if}
-				<h1 class="text-sm">Your startups</h1>
-			</button> -->
 			<div class="relative flex w-full items-center justify-between">
 				<button class="flex w-fit cursor-pointer items-center gap-1" on:click={toggleStartups}>
 					{#if showStartups}
@@ -136,20 +129,7 @@
 					{/if}
 					<h1 class="text-sm">Assigned startups</h1>
 				</button>
-				<Dialog.Root open={showApplication} onOpenChange={toggleShowApplication}>
-					<Dialog.Trigger class="absolute right-0 h-8">
-						<Button class="text-white">Apply</Button>
-					</Dialog.Trigger>
-					<Dialog.Content class="h-4/5 max-w-[700px]">
-						<ApplicationForm />
-					</Dialog.Content>
-				</Dialog.Root>
 			</div>
-
-			<!-- <div class="flex-1 justify-center flex flex-col items-center gap-1 text-center">
-				<h3 class="text-2xl font-bold tracking-tight">You don't belong to any startups</h3>
-				<Button class="mt-4">Create Startup</Button>
-			</div> -->
 			{#if showStartups}
 				<div class="grid grid-cols-5 gap-5" transition:fade>
 					{#each data.startups as startup}

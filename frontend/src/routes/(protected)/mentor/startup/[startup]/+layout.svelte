@@ -297,6 +297,7 @@
 				/>
 				<span class="sr-only">Toggle theme</span>
 			</Button>
+			<Badge>Mentor</Badge>
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger asChild let:builder>
 					<Button

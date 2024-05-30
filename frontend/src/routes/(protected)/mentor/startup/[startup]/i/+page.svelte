@@ -17,6 +17,7 @@
 
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	const flipDurationMs = 300;
 	let access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
@@ -149,7 +150,31 @@
 
 	let open = false;
 	let currItem: { id: number; name: string } = items[0].items[0].subItems[0];
+	let updateOpen = false;
+	function toggleUpdateOpen() {
+		updateOpen = !updateOpen;
+	}
 
+	let currUpdateItem = initiatives[0];
+
+	function changeUpdateCurr(index: number) {
+		currUpdateItem = initiatives[index];
+	}
+
+	async function updateTask(id: number) {
+		await fetch(`http://127.0.0.1:8000/tasks/initiatives/${id}/`, {
+			method: 'PATCH',
+			headers: {
+				'Content-type': 'application/json',
+				Authorization: `Bearer ${access}`
+			},
+			body: JSON.stringify({
+				description: currUpdateItem.description,
+				measures: currUpdateItem.measures,
+				targets: currUpdateItem.targets
+			})
+		});
+	}
 	function changeCurr(index: number, subIndex: number, i: number) {
 		currItem = items[index].items[subIndex].subItems[i];
 	}
@@ -211,11 +236,7 @@
 											}}
 										>
 											<p>{item.description.substring(0, 80) + '...'}</p>
-											<Badge class="w-fit">Technology</Badge>
-											<div class="flex items-center gap-1">
-												<Target class="h-4 w-4" />
-												<p class="text-sm">Target Level: {5}</p>
-											</div>
+											
 										</div>
 									{/each}
 								{/if}
@@ -241,19 +262,18 @@
 							{#each shortTerm as term}
 								<div class="flex flex-1 flex-col gap-6 rounded-lg bg-muted p-4 dark:bg-muted/40">
 									<h1 class="font-semibold text-base">Priority {term.priority_number} Initiatives</h1>
-									{#each initiatives.filter(init => init.task_id === term.id) as task}
+									{#each initiatives.filter(init => init.task_id === term.id) as task, index}
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<!-- svelte-ignore a11y-no-static-element-interactions -->
 										<div
 											class="flex h-40 cursor-pointer flex-col gap-3 rounded-lg bg-white/60 p-5 dark:bg-muted"
-											on:click={toggleOpen}
+											on:click={() => {
+												toggleUpdateOpen()
+												changeUpdateCurr(index)
+											}}
 										>
 											<p>{task.description.substring(0, 80) + '...'}</p>
-											<Badge class="w-fit">Technology</Badge>
-											<div class="flex items-center gap-1">
-												<Target class="h-4 w-4" />
-												<p class="text-sm">Target Level: {5}</p>
-											</div>
+											<Badge class="w-fit">Initiative # {index+1}</Badge>
 										</div>
 									{/each}
 								</div>
@@ -273,11 +293,8 @@
 											on:click={toggleOpen}
 										>
 											<p>{task.description.substring(0, 80) + '...'}</p>
-											<Badge class="w-fit">Technology</Badge>
-											<div class="flex items-center gap-1">
-												<Target class="h-4 w-4" />
-												<p class="text-sm">Target Level: {5}</p>
-											</div>
+											<Badge class="w-fit">Priority #1 Initiative #1</Badge>
+											
 										</div>
 									{/each}
 								</div>
@@ -306,12 +323,19 @@
 </div>
 
 <Dialog.Root {open} onOpenChange={toggleOpen}>
-	<Dialog.Content>
-		<p class="text-lg">{currItem.description}</p>
-		<Badge class="w-fit">Technology</Badge>
-		<div class="flex items-center gap-1">
-			<Target class="h-4 w-4" />
-			<p class="text-sm">Target Level: {5}</p>
-		</div>
+	<Dialog.Content class="h-[600px] max-w-[800px]">
+		<Textarea bind:value={currItem.description} rows={20} class="text-lg" />
+		<Textarea bind:value={currItem.measures} rows={20} class="text-lg" />
+		<Textarea bind:value={currItem.targets} rows={20} class="text-lg" />
+		<div class="flex justify-end"><Button on:click={() => updateTask(currItem.id)}>Save</Button></div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root open={updateOpen} onOpenChange={toggleUpdateOpen}>
+	<Dialog.Content class="h-[600px] max-w-[800px]">
+		<Textarea bind:value={currUpdateItem.description} rows={20} class="text-lg" />
+		<Textarea bind:value={currUpdateItem.measures} rows={20} class="text-lg" />
+		<Textarea bind:value={currUpdateItem.targets} rows={20} class="text-lg" />
+		<div class="flex justify-end"><Button on:click={() => updateTask(currUpdateItem.id)}>Save</Button></div>
 	</Dialog.Content>
 </Dialog.Root>

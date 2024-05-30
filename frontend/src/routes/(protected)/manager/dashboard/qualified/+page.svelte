@@ -31,7 +31,7 @@
 	function toggleAcceptedDialog() {
 		showAcceptedDialog = !showAcceptedDialog;
 	}
-	let inf: any, que, ans, calc;
+	let inf: any, lev;
 
 	async function getStartupInformation(startupId: number) {
 		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/`, {
@@ -44,45 +44,20 @@
 
 		const data = await response.json();
 		if (response.ok) {
-			const urat_questions = await fetch('http://127.0.0.1:8000/readinesslevel/urat-questions/', {
-				method: 'get',
-				headers: {
-					Authorization: `Bearer ${access}`
-				}
-			});
-
-			const questions_data = await urat_questions.json();
-
-			const urat_answers = await fetch(
-				`http://127.0.0.1:8000/urat-question-answers/?startup_id=${startupId}`,
+			const level = await fetch(
+				`http://127.0.0.1:8000/startup-readiness-levels/?startup_id=${data.id}`,
 				{
 					method: 'get',
 					headers: {
+						'Content-Type': 'application/json',
 						Authorization: `Bearer ${access}`
 					}
 				}
 			);
-
-			const answers_data = await urat_answers.json();
-
-			const calculator = await fetch(
-				`http://127.0.0.1:8000/startups/${startupId}/calculator-final-scores/`,
-				{
-					method: 'get',
-					headers: {
-						Authorization: `Bearer ${access}`
-					}
-				}
-			);
-
-			const calculator_data = await calculator.json();
-
-			if (urat_questions.ok && urat_answers.ok && calculator.ok) {
+			const levels = await level.json();
+			if (level.ok) {
 				inf = data;
-				que = questions_data.results;
-				ans = answers_data.results;
-				calc = calculator_data;
-				console.log(data);
+				lev = levels.results;
 				// return {
 				// 	info: data,
 				// 	questions: questions_data.results,
@@ -118,7 +93,9 @@
 						<Table.Row class="h-[80px]">
 							<Table.Cell class="font-medium">{applicant.name}</Table.Cell>
 							<Table.Cell>{applicant.group_name}</Table.Cell>
-							<Table.Cell class="hidden md:table-cell">{applicant.user}</Table.Cell>
+							<Table.Cell class="hidden md:table-cell"
+								>{applicant.leader_first_name} {applicant.leader_last_name}</Table.Cell
+							>
 							<Table.Cell>
 								<DropdownMenu.Root>
 									<DropdownMenu.Trigger asChild let:builder>
@@ -154,7 +131,14 @@
 					<h1 class="text-lg font-semibold">Project Details</h1>
 					<div class="grid gap-2">
 						<Label for="email">Startup Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
+						<Input
+							readonly
+							name="email"
+							id="email"
+							type="email"
+							placeholder="m@example.com"
+							value={inf.name}
+						/>
 					</div>
 
 					<div class="grid gap-2">
@@ -190,55 +174,114 @@
 					<h1 class="text-lg font-semibold">Group Information</h1>
 					<div class="grid gap-2">
 						<Label for="email">Group Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
+						<Input
+							readonly
+							name="email"
+							id="email"
+							type="email"
+							placeholder="m@example.com"
+							value={inf.group_name}
+						/>
 					</div>
 
 					<div class="grid gap-2">
 						<Label for="email">Leader</Label>
 						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								value={inf.leader_email}
+							/>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="text"
+								placeholder="m@example.com"
+								value={inf.leader_first_name}
+							/>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="text"
+								placeholder="m@example.com"
+								value={inf.leader_last_name}
+							/>
 						</div>
 					</div>
-					<div class="grid gap-2">
-						<Label for="email">Member #1</Label>
-						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+					{#each inf.members as member, i}
+						<div class="grid gap-2">
+							<Label for="email">Member #{i + 1}</Label>
+							<div class="flex gap-3">
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="email"
+									placeholder="m@example.com"
+									value={member.email}
+								/>
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="text"
+									placeholder="m@example.com"
+									value={member.first_name}
+								/>
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="text"
+									placeholder="m@example.com"
+									value={member.last_name}
+								/>
+							</div>
 						</div>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">Member #2</Label>
-						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+					{/each}
+
+					{#if inf.university_name}
+						<div class="grid gap-2">
+							<Label for="email">University Name</Label>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								value={inf.university_name}
+							/>
 						</div>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">University Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-					</div>
+					{/if}
 				</div>
 				<!-- Calculator -->
 				<div class="flex flex-col gap-3">
-					<h1 class="text-lg font-semibold">Technology and Commercialization Calculator</h1>
+					<h1 class="text-lg font-semibold">Readiness Level</h1>
 					<div class="p-10">
 						<RadarChart
 							id={inf.id}
 							min={0}
-							max={15}
-							data={[10, 10, 10, 10, 10, 10, 10]}
+							max={9}
+							data={[
+								lev.filter((r) => r.readiness_type === 'Technology')[0].readiness_level,
+								lev.filter((r) => r.readiness_type === 'Organizational')[0].readiness_level,
+								lev.filter((r) => r.readiness_type === 'Market')[0].readiness_level,
+								lev.filter((r) => r.readiness_type === 'Regulatory')[0].readiness_level,
+								lev.filter((r) => r.readiness_type === 'Acceptance')[0].readiness_level,
+								lev.filter((r) => r.readiness_type === 'Investment')[0].readiness_level,
+							]}
 							labels={[
 								'Technology',
-								'Product Development',
-								'Product Definition',
-								'Competitive Landscape',
-								'Team',
-								'Go-To-Market',
-								'Supply Chain'
+								'Organizational',
+								'Market',
+								'Regulatory',
+								'Acceptance',
+								'Investment'
 							]}
 						/>
 					</div>

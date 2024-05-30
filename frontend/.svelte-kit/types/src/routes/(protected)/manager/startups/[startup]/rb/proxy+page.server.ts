@@ -28,11 +28,27 @@ export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad
 		const rb_data = await roadblocks.json();
 
 		if (roadblocks.ok) {
-			return {
-				allow: data,
-				roadblocks: rb_data.results,
-				startupId: params.startup
-			};
+			const startup = await fetch(`http://127.0.0.1:8000/startups/${params.startup}`, {
+				method: 'get',
+				headers: {
+					Authorization: `Bearer ${cookies.get('Access')}`
+				}
+			});
+
+			const s = await startup.json();
+			s.members.push({
+				user_id: s.user_id,
+				first_name: s.leader_first_name,
+				last_name: s.leader_last_name
+			})
+			if (startup.ok) {
+				return {
+					startup: s,
+					allow: data,
+					roadblocks: rb_data.results,
+					startupId: params.startup
+				};
+			}
 		}
 	}
 };

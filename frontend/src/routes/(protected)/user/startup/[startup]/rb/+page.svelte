@@ -1,88 +1,70 @@
 <script lang="ts">
-	import File from 'lucide-svelte/icons/file';
-	import Home from 'lucide-svelte/icons/home';
-	import LineChart from 'lucide-svelte/icons/line-chart';
-	import ListFilter from 'lucide-svelte/icons/list-filter';
-	import Ellipsis from 'lucide-svelte/icons/ellipsis';
-	import Package from 'lucide-svelte/icons/package';
-	import Package2 from 'lucide-svelte/icons/package-2';
-	import CirclePlus from 'lucide-svelte/icons/circle-plus';
-	import Search from 'lucide-svelte/icons/search';
-	import ShoppingCart from 'lucide-svelte/icons/shopping-cart';
-	import { toggleMode } from 'mode-watcher';
-	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import * as Sheet from '$lib/components/ui/sheet/index.js';
-	import * as Table from '$lib/components/ui/table/index.js';
-	import * as Tabs from '$lib/components/ui/tabs/index.js';
-	import Users from 'lucide-svelte/icons/users';
-	import Sun from 'svelte-radix/Sun.svelte';
-	import Moon from 'svelte-radix/Moon.svelte';
-	import Menu from 'lucide-svelte/icons/menu';
-	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
-	import ChevronRight from 'lucide-svelte/icons/chevron-right';
-	import * as Pagination from '$lib/components/ui/pagination/index.js';
-	import Check from 'lucide-svelte/icons/check';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import Spinner from 'lucide-svelte/icons/loader-circle';
-
+	import * as Dialog from '$lib/components/ui/dialog';
+	import * as Select from '$lib/components/ui/select';
 
 	export let data;
 
 	let roadblocks = data.roadblocks;
+	let open = false;
 
-	
+	function toggleOpen() {
+		open = !open;
+	}
+	let currItem = roadblocks[0];
+	function changeCurr(index: number) {
+		currItem = roadblocks[index];
+		currItem.assignee_id = data.startup.members[0].user_id;
+	}
 </script>
 
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Roadblocks</h1>
-		
 	</div>
 </div>
 <div class="flex flex-1 flex-col">
 	{#if roadblocks.length > 0}
-		<Card.Root
-			data-x-chunk-name="dashboard-06-chunk-1"
-			data-x-chunk-description="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions."
-		>
-			<Card.Content class="pt-[24px] ">
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>Risk Number</Table.Head>
-							<Table.Head>Description</Table.Head>
-							<Table.Head>Fix/Mitigation</Table.Head>
-							<Table.Head>Assignee</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each roadblocks as r, index}
-							<Table.Row class="h-[80px]">
-								<Table.Cell class="font-medium">{index + 1}</Table.Cell>
-								<Table.Cell>
-									<div class="flex items-center gap-2">
-										<Textarea value={r.description} />
-									</div>
-								</Table.Cell>
-								<Table.Cell>
-									<div class="flex items-center gap-2">
-										<Textarea value={r.fix} />
-									</div>
-								</Table.Cell>
-								<Table.Cell></Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
-			</Card.Content>
-		</Card.Root>
+		<div class="flex flex-col items-center gap-6">
+			{#each roadblocks as r, index}
+				<Card.Root
+					class="flex w-1/2 cursor-pointer flex-col gap-2 p-5"
+					on:click={() => {
+						toggleOpen();
+						changeCurr(index);
+					}}
+				>
+					<div class="flex justify-between">
+						<div>
+							<span class="text-base font-semibold">Risk </span>
+							<span class="rounded-lg bg-muted px-2 py-1">{index + 1}</span>
+						</div>
+						<div>
+							Assignee: {#if r.assignee_id}
+								{`${data.startup.members.filter((d) => d.user_id === r.assignee_id)[0].first_name} ${data.startup.members.filter((d) => d.user_id === r.assignee_id)[0].last_name}`}
+							{:else}
+								None
+							{/if}
+						</div>
+					</div>
+					<div>
+						{r.description.substring(0, 100) + '...'}
+					</div>
+				</Card.Root>
+			{/each}
+		</div>
 	{:else}
 		<div class="flex flex-1 items-center justify-center">
 			Roadblocks will show once your mentor is done finalizing it
 		</div>
 	{/if}
 </div>
+
+<Dialog.Root {open} onOpenChange={toggleOpen}>
+	<Dialog.Content class="h-[400px] max-w-[800px]">
+		<div class="text-lg">{currItem.description}</div>
+		<div class="text-lg">{currItem.fix}</div>
+	</Dialog.Content>
+</Dialog.Root>

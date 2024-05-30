@@ -371,11 +371,11 @@ class RoadblockViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        if viewset_action in ["partial_update", "destroy"]:
-            return [tasks_permissions.IsMentorThroughInitiativePermission()]
+        # if viewset_action in ["partial_update", "destroy"]:
+        #     return super().get_permission()
 
-        elif viewset_action in ["create", "initial_roadblocks"]:
-            return [tasks_permissions.IsMentorThroughTaskPermission()]
+        # elif viewset_action in ["create", "initial_roadblocks"]:
+        #     return [tasks_permissions.IsMentorThroughTaskPermission()]
 
         return super().get_permissions()
 

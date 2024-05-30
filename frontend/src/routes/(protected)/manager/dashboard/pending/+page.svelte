@@ -15,13 +15,13 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Info } from 'lucide-svelte';
-    import Assessment from '$lib/components/admin/Assessment.svelte'
+	import Assessment from '$lib/components/admin/Assessment.svelte';
 	const access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzExNjQ2LCJpYXQiOjE3MTcwNTI0NDYsImp0aSI6ImIyNTliMzg4ZGVhMDQxMmU4OWNlMjg0NmU5MmMzNmE2IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.djNx6qgCuow04--zbDbteb7rp8qkry8RnH0hs1kDGAE';
 	export let data;
-    let applicants = data.applicants.filter((d) => d.qualification_status === 1)
+	let applicants = data.applicants.filter((d) => d.qualification_status === 1);
 
-    let showCapsule = false;
+	let showCapsule = false;
 
 	let showPendingDialog = false;
 
@@ -79,6 +79,7 @@
 			const calculator_data = await calculator.json();
 			if (urat_questions.ok && urat_answers.ok && calculator.ok) {
 				inf = data;
+				console.log(data.members);
 				que = questions_data.results;
 				ans = answers_data.results;
 				calc = calculator_data;
@@ -96,13 +97,13 @@
 			}
 		});
 
-        const data = await response.json()
+		const data = await response.json();
 
-        if(response.ok) {
-            const sub = applicants.filter((d) => d.id !== startupId)
-            applicants = sub
-            togglePendingdialog()
-        }
+		if (response.ok) {
+			const sub = applicants.filter((d) => d.id !== startupId);
+			applicants = sub;
+			togglePendingdialog();
+		}
 	}
 </script>
 
@@ -128,7 +129,9 @@
 						<Table.Row class="h-[80px]">
 							<Table.Cell class="font-medium">{applicant.name}</Table.Cell>
 							<Table.Cell>{applicant.group_name}</Table.Cell>
-							<Table.Cell class="hidden md:table-cell">{applicant.user}</Table.Cell>
+							<Table.Cell class="hidden md:table-cell"
+								>{applicant.leader_first_name} {applicant.leader_last_name}</Table.Cell
+							>
 							<Table.Cell>
 								<DropdownMenu.Root>
 									<DropdownMenu.Trigger asChild let:builder>
@@ -164,7 +167,14 @@
 					<h1 class="text-lg font-semibold">Project Details</h1>
 					<div class="grid gap-2">
 						<Label for="email">Startup Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
+						<Input
+							readonly
+							name="email"
+							id="email"
+							type="email"
+							placeholder="m@example.com"
+							value={inf.name}
+						/>
 					</div>
 
 					<div class="grid gap-2">
@@ -200,48 +210,108 @@
 					<h1 class="text-lg font-semibold">Group Information</h1>
 					<div class="grid gap-2">
 						<Label for="email">Group Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
+						<Input
+							readonly
+							name="email"
+							id="email"
+							type="email"
+							placeholder="m@example.com"
+							value={inf.group_name}
+						/>
 					</div>
 
 					<div class="grid gap-2">
 						<Label for="email">Leader</Label>
 						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								value={inf.leader_email}
+							/>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="text"
+								placeholder="m@example.com"
+								value={inf.leader_first_name}
+							/>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="text"
+								placeholder="m@example.com"
+								value={inf.leader_last_name}
+							/>
 						</div>
 					</div>
-					<div class="grid gap-2">
-						<Label for="email">Member #1</Label>
-						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+					{#each inf.members as member, i}
+						<div class="grid gap-2">
+							<Label for="email">Member #{i + 1}</Label>
+							<div class="flex gap-3">
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="email"
+									placeholder="m@example.com"
+									value={member.email}
+								/>
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="text"
+									placeholder="m@example.com"
+									value={member.first_name}
+								/>
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="text"
+									placeholder="m@example.com"
+									value={member.last_name}
+								/>
+							</div>
 						</div>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">Member #2</Label>
-						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+					{/each}
+
+					{#if inf.university_name}
+						<div class="grid gap-2">
+							<Label for="email">University Name</Label>
+							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" value={inf.university_name}/>
 						</div>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">University Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-					</div>
+					{/if}
 				</div>
 				<!-- Calculator -->
 				<div class="flex flex-col gap-3">
 					<h1 class="text-lg font-semibold">Technology and Commercialization Calculator</h1>
 					<div class="p-10">
-						<RadarChart id={inf.id} min={0} max={15} data={[10,10,10,10,10,10,10]} labels={['Technology', 'Product Development', 'Product Definition', 'Competitive Landscape', 'Team', 'Go-To-Market', 'Supply Chain']}/>
+						<RadarChart
+							id={inf.id}
+							min={0}
+							max={9}
+							data={[calc.technology_score, calc.product_development, calc.product_definition, calc.competitive_landscape, calc.team, calc.go_to_market, calc.supply_chain]}
+							labels={[
+								'Technology',
+								'Product Development',
+								'Product Definition',
+								'Competitive Landscape',
+								'Team',
+								'Go-To-Market',
+								'Supply Chain'
+							]}
+						/>
 					</div>
 				</div>
 				<!-- URAT Assessment -->
 				<div class="flex flex-col gap-3">
-					<h1 class="text-lg font-semibold">Assessment</h1>
+					<h1 class="text-lg font-semibold">URAT Assessment</h1>
 					<div class="flex flex-col gap-3">
 						<Assessment
 							questions={que.filter((d) => d.readiness_type === 'Technology')}

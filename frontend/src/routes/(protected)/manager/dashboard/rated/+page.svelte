@@ -23,6 +23,12 @@
 		showCapsule = !showCapsule;
 	}
 	let inf: any, que, ans, calc;
+	let trl = 0,
+		orl = 0,
+		mrl = 0,
+		rrl = 0,
+		arl = 0,
+		irl = 0;
 
 	let showRatedDialog = false;
 
@@ -79,6 +85,36 @@
 				que = questions_data.results;
 				ans = answers_data.results;
 				calc = calculator_data;
+				trl = ans
+					.filter((d) => d.readiness_type === 'Technology')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				orl = ans
+					.filter((d) => d.readiness_type === 'Organizational')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				mrl = ans
+					.filter((d) => d.readiness_type === 'Market')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				rrl = ans
+					.filter((d) => d.readiness_type === 'Regulatory')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				arl = ans
+					.filter((d) => d.readiness_type === 'Acceptance')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				irl = ans
+					.filter((d) => d.readiness_type === 'Investment')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
 				toggleRatedDialog();
 			}
 		}
@@ -157,7 +193,9 @@
 						<Table.Row class="h-[80px]">
 							<Table.Cell class="font-medium">{applicant.name}</Table.Cell>
 							<Table.Cell>{applicant.group_name}</Table.Cell>
-							<Table.Cell class="hidden md:table-cell">{applicant.user}</Table.Cell>
+							<Table.Cell class="hidden md:table-cell"
+								>{applicant.leader_first_name} {applicant.leader_last_name}</Table.Cell
+							>
 							<Table.Cell>
 								<DropdownMenu.Root>
 									<DropdownMenu.Trigger asChild let:builder>
@@ -193,7 +231,14 @@
 					<h1 class="text-lg font-semibold">Project Details</h1>
 					<div class="grid gap-2">
 						<Label for="email">Startup Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
+						<Input
+							readonly
+							name="email"
+							id="email"
+							type="email"
+							placeholder="m@example.com"
+							value={inf.name}
+						/>
 					</div>
 
 					<div class="grid gap-2">
@@ -229,47 +274,110 @@
 					<h1 class="text-lg font-semibold">Group Information</h1>
 					<div class="grid gap-2">
 						<Label for="email">Group Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
+						<Input
+							readonly
+							name="email"
+							id="email"
+							type="email"
+							placeholder="m@example.com"
+							value={inf.group_name}
+						/>
 					</div>
 
 					<div class="grid gap-2">
 						<Label for="email">Leader</Label>
 						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								value={inf.leader_email}
+							/>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="text"
+								placeholder="m@example.com"
+								value={inf.leader_first_name}
+							/>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="text"
+								placeholder="m@example.com"
+								value={inf.leader_last_name}
+							/>
 						</div>
 					</div>
-					<div class="grid gap-2">
-						<Label for="email">Member #1</Label>
-						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+					{#each inf.members as member, i}
+						<div class="grid gap-2">
+							<Label for="email">Member #{i + 1}</Label>
+							<div class="flex gap-3">
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="email"
+									placeholder="m@example.com"
+									value={member.email}
+								/>
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="text"
+									placeholder="m@example.com"
+									value={member.first_name}
+								/>
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="text"
+									placeholder="m@example.com"
+									value={member.last_name}
+								/>
+							</div>
 						</div>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">Member #2</Label>
-						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+					{/each}
+
+					{#if inf.university_name}
+						<div class="grid gap-2">
+							<Label for="email">University Name</Label>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								value={inf.university_name}
+							/>
 						</div>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">University Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-					</div>
+					{/if}
 				</div>
 				<!-- Calculator -->
 				<div class="flex flex-col gap-3">
 					<h1 class="text-lg font-semibold">Technology and Commercialization Calculator</h1>
+					<div>Technology: {calc.technology_level}</div>
+					<div>Commercialization: {calc.commercialization_level}</div>
 					<div class="p-10">
 						<RadarChart
 							id={inf.id}
 							min={0}
-							max={15}
-							data={[10, 10, 10, 10, 10, 10, 10]}
+							max={5}
+							data={[
+								calc.technology_score,
+								calc.product_development,
+								calc.product_definition,
+								calc.competitive_landscape,
+								calc.team,
+								calc.go_to_market,
+								calc.supply_chain
+							]}
 							labels={[
 								'Technology',
 								'Product Development',
@@ -284,14 +392,13 @@
 				</div>
 				<!-- URAT Assessment -->
 				<div class="flex flex-col gap-3">
-					<h1 class="text-lg font-semibold">URAT Questionnaire Readiness Level</h1>
-
+					<h1 class="text-lg font-semibold">URAT Assessment</h1>
 					<div class="p-20">
 						<RadarChart
 							id={inf.id + 100}
 							min={0}
-							max={9}
-							data={[6, 7, 4, 8, 9, 7]}
+							max={15}
+							data={[trl, orl, mrl, rrl, arl, irl]}
 							labels={[
 								'Technology',
 								'Organizational',

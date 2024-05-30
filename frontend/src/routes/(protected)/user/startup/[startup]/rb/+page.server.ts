@@ -1,8 +1,8 @@
 import type { PageServerLoad } from '../rns/$types';
 
 export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
-	const response = await fetch(
-		`http://127.0.0.1:8000/startups/${params.startup}/allow-roadblocks/`,
+	const roadblocks = await fetch(
+		`http://127.0.0.1:8000/tasks/roadblocks/?startup_id=${params.startup}`,
 		{
 			method: 'get',
 			headers: {
@@ -11,24 +11,26 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 		}
 	);
 
-	const data = await response.json();
+	const rb_data = await roadblocks.json();
 
-	if (response.ok) {
-		const roadblocks = await fetch(
-			`http://127.0.0.1:8000/tasks/roadblocks/?startup_id=${params.startup}`,
-			{
-				method: 'get',
-				headers: {
-					Authorization: `Bearer ${cookies.get('Access')}`
-				}
+	if (roadblocks.ok) {
+		const response = await fetch(`http://127.0.0.1:8000/startups/${params.startup}`, {
+			method: 'get',
+			headers: {
+				Authorization: `Bearer ${cookies.get('Access')}`
 			}
-		);
+		});
 
-		const rb_data = await roadblocks.json();
+		const s = await response.json();
+			s.members.push({
+				user_id: s.user_id,
+				first_name: s.leader_first_name,
+				last_name: s.leader_last_name
+			})
 
-		if (roadblocks.ok) {
+		if (response.ok) {
 			return {
-				allow: data,
+				startup: s,
 				roadblocks: rb_data.results,
 				startupId: params.startup
 			};

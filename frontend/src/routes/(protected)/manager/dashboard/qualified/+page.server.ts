@@ -10,6 +10,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	});
 	const data = await response.json();
 	if (response.ok) {
+		console.log(data)
 		return {
 			applicants: data
 		};

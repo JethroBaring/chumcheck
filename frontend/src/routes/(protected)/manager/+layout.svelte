@@ -21,6 +21,7 @@
 	import Moon from 'svelte-radix/Moon.svelte';
 	import Menu from 'lucide-svelte/icons/menu';
 	import { goto } from '$app/navigation'
+	import AdminSidebar from "$lib/components/shared/AdminSidebar.svelte";
 
     function handleUrl(status:string) {
 		goto(`/manager/${status}`)
@@ -29,6 +30,6 @@
 
 <Toaster />
 <div class="flex w-full bg-muted/40">
-    <Sidebar />
+    <AdminSidebar />
     <slot />
 </div>

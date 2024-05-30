@@ -1052,7 +1052,7 @@ class CapsuleProposalInfoViewSet(
         )
 
 
-class StartupRNAViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
+class StartupRNAViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin):
     queryset = startups_models.StartupRNA.objects
     serializer_class = startups_serializers.base.StartupRNABaseSerializer
 
@@ -1091,3 +1091,7 @@ class StartupRNAViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMi
         self.check_object_permissions(request, startup)
 
         return super().create(request, *args, **kwargs)
+
+    @transaction.atomic
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
