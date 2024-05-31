@@ -77,7 +77,9 @@
 		}
 	});
 </script>
-
+<svelte:head>
+	<title>Readiness Level</title>
+</svelte:head>
 <div class="flex items-center">
 	<h1 class="text-lg font-semibold md:text-2xl">Readiness Level</h1>
 </div>

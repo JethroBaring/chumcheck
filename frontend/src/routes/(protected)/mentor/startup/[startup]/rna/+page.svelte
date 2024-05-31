@@ -6,6 +6,9 @@
 	import Spinner from 'lucide-svelte/icons/loader-circle';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
+	import Assessment from '$lib/components/admin/Assessment.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import { number } from 'zod';
 
 	let access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
@@ -59,13 +62,14 @@
 
 	let currItemUnsave = 0;
 	let currItem = rna[0];
-	function changeCurr(index: number) {
-		currItem = rna.filter((d) => d.readiness_level_id === index)[0]
+	let curType = 0;
+	function changeCurr(index: number, type: number) {
+		currItem = rna.filter((d) => d.readiness_level_id === index)[0];
+		curType = type;
 	}
 
 	function changeCurrUnsave(index: number) {
 		currItemUnsave = index;
-		console.log("why")
 	}
 
 	async function updateRNA(id: number) {
@@ -86,6 +90,9 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Readiness and Needs Assessment</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Readiness and Needs Assessment</h1>
@@ -102,7 +109,7 @@
 					class="flex w-1/2 cursor-pointer flex-col gap-2 p-5"
 					on:click={() => {
 						toggleOpen();
-						changeCurr(data.readiness[index].readiness_level_id);
+						changeCurr(data.readiness[index].readiness_level_id, index);
 					}}
 				>
 					<div>
@@ -120,11 +127,12 @@
 	{:else if generated.length > 0}
 		<div class="flex flex-col items-center gap-6">
 			{#each readiness as r, index}
-				<Card.Root class="flex w-1/2 cursor-pointer flex-col gap-2 p-5 "
-				on:click={() => {
-					toggleOpenUnsave()
-					changeCurrUnsave(index)
-				}}
+				<Card.Root
+					class="flex w-1/2 cursor-pointer flex-col gap-2 p-5 "
+					on:click={() => {
+						toggleOpenUnsave();
+						changeCurrUnsave(index);
+					}}
 				>
 					<div>
 						<span class="text-base font-semibold">{r} Level</span>
@@ -167,7 +175,14 @@
 
 <Dialog.Root {open} onOpenChange={toggleOpen}>
 	<Dialog.Content class="h-[400px] max-w-[800px]">
-		<Textarea bind:value={currItem.rna} rows={20} class="text-lg" />
+		<div>
+			<span class="text-base font-semibold">{readiness[curType]} Level</span>
+			<span class="rounded-lg bg-muted px-2 py-1">7</span>
+		</div>
+		<div class="grid h-[250px] w-full gap-1.5">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.rna} rows={20} class="text-lg" />
+		</div>
 		<div class="flex justify-end">
 			<Button on:click={() => updateRNA(currItem.id)}>Save</Button>
 		</div>
@@ -176,6 +191,13 @@
 
 <Dialog.Root open={openUnsave} onOpenChange={toggleOpenUnsave}>
 	<Dialog.Content class="h-[400px] max-w-[800px]">
-		<Textarea bind:value={generated[currItemUnsave]} rows={20} class="text-lg" />
+		<div>
+			<span class="text-base font-semibold">{readiness[curType]} Level</span>
+			<span class="rounded-lg bg-muted px-2 py-1">7</span>
+		</div>
+		<div class="grid h-[250px] w-full gap-1.5">
+			<Label>Description</Label>
+			<Textarea bind:value={generated[currItemUnsave]} rows={20} class="text-lg" />
+		</div>
 	</Dialog.Content>
 </Dialog.Root>

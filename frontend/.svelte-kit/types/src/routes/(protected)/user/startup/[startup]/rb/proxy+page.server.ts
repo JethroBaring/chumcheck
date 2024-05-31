@@ -1,7 +1,7 @@
 // @ts-nocheck
 import type { PageServerLoad } from '../rns/$types';
 
-export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad>[0]) => {
+export const load = async ({ fetch, cookies, params, locals }: Parameters<PageServerLoad>[0]) => {
 	const roadblocks = await fetch(
 		`http://127.0.0.1:8000/tasks/roadblocks/?startup_id=${params.startup}`,
 		{
@@ -33,7 +33,8 @@ export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad
 			return {
 				startup: s,
 				roadblocks: rb_data.results,
-				startupId: params.startup
+				startupId: params.startup,
+				userId: locals.user.id
 			};
 		}
 	}

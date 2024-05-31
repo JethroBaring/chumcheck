@@ -23,7 +23,12 @@
 	import Sun from 'svelte-radix/Sun.svelte';
 	import Moon from 'svelte-radix/Moon.svelte';
 	import { toggleMode } from 'mode-watcher';
-	import { Plus } from 'svelte-radix';
+	import Chart from 'lucide-svelte/icons/area-chart'
+	import Newspaper from 'lucide-svelte/icons/newspaper'
+	import Footprints from 'lucide-svelte/icons/footprints'
+	import Bookcheck from 'lucide-svelte/icons/book-check'
+	import Road from 'lucide-svelte/icons/cuboid'
+	import { FootprintsIcon } from 'lucide-svelte';
 	export let data
 
 	let currentTab = data.cur;
@@ -170,7 +175,7 @@
 							class={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${currentTab === 'rl' ? 'bg-muted text-primary' : 'text-muted-foreground'}`}
 							on:click={() => changeTab('rl')}
 						>
-							<ShoppingCart class="h-4 w-4" />
+							<Chart class="h-4 w-4" />
 							Readiness Level
 						</a>
 						<a
@@ -178,7 +183,7 @@
 							class={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${currentTab === 'rna' ? 'bg-muted text-primary' : 'text-muted-foreground'}`}
 							on:click={() => changeTab('rna')}
 						>
-							<ShoppingCart class="h-4 w-4" />
+							<Newspaper class="h-4 w-4" />
 							Readiness and Needs Assessment
 						</a>
 						<a
@@ -186,7 +191,7 @@
 							class={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${currentTab === 'rns' ? 'bg-muted text-primary' : 'text-muted-foreground'}`}
 							on:click={() => changeTab('rns')}
 						>
-							<Home class="h-4 w-4" />
+							<Footprints class="h-4 w-4" />
 							Recommended Next Step
 						</a>
 						<a
@@ -194,7 +199,7 @@
 							class={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${currentTab === 'i' ? 'bg-muted text-primary' : 'text-muted-foreground'}`}
 							on:click={() => changeTab('i')}
 						>
-							<Home class="h-4 w-4" />
+							<Bookcheck class="h-4 w-4" />
 							Initiatives
 						</a>
 						<a
@@ -202,7 +207,7 @@
 							class={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${currentTab === 'rb' ? 'bg-muted text-primary' : 'text-muted-foreground'}`}
 							on:click={() => changeTab('rb')}
 						>
-							<Home class="h-4 w-4" />
+							<Road class="h-4 w-4" />
 							Roadblocks
 						</a>
 					</nav>

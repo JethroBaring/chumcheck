@@ -10,6 +10,8 @@
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import Target from 'lucide-svelte/icons/target';
 	import { goto } from '$app/navigation';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	const flipDurationMs = 300;
 	let access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
@@ -169,7 +171,9 @@
 		currItem = items[index].items[subIndex].subItems[i];
 	}
 </script>
-
+<svelte:head>
+	<title>Recommended Next Steps</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Recommended Next Steps</h1>
@@ -217,10 +221,10 @@
 												}}
 											>
 												<p>{item.description.substring(0, 80) + '...'}</p>
-												<Badge class="w-fit">Technology</Badge>
+												<Badge class="w-fit">{item.readiness_type_rl_type}</Badge>
 												<div class="flex items-center gap-1">
 													<Target class="h-4 w-4" />
-													<p class="text-sm">Target Level: {5}</p>
+													<p class="text-sm">Target Level: {item.target_level_level}</p>
 												</div>
 											</div>
 										{/each}
@@ -238,7 +242,7 @@
 		</div>
 	{/if}
 </div>
-
+<!-- 
 <Dialog.Root {open} onOpenChange={toggleOpen}>
 	<Dialog.Content>
 		<p class="text-lg">{currItem.description}</p>
@@ -246,6 +250,19 @@
 		<div class="flex items-center gap-1">
 			<Target class="h-4 w-4" />
 			<p class="text-sm">Target Level: {5}</p>
+		</div>
+	</Dialog.Content>
+</Dialog.Root> -->
+<Dialog.Root {open} onOpenChange={toggleOpen}>
+	<Dialog.Content class="h-[450px] max-w-[800px]">
+		<div class="grid w-full gap-1.5 h-[250px]">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.description} rows={20} class="text-lg" disabled/>
+		</div>
+		<Badge class="h-fit w-fit">Technology</Badge>
+		<div class="flex items-center gap-1">
+			<Target class="h-4 w-4" />
+			<p class="text-sm">Target Level: {currItem.target_level_level}</p>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

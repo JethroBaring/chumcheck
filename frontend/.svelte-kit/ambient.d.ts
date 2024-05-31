@@ -71,6 +71,7 @@ declare module '$env/static/private' {
 	export const LS_COLORS: string;
 	export const XDG_CURRENT_DESKTOP: string;
 	export const npm_package_version: string;
+	export const VIRTUAL_ENV: string;
 	export const MEMORY_PRESSURE_WATCH: string;
 	export const VTE_VERSION: string;
 	export const WAYLAND_DISPLAY: string;
@@ -102,6 +103,7 @@ declare module '$env/static/private' {
 	export const PAGER: string;
 	export const QT_IM_MODULE: string;
 	export const _P9K_SSH_TTY: string;
+	export const VIRTUAL_ENV_PROMPT: string;
 	export const npm_config_user_agent: string;
 	export const npm_execpath: string;
 	export const XDG_RUNTIME_DIR: string;
@@ -201,6 +203,7 @@ declare module '$env/dynamic/private' {
 		LS_COLORS: string;
 		XDG_CURRENT_DESKTOP: string;
 		npm_package_version: string;
+		VIRTUAL_ENV: string;
 		MEMORY_PRESSURE_WATCH: string;
 		VTE_VERSION: string;
 		WAYLAND_DISPLAY: string;
@@ -232,6 +235,7 @@ declare module '$env/dynamic/private' {
 		PAGER: string;
 		QT_IM_MODULE: string;
 		_P9K_SSH_TTY: string;
+		VIRTUAL_ENV_PROMPT: string;
 		npm_config_user_agent: string;
 		npm_execpath: string;
 		XDG_RUNTIME_DIR: string;

@@ -7,6 +7,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 
 	let access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MTY1MTg0LCJpYXQiOjE3MTY5MDU5ODQsImp0aSI6ImMzZmFlOGZlYmY2YzQwNThhZDQxZWQ3MzMyNjlhYTBhIiwidXNlcl9pZCI6NiwidXNlcl90eXBlIjoiTUUifQ.-R00RI1Plp1-UlD0kEKrvj8w54t-5ZdH2fd-0F3oLIE';
@@ -49,9 +50,11 @@
 		open = !open;
 	}
 	let currItem = roadblocks[0];
+	let currIndex = 0;
 	function changeCurr(index: number) {
 		currItem = roadblocks[index];
 		currItem.assignee_id = data.startup.members[0].user_id;
+		currIndex = index
 	}
 
 	async function updateRoadblock(id: number) {
@@ -73,7 +76,9 @@
 		}
 	}
 </script>
-
+<svelte:head>
+	<title>Roadblocks</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Roadblocks</h1>
@@ -146,9 +151,20 @@
 </div>
 
 <Dialog.Root {open} onOpenChange={toggleOpen}>
-	<Dialog.Content class="h-[400px] max-w-[800px]">
-		<Textarea bind:value={currItem.description} rows={20} class="text-lg" />
-		<Textarea bind:value={currItem.fix} rows={20} class="text-lg" />
+	<Dialog.Content class="h-[550px] max-w-[800px]">
+		<div>
+			<span class="text-base font-semibold">Risk </span>
+			<span class="rounded-lg bg-muted px-2 py-1">{currIndex + 1}</span>
+		</div>
+		<div class="grid w-full gap-1.5 h-[160px]">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.description} rows={15} class="text-lg"/>
+		</div>
+		<div class="grid w-full gap-1.5 h-[160px]">
+			<Label>Measures</Label>
+			<Textarea bind:value={currItem.fix} rows={15} class="text-lg"/>
+		</div>
+		
 		<Select.Root
 			selected={currItem.assignee_id.value}
 			onSelectedChange={(v) => {

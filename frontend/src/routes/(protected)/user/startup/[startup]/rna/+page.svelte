@@ -6,6 +6,8 @@
 	import Spinner from 'lucide-svelte/icons/loader-circle';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
+	import Assessment from '$lib/components/admin/Assessment.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 
 	export let data;
 	let rna = data.rna;
@@ -25,11 +27,15 @@
 	}
 
 	let currItem = rna[0];
-	function changeCurr(index: number) {
+	let currType = 0
+	function changeCurr(index: number, type: number) {
 		currItem = rna.filter((d) => d.readiness_level_id === index)[0]
+		currType = type
 	}
 </script>
-
+<svelte:head>
+	<title>Readiness and Needs Assessment</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Readiness and Needs Assessment</h1>
@@ -43,7 +49,7 @@
 					class="flex w-1/2 cursor-pointer flex-col gap-2 p-5"
 					on:click={() => {
 						toggleOpen();
-						changeCurr(data.readiness[index].readiness_level_id);
+						changeCurr(data.readiness[index].readiness_level_id, index);
 					}}
 				>
 					<div>
@@ -67,6 +73,14 @@
 
 <Dialog.Root {open} onOpenChange={toggleOpen}>
 	<Dialog.Content class="h-[400px] max-w-[800px]">
-		<div class="text-lg">{currItem.rna}</div>
+		<div>
+			<span class="text-base font-semibold">{readiness_type[currType]} Level</span>
+			<span class="rounded-lg bg-muted px-2 py-1">{readiness[currType].readiness_level}</span>
+		</div>
+		<div class="grid h-[250px] w-full gap-1.5">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.rna} rows={20} class="text-lg" disabled/>
+		</div>
+		
 	</Dialog.Content>
 </Dialog.Root>

@@ -18,6 +18,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 	const flipDurationMs = 300;
 	let access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
@@ -51,8 +52,8 @@
 					});
 				})
 			).then((values) => {
-				console.log(values);
 				generating = false;
+				window.location.href = `/mentor/startup/${data.startupId}/i`
 			});
 		} catch (error) {
 			console.log(error);
@@ -78,6 +79,7 @@
 				console.log(values);
 				const temp = initiatives.map((initiative: any) => (initiative.status = 4));
 				initiatives = temp;
+				window.location.href = `/mentor/startup/${data.startupId}/i`
 			});
 		} catch (error) {
 			console.log(error);
@@ -182,7 +184,9 @@
 	const shortTerm = data.tasks.filter((d) => d.task_type === 1);
 	const longTerm = data.tasks.filter((d) => d.task_type === 2);
 </script>
-
+<svelte:head>
+	<title>Initiatives</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Initiatives</h1>
@@ -324,18 +328,37 @@
 
 <Dialog.Root {open} onOpenChange={toggleOpen}>
 	<Dialog.Content class="h-[600px] max-w-[800px]">
-		<Textarea bind:value={currItem.description} rows={20} class="text-lg" />
-		<Textarea bind:value={currItem.measures} rows={20} class="text-lg" />
-		<Textarea bind:value={currItem.targets} rows={20} class="text-lg" />
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.description} rows={15} class="text-lg"/>
+		</div>
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Measures</Label>
+			<Textarea bind:value={currItem.measures} rows={15} class="text-lg"/>
+		</div>
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Targets</Label>
+			<Textarea bind:value={currItem.targets} rows={15} class="text-lg"/>
+		</div>
+	
 		<div class="flex justify-end"><Button on:click={() => updateTask(currItem.id)}>Save</Button></div>
 	</Dialog.Content>
 </Dialog.Root>
 
 <Dialog.Root open={updateOpen} onOpenChange={toggleUpdateOpen}>
 	<Dialog.Content class="h-[600px] max-w-[800px]">
-		<Textarea bind:value={currUpdateItem.description} rows={20} class="text-lg" />
-		<Textarea bind:value={currUpdateItem.measures} rows={20} class="text-lg" />
-		<Textarea bind:value={currUpdateItem.targets} rows={20} class="text-lg" />
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Description</Label>
+			<Textarea bind:value={currUpdateItem.description} rows={15} class="text-lg"/>
+		</div>
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Measures</Label>
+			<Textarea bind:value={currUpdateItem.measures} rows={15} class="text-lg"/>
+		</div>
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Targets</Label>
+			<Textarea bind:value={currUpdateItem.targets} rows={15} class="text-lg"/>
+		</div>
 		<div class="flex justify-end"><Button on:click={() => updateTask(currUpdateItem.id)}>Save</Button></div>
 	</Dialog.Content>
 </Dialog.Root>

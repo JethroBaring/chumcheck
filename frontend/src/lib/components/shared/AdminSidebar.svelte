@@ -1,6 +1,7 @@
 <script lang="ts">
     import Home from "lucide-svelte/icons/home";
     import Settings from "lucide-svelte/icons/settings";
+    import Grid from 'lucide-svelte/icons/grid-2x2'
     import * as Tooltip from "$lib/components/ui/tooltip/index.js";
   </script>
 
@@ -35,7 +36,7 @@
             use:builder.action
             {...builder}
           >
-            <Home class="h-5 w-5" />
+            <Grid class="h-5 w-5" />
             <span class="sr-only">Startups</span>
           </a>
         </Tooltip.Trigger>

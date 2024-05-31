@@ -10,6 +10,8 @@
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import Target from 'lucide-svelte/icons/target';
 	import { goto } from '$app/navigation';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 	const flipDurationMs = 300;
 	let access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
@@ -56,6 +58,7 @@
 
 			if (another.ok) {
 				generating = false;
+				window.location.href = `/mentor/startup/${data.startupId}/rns`
 			}
 		}
 	}
@@ -90,8 +93,8 @@
 				if (response.ok) {
 					tasks = d.results;
 				}
+				window.location.href = `/mentor/startup/${data.startupId}/rns`
 
-				console.log(tasks);
 			});
 		} catch (error) {
 			console.log(error);
@@ -163,13 +166,50 @@
 	}
 
 	let open = false;
-	let currItem: { id: number; name: string } = items[0].items[0].subItems[0];
-
+	let updateOpen = false;
+	function toggleUpdateOpen() {
+		updateOpen = !updateOpen;
+	}
+	let currItem= items[0].items[0].subItems[0];
+	let currUpdateItem = tasks[0];
 	function changeCurr(index: number, subIndex: number, i: number) {
 		currItem = items[index].items[subIndex].subItems[i];
 	}
-</script>
 
+	function changeUpdateCurr(index: number) {
+		currUpdateItem = tasks[index];
+	}
+
+	async function updateTask(id: number) {
+		await fetch(`http://127.0.0.1:8000/tasks/tasks/${id}/`, {
+			method: 'PATCH',
+			headers: {
+				'Content-type': 'application/json',
+				Authorization: `Bearer ${access}`
+			},
+			body: JSON.stringify({
+				description: currUpdateItem.description
+			})
+		});
+	}
+
+	async function updateTask2(id: number) {
+		await fetch(`http://127.0.0.1:8000/tasks/tasks/${id}/`, {
+			method: 'PATCH',
+			headers: {
+				'Content-type': 'application/json',
+				Authorization: `Bearer ${access}`
+			},
+			body: JSON.stringify({
+				description: currItem.description
+			})
+		});
+	}
+	console.log(tasks)
+</script>
+<svelte:head>
+	<title>Recommended Next Steps</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Recommended Next Steps</h1>
@@ -225,10 +265,10 @@
 												}}
 											>
 												<p>{item.description.substring(0, 80) + '...'}</p>
-												<Badge class="w-fit">Technology</Badge>
+												<Badge class="w-fit">{item.readiness_type_rl_type}</Badge>
 												<div class="flex items-center gap-1">
 													<Target class="h-4 w-4" />
-													<p class="text-sm">Target Level: {5}</p>
+													<p class="text-sm">Target Level: {item.target_level_level}</p>
 												</div>
 											</div>
 										{/each}
@@ -245,18 +285,21 @@
 			<div class="flex flex-1 flex-col gap-2">
 				<p class="text-[17px] font-medium">Short Term</p>
 				<div class="flex flex-1 flex-col gap-6 rounded-lg bg-muted p-4 dark:bg-muted/40">
-					{#each tasks.filter((task) => task.task_type === 1) as task}
+					{#each tasks.filter((task) => task.task_type === 1) as task, index}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<div
 							class="flex h-40 cursor-pointer flex-col gap-3 rounded-lg bg-white/60 p-5 dark:bg-muted"
-							on:click={toggleOpen}
+							on:click={() => {
+								toggleUpdateOpen();
+								changeUpdateCurr(index);
+							}}
 						>
 							<p>{task.description.substring(0, 80) + '...'}</p>
-							<Badge class="w-fit">Technology</Badge>
+							<Badge class="w-fit">{task.readiness_type_rl_type}</Badge>
 							<div class="flex items-center gap-1">
 								<Target class="h-4 w-4" />
-								<p class="text-sm">Target Level: {5}</p>
+								<p class="text-sm">Target Level: {task.target_level_level}</p>
 							</div>
 						</div>
 					{/each}
@@ -265,18 +308,21 @@
 			<div class="flex flex-1 flex-col gap-2">
 				<p class="text-[17px] font-medium">Long Term</p>
 				<div class="flex flex-1 flex-col gap-6 rounded-lg bg-muted p-4 dark:bg-muted/40">
-					{#each tasks.filter((task) => task.task_type === 2) as task}
+					{#each tasks.filter((task) => task.task_type === 2) as task, index}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<div
 							class="flex h-40 cursor-pointer flex-col gap-3 rounded-lg bg-white/60 p-5 dark:bg-muted"
-							on:click={toggleOpen}
+							on:click={() => {
+								toggleUpdateOpen();
+								changeUpdateCurr(tasks.filter((task) => task.task_type === 2).length + index);
+							}}
 						>
 							<p>{task.description.substring(0, 80) + '...'}</p>
-							<Badge class="w-fit">Technology</Badge>
+							<Badge class="w-fit">{task.readiness_type_rl_type}</Badge>
 							<div class="flex items-center gap-1">
 								<Target class="h-4 w-4" />
-								<p class="text-sm">Target Level: {5}</p>
+								<p class="text-sm">Target Level: {task.target_level_level}</p>
 							</div>
 						</div>
 					{/each}
@@ -305,12 +351,31 @@
 </div>
 
 <Dialog.Root {open} onOpenChange={toggleOpen}>
-	<Dialog.Content>
-		<p class="text-lg">{currItem.description}</p>
-		<Badge class="w-fit">Technology</Badge>
+	<Dialog.Content class="h-[450px] max-w-[800px]">
+		<div class="grid w-full gap-1.5 h-[250px]">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.description} rows={20} class="text-lg"/>
+		</div>
+		<Badge class="h-fit w-fit">Technology</Badge>
 		<div class="flex items-center gap-1">
 			<Target class="h-4 w-4" />
-			<p class="text-sm">Target Level: {5}</p>
+			<p class="text-sm">Target Level: {currItem.target_level_level}</p>
 		</div>
+		<div class="flex justify-end"><Button on:click={() => updateTask2(currItem.id)}>Save</Button></div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root open={updateOpen} onOpenChange={toggleUpdateOpen}>
+	<Dialog.Content class="h-[450px] max-w-[800px]">
+		<div class="grid w-full gap-1.5 h-[250px]">
+			<Label>Description</Label>
+			<Textarea bind:value={currUpdateItem.description} rows={20} class="text-lg"/>
+		</div>
+		<Badge class="h-fit w-fit">Technology</Badge>
+		<div class="flex items-center gap-1">
+			<Target class="h-4 w-4" />
+			<p class="text-sm">Target Level: {currUpdateItem.target_level_level}</p>
+		</div>
+		<div class="flex justify-end"><Button on:click={() => updateTask(currUpdateItem.id)}>Save</Button></div>
 	</Dialog.Content>
 </Dialog.Root>

@@ -1,6 +1,6 @@
 import type { PageServerLoad } from '../rns/$types';
 
-export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
+export const load: PageServerLoad = async ({ fetch, cookies, params, locals }) => {
 	const roadblocks = await fetch(
 		`http://127.0.0.1:8000/tasks/roadblocks/?startup_id=${params.startup}`,
 		{
@@ -32,7 +32,8 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 			return {
 				startup: s,
 				roadblocks: rb_data.results,
-				startupId: params.startup
+				startupId: params.startup,
+				userId: locals.user.id
 			};
 		}
 	}
