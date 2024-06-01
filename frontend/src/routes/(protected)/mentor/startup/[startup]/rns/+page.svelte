@@ -195,16 +195,21 @@
 	}
 
 	async function updateTask2(id: number) {
-		await fetch(`http://127.0.0.1:8000/tasks/tasks/${id}/`, {
+		const response = await fetch(`http://127.0.0.1:8000/tasks/tasks/${id}/`, {
 			method: 'PATCH',
 			headers: {
 				'Content-type': 'application/json',
 				Authorization: `Bearer ${access}`
 			},
 			body: JSON.stringify({
-				description: currItem.description
+				description: currItem.description,
+				target_level_id: currItem.target_level_id
 			})
 		});
+
+		if (response.ok) {
+			window.location.href = `/mentor/startup/${data.startupId}/rns`;
+		}
 	}
 	console.log(tasks);
 </script>
@@ -365,7 +370,51 @@
 		<Badge class="h-fit w-fit">Technology</Badge>
 		<div class="flex items-center gap-1">
 			<Target class="h-4 w-4" />
-			<p class="text-sm">Target Level: {currItem.target_level_level}</p>
+			<p class="text-sm">
+				Target Level: <select
+					on:change={(e) => {
+						currItem.target_level_id = e.target.value;
+					}}
+				>
+					{#if currItem.readiness_type_rl_type === 'Technology'}
+						{#each data.technology as level}
+							<option value={level.id} selected={currItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currItem.readiness_type_rl_type === 'Market'}
+						{#each data.market as level}
+							<option value={level.id} selected={currItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currItem.readiness_type_rl_type === 'Organizational'}
+						{#each data.organizational as level}
+							<option value={level.id} selected={currItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currItem.readiness_type_rl_type === 'Regulatory'}
+						{#each data.regulatory as level}
+							<option value={level.id} selected={currItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currItem.readiness_type_rl_type === 'Acceptance'}
+						{#each data.acceptance as level}
+							<option value={level.id} selected={currItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currItem.readiness_type_rl_type === 'Investment'}
+						{#each data.investment as level}
+							<option value={level.id} selected={currItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{/if}
+				</select>
+			</p>
 		</div>
 		<div class="flex justify-end">
 			<Button on:click={() => updateTask2(currItem.id)}>Save</Button>
@@ -382,7 +431,51 @@
 		<Badge class="h-fit w-fit">Technology</Badge>
 		<div class="flex items-center gap-1">
 			<Target class="h-4 w-4" />
-			<p class="text-sm">Target Level: {currUpdateItem.target_level_level}</p>
+			<p class="text-sm">
+				Target Level: <select
+					on:change={(e) => {
+						currItem.target_level_id = e.target.value;
+					}}
+				>
+					{#if currUpdateItem.readiness_type_rl_type === 'Technology'}
+						{#each data.technology as level}
+							<option value={level.id} selected={currUpdateItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currUpdateItem.readiness_type_rl_type === 'Market'}
+						{#each data.market as level}
+							<option value={level.id} selected={currUpdateItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currUpdateItem.readiness_type_rl_type === 'Organizational'}
+						{#each data.organizational as level}
+							<option value={level.id} selected={currUpdateItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currUpdateItem.readiness_type_rl_type === 'Regulatory'}
+						{#each data.regulatory as level}
+							<option value={level.id} selected={currUpdateItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currUpdateItem.readiness_type_rl_type === 'Acceptance'}
+						{#each data.acceptance as level}
+							<option value={level.id} selected={currUpdateItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{:else if currUpdateItem.readiness_type_rl_type === 'Investment'}
+						{#each data.investment as level}
+							<option value={level.id} selected={currUpdateItem.target_level_level === level.level}
+								>{level.level}</option
+							>
+						{/each}
+					{/if}
+				</select>
+			</p>
 		</div>
 		<div class="flex justify-end">
 			<Button on:click={() => updateTask(currUpdateItem.id)}>Save</Button>
