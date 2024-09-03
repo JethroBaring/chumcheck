@@ -20,14 +20,13 @@
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
 	const flipDurationMs = 300;
-	let access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
 
 	function toggleOpen() {
 		open = !open;
 	}
 
 	export let data;
+	let access = data.access
 	let initiatives = data.initiatives;
 	let generating = false;
 	let generated: any = [];

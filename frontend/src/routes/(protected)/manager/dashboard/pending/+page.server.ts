@@ -13,7 +13,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	if (response.ok) {
 		console.log(data)
 		return {
-			applicants: data
+			applicants: data,
+			access: cookies.get('Access')
 		};
 	}
 };

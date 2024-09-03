@@ -55,7 +55,7 @@ export const actions = {
 		if (response.ok) {
 			return message(form, { text: 'Account created successfully' });
 		}
-
+		console.log("WEW")
 		return message(form, { text: data.message });
 	}
 };

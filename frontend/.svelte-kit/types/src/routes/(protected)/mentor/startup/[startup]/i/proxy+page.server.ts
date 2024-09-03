@@ -54,7 +54,8 @@ export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad
 				return {
 					allow: data,
 					tasks: tasks_data.results,
-					initiatives: initiativesResults
+					initiatives: initiativesResults,
+					access: cookies.get('Access')
 				};
 			} catch (error) {
 				console.log(error);

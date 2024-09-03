@@ -547,6 +547,7 @@ class UratQuestionAnswerViewSet(
 
     def get_permissions(self):
         viewset_action = self.action
+        print("hello world")
 
         if viewset_action in ["create", "bulk_create"]:
             return []
@@ -938,7 +939,7 @@ class CapsuleProposalInfoViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        if viewset_action == "create":
+        if viewset_action in ["create", "extract_capsule_proposal_info"]:
             return [startups_permissions.IsAuthenticated()]
 
         elif viewset_action in ["retrieve", "partial_update"]:

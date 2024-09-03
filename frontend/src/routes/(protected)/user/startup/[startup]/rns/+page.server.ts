@@ -24,7 +24,8 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 			return {
 				allow: data,
 				tasks: tasks_data.results,
-				startupOd: params.startup
+				startupOd: params.startup,
+				access: cookies.get('Access')
 			};
 		}
 	}

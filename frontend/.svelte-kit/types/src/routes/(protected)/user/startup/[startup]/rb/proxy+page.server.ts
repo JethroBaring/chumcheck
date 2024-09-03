@@ -34,7 +34,8 @@ export const load = async ({ fetch, cookies, params, locals }: Parameters<PageSe
 				startup: s,
 				roadblocks: rb_data.results,
 				startupId: params.startup,
-				userId: locals.user.id
+				userId: locals.user.id,
+				access: cookies.get('Access')
 			};
 		}
 	}
@@ -44,7 +45,7 @@ export const actions = {
 	default: async ({ request, cookies, params }) => {
 		const formData = await request.formData();
 
-		let readiness = [
+		const readiness = [
 			'Technology',
 			'Market',
 			'Acceptance',

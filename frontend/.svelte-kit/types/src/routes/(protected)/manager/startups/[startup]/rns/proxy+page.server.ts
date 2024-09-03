@@ -44,7 +44,8 @@ export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad
 					market: r.results.filter((d) => d.readiness_type === 'Market'),
 					regulatory: r.results.filter((d) => d.readiness_type === 'Rregulatory'),
 					acceptance: r.results.filter((d) => d.readiness_type === 'Acceptance'),
-					investment: r.results.filter((d) => d.readiness_type === 'Invesment')
+					investment: r.results.filter((d) => d.readiness_type === 'Invesment'),
+					access: cookies.get('Access')
 				};
 			}
 		}

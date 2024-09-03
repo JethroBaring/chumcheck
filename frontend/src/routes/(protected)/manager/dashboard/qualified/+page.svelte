@@ -15,9 +15,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 
-	const access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzE2OTM4LCJpYXQiOjE3MTcwNTc3MzgsImp0aSI6IjlhOTI0NGQ0MDE0YzQ1NTQ4YzBmZGUyNTNlNDJjZWZkIiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.PS0kPp9qtgqqWcPePmshKlQTssTRelFbBLs3_Wzm_nc';
 	export let data;
+	const access = data.access
 	let applicants = data.applicants;
 
 	let showCapsule = false;
@@ -31,7 +30,7 @@
 	function toggleAcceptedDialog() {
 		showAcceptedDialog = !showAcceptedDialog;
 	}
-	let inf: any, lev;
+	let inf: any, lev: any;
 
 	async function getStartupInformation(startupId: number) {
 		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/`, {

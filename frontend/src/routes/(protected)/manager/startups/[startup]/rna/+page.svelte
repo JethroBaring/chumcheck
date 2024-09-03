@@ -10,8 +10,6 @@
 	import Label from '$lib/components/ui/label/label.svelte';
 	import { number } from 'zod';
 
-	let access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
 	let readiness = [
 		'Technology',
 		'Market',
@@ -22,6 +20,7 @@
 	];
 
 	export let data;
+	let access = data.access
 	console.log(data.rna);
 	let rna = data.rna;
 

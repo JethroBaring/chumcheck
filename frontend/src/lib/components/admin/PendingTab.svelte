@@ -17,7 +17,7 @@
 	import { Info } from 'lucide-svelte';
 	import Assessment from './Assessment.svelte';
 	const access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MTU1ODEyLCJpYXQiOjE3MTY4OTY2MTIsImp0aSI6IjE3NDRiZGUyYTMwYjRiNTRhN2ZmNTYxNDNiMmE3OTliIiwidXNlcl9pZCI6MywidXNlcl90eXBlIjoiTSJ9.01eNx7NdkvPkXEFg2wCate01ct4zIRQ5dr1XQJjH8TQ';
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1NjI0NjA0LCJpYXQiOjE3MjUzNjQ0MzIsImp0aSI6IjM3MWQ4NWNkMjlhZTQ3NWFiY2Y3YzBkMzQ4MmFjNjk0IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.hlZnRNMwzxM2TJZJ2twMcZhu64toUUte4iX7sMWAKMw';
 	export let data;
     let applicants = data.filter((d) => d.qualification_status === 1)
     console.log("lol" + applicants)

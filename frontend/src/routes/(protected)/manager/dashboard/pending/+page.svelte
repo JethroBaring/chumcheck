@@ -16,9 +16,10 @@
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Info } from 'lucide-svelte';
 	import Assessment from '$lib/components/admin/Assessment.svelte';
-	const access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzExNjQ2LCJpYXQiOjE3MTcwNTI0NDYsImp0aSI6ImIyNTliMzg4ZGVhMDQxMmU4OWNlMjg0NmU5MmMzNmE2IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.djNx6qgCuow04--zbDbteb7rp8qkry8RnH0hs1kDGAE';
 	export let data;
+
+	const access = data.access
+
 	let applicants = data.applicants.filter((d) => d.qualification_status === 1);
 
 	let showCapsule = false;

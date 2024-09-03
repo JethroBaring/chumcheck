@@ -45,7 +45,8 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 					startup: s,
 					allow: data,
 					roadblocks: rb_data.results,
-					startupId: params.startup
+					startupId: params.startup,
+					access: cookies.get('Access')
 				};
 			}
 		}
@@ -56,7 +57,7 @@ export const actions = {
 	default: async ({ request, cookies, params }) => {
 		const formData = await request.formData();
 
-		let readiness = [
+		const readiness = [
 			'Technology',
 			'Market',
 			'Acceptance',

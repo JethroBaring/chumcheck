@@ -8,10 +8,9 @@
 	import * as Select from '$lib/components/ui/select';
 	import Label from '$lib/components/ui/label/label.svelte';
 
-	let access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MTY1MTg0LCJpYXQiOjE3MTY5MDU5ODQsImp0aSI6ImMzZmFlOGZlYmY2YzQwNThhZDQxZWQ3MzMyNjlhYTBhIiwidXNlcl9pZCI6NiwidXNlcl90eXBlIjoiTUUifQ.-R00RI1Plp1-UlD0kEKrvj8w54t-5ZdH2fd-0F3oLIE';
-
 	export let data;
+
+	let access = data.access
 
 	let roadblocks = data.roadblocks;
 
