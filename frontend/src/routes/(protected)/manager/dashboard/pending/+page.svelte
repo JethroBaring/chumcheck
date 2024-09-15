@@ -49,7 +49,7 @@
 		const data = await response.json();
 		if (response.ok) {
 			const urat_questions = await fetch(`${PUBLIC_API_URL}/readinesslevel/urat-questions/`, {
-				method: 'get',
+				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${access}`
 				}
@@ -60,7 +60,7 @@
 			const urat_answers = await fetch(
 				`${PUBLIC_API_URL}/urat-question-answers/?startup_id=${startupId}`,
 				{
-					method: 'get',
+					method: 'GET',
 					headers: {
 						Authorization: `Bearer ${access}`
 					}
