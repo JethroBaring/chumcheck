@@ -140,7 +140,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Example: your frontend URL
     "https://chumcheck.vercel.app",
     "https://chumcheck-jethro-barings-projects.vercel.app",
-    "https://chumcheck-git-master-jethro-barings-projects.vercel.app/"
+    "https://chumcheck-git-master-jethro-barings-projects.vercel.app"
 ]
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
