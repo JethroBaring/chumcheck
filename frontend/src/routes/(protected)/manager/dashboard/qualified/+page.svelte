@@ -14,6 +14,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	export let data;
 	const access = data.access
@@ -33,7 +34,7 @@
 	let inf: any, lev: any;
 
 	async function getStartupInformation(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/`, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json',
@@ -44,7 +45,7 @@
 		const data = await response.json();
 		if (response.ok) {
 			const level = await fetch(
-				`http://127.0.0.1:8000/startup-readiness-levels/?startup_id=${data.id}`,
+				`${PUBLIC_API_URL}/startup-readiness-levels/?startup_id=${data.id}`,
 				{
 					method: 'get',
 					headers: {

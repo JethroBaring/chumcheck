@@ -19,6 +19,8 @@
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
+
 	const flipDurationMs = 300;
 
 	function toggleOpen() {
@@ -38,7 +40,7 @@
 		try {
 			await Promise.all(
 				data.tasks.map(async (r) => {
-					await fetch(`http://127.0.0.1:8000/tasks/initiatives/create-initial-initiatives/`, {
+					await fetch(`${PUBLIC_API_URL}/tasks/initiatives/create-initial-initiatives/`, {
 						method: 'post',
 						headers: {
 							'Content-type': 'application/json',
@@ -63,7 +65,7 @@
 		try {
 			await Promise.all(
 				initiatives.map(async (initiative: any) => {
-					await fetch(`http://127.0.0.1:8000/tasks/initiatives/${initiative.id}/`, {
+					await fetch(`${PUBLIC_API_URL}/tasks/initiatives/${initiative.id}/`, {
 						method: 'PATCH',
 						headers: {
 							'Content-type': 'application/json',
@@ -136,7 +138,7 @@
 		if (e.detail.info.trigger == 'droppedIntoZone') {
 			const task = e.detail.items.find((t) => t.id == e.detail.info.id);
 
-			const response = await fetch(`http://127.0.0.1:8000/tasks/initiatives/${task.id}/`, {
+			const response = await fetch(`${PUBLIC_API_URL}/tasks/initiatives/${task.id}/`, {
 				method: 'PATCH',
 				headers: {
 					'Content-type': 'application/json',
@@ -163,7 +165,7 @@
 	}
 
 	async function updateTask(id: number) {
-		await fetch(`http://127.0.0.1:8000/tasks/initiatives/${id}/`, {
+		await fetch(`${PUBLIC_API_URL}/tasks/initiatives/${id}/`, {
 			method: 'PATCH',
 			headers: {
 				'Content-type': 'application/json',

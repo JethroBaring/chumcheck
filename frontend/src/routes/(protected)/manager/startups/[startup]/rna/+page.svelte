@@ -9,6 +9,7 @@
 	import Assessment from '$lib/components/admin/Assessment.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import { number } from 'zod';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	let readiness = [
 		'Technology',
@@ -29,7 +30,7 @@
 	async function generateRNA() {
 		generated = [];
 		generating = true;
-		const response = await fetch(`http://127.0.0.1:8000/startups/${data.startupId}/generate-rna`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${data.startupId}/generate-rna`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${access}`
@@ -72,7 +73,7 @@
 	}
 
 	async function updateRNA(id: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startup-rna/${id}/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startup-rna/${id}/`, {
 			method: 'PATCH',
 			headers: {
 				'Content-type': 'application/json',

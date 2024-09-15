@@ -1,7 +1,8 @@
+import { PUBLIC_API_URL } from '$env/static/public';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies }) => {
-	const response = await fetch('http://127.0.0.1:8000/startups/ranking-by-urat/', {
+	const response = await fetch(`${PUBLIC_API_URL}/startups/ranking-by-urat/`, {
 		method: 'get',
 		headers: {
 			'Content-Type': 'application/json',

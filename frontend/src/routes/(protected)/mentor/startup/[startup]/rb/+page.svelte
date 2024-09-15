@@ -8,6 +8,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import { onMount } from 'svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	export let data;
 	
@@ -21,7 +22,7 @@
 		generated = [];
 		generating = true;
 		const response = await fetch(
-			`http://127.0.0.1:8000/tasks/roadblocks/create-initial-roadblocks/`,
+			`${PUBLIC_API_URL}/tasks/roadblocks/create-initial-roadblocks/`,
 			{
 				method: 'POST',
 				headers: {
@@ -57,7 +58,7 @@
 	}
 
 	async function updateRoadblock(id: number) {
-		const response = await fetch(`http://127.0.0.1:8000/tasks/roadblocks/${id}/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/tasks/roadblocks/${id}/`, {
 			method: 'PATCH',
 			headers: {
 				'Content-type': 'application/json',

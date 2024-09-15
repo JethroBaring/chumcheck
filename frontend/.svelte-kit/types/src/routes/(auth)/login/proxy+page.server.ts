@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { PUBLIC_API_URL } from '$env/static/public';
 import { z } from 'zod';
 import { dev } from '$app/environment';
 import type { PageServerLoad } from './$types';
@@ -30,7 +31,7 @@ export const actions = {
 
 		const { email, password } = form.data
 
-		const response = await fetch('http://127.0.0.1:8000/tokens/acquire/', {
+		const response = await fetch(`${PUBLIC_API_URL}/tokens/acquire/`, {
 			method: 'POST',
 			headers: {
 				'Content-type': 'application/json'

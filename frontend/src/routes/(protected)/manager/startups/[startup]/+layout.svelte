@@ -28,6 +28,8 @@
 	import Footprints from 'lucide-svelte/icons/footprints'
 	import Bookcheck from 'lucide-svelte/icons/book-check'
 	import Road from 'lucide-svelte/icons/cuboid'
+	import { PUBLIC_API_URL } from '$env/static/public';
+
 	export let data;
 	console.log(data.startup)
 	let currentTab = data.cur;
@@ -44,7 +46,7 @@
 	let search: string;
 	let searchedUsers: any[] = [];
 	async function searchUsers() {
-		const response = await fetch(`http://127.0.0.1:8000/users/?search=${search}`, {
+		const response = await fetch(`${PUBLIC_API_URL}/users/?search=${search}`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${data.token}`

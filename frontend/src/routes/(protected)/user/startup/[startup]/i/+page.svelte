@@ -14,6 +14,7 @@
 	import ListFilter from 'lucide-svelte/icons/list-filter';
 
 	import CirclePlus from 'lucide-svelte/icons/circle-plus';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
@@ -81,7 +82,7 @@
 		if (e.detail.info.trigger == 'droppedIntoZone') {
 			const task = e.detail.items.find((t) => t.id == e.detail.info.id);
 
-			const response = await fetch(`http://127.0.0.1:8000/tasks/initiatives/${task.id}/`, {
+			const response = await fetch(`${PUBLIC_API_URL}/tasks/initiatives/${task.id}/`, {
 				method: 'PATCH',
 				headers: {
 					'Content-type': 'application/json',

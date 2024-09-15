@@ -29,6 +29,8 @@
 	import Moon from 'svelte-radix/Moon.svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { Plus } from 'svelte-radix';
+	import { PUBLIC_API_URL } from '$env/static/public';
+
 	export let data
 	
 	let currentTab = data.current;
@@ -45,7 +47,7 @@
 	let search: string;
 	let searchedUsers: any[] = [];
 	async function searchUsers() {
-		const response = await fetch(`http://127.0.0.1:8000/users/?search=${search}`, {
+		const response = await fetch(`${PUBLIC_API_URL}/users/?search=${search}`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${data.token}`

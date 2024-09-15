@@ -1,10 +1,11 @@
 import { redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
 	const showToast = url.searchParams.get('toast') === 'true';
 
-	const response = await fetch('http://127.0.0.1:8000/startups/', {
+	const response = await fetch(`${PUBLIC_API_URL}/startups/`, {
 		method: 'get',
 		headers: {
 			Authorization: `Bearer ${cookies.get('Access')}`
@@ -40,7 +41,7 @@ export const actions: Actions = {
 			}
 		}
 
-		const response = await fetch('http://127.0.0.1:8000/startups/', {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${cookies.get('Access')}`
@@ -101,7 +102,7 @@ export const actions: Actions = {
 				});
 			});
 
-			const urat_answers = await fetch('http://127.0.0.1:8000/urat-question-answers/bulk-create/', {
+			const urat_answers = await fetch(`${PUBLIC_API_URL}/urat-question-answers/bulk-create/`, {
 				method: 'post',
 				headers: {
 					'Content-type': 'application/json',
@@ -113,7 +114,7 @@ export const actions: Actions = {
 			});
 
 			const calculator_answers = await fetch(
-				'http://127.0.0.1:8000/calculator-question-answers/bulk-create/',
+				`${PUBLIC_API_URL}/calculator-question-answers/bulk-create/`,
 				{
 					method: 'post',
 					headers: {
@@ -127,7 +128,7 @@ export const actions: Actions = {
 			);
 
 			if (urat_answers.ok && calculator_answers.ok) {
-				const capsule_info = await fetch('http://127.0.0.1:8000/capsule-proposal-infos/', {
+				const capsule_info = await fetch(`${PUBLIC_API_URL}/capsule-proposal-infos/`, {
 					method: 'POST',
 					headers: {
 						'Content-type': 'application/json',
