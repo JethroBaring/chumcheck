@@ -1,8 +1,9 @@
 // @ts-nocheck
 import type { PageServerLoad } from '../rns/$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad>[0]) => {
-	const response = await fetch(`http://127.0.0.1:8000/startups/${params.startup}/allow-tasks/`, {
+	const response = await fetch(`${PUBLIC_API_URL}/startups/${params.startup}/allow-tasks/`, {
 		method: 'get',
 		headers: {
 			Authorization: `Bearer ${cookies.get('Access')}`
@@ -12,7 +13,7 @@ export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad
 	const data = await response.json();
 
 	if (response.ok) {
-		const tasks = await fetch(`http://127.0.0.1:8000/tasks/tasks/?startup_id=${params.startup}`, {
+		const tasks = await fetch(`${PUBLIC_API_URL}/tasks/tasks/?startup_id=${params.startup}`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${cookies.get('Access')}`
@@ -23,7 +24,7 @@ export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad
 
 		if (tasks.ok) {
 			const readiness_levels = await fetch(
-				'http://127.0.0.1:8000/readinesslevel/readiness-levels/',
+				`${PUBLIC_API_URL}/readinesslevel/readiness-levels/`,
 				{
 					method: 'get',
 					headers: {

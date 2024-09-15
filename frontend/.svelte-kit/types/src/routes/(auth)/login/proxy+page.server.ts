@@ -31,18 +31,19 @@ export const actions = {
 
 		const { email, password } = form.data
 
-		const response = await fetch(`${PUBLIC_API_URL}/tokens/acquire/`, {
-			method: 'POST',
-			headers: {
-				'Content-type': 'application/json'
-			},
-			body: JSON.stringify({
-				email: email,
-				password: password
-			})
-		});
+		try {
+			const response = await fetch(`${PUBLIC_API_URL}/tokens/acquire/`, {
+				method: 'POST',
+				headers: {
+					'Content-type': 'application/json'
+				},
+				body: JSON.stringify({
+					email: email,
+					password: password
+				})
+			});
 
-		const data = await response.json();
+			const data = await response.json();
 
 		if (response.ok) {
 			cookies.set('Refresh', data.refresh, {
@@ -64,6 +65,11 @@ export const actions = {
 		}
 
 		return message(form, { text: data.message });
+		} catch (error) {
+			console.log(error)
+		}
+
+		
 	}
 };
 ;null as any as PageServerLoad;

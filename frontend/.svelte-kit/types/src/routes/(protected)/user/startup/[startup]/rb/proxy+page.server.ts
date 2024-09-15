@@ -1,9 +1,10 @@
 // @ts-nocheck
 import type { PageServerLoad } from '../rns/$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load = async ({ fetch, cookies, params, locals }: Parameters<PageServerLoad>[0]) => {
 	const roadblocks = await fetch(
-		`http://127.0.0.1:8000/tasks/roadblocks/?startup_id=${params.startup}`,
+		`${PUBLIC_API_URL}/tasks/roadblocks/?startup_id=${params.startup}`,
 		{
 			method: 'get',
 			headers: {
@@ -15,7 +16,7 @@ export const load = async ({ fetch, cookies, params, locals }: Parameters<PageSe
 	const rb_data = await roadblocks.json();
 
 	if (roadblocks.ok) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${params.startup}`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${params.startup}`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${cookies.get('Access')}`
@@ -57,7 +58,7 @@ export const actions = {
 		try {
 			await Promise.all(
 				readiness.map(async (r) => {
-					await fetch(`http://127.0.0.1:8000/startup-rna/`, {
+					await fetch(`${PUBLIC_API_URL}/startup-rna/`, {
 						method: 'post',
 						headers: {
 							'Content-type': 'application/json',

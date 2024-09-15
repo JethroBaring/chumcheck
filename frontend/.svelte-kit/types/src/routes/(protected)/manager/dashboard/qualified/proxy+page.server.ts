@@ -1,8 +1,9 @@
 // @ts-nocheck
+import { PUBLIC_API_URL } from '$env/static/public';
 import type { PageServerLoad } from './$types';
 
 export const load = async ({ cookies }: Parameters<PageServerLoad>[0]) => {
-	const response = await fetch('http://127.0.0.1:8000/startups/ranking-by-rubrics/', {
+	const response = await fetch(`${PUBLIC_API_URL}/startups/ranking-by-rubrics/`, {
 		method: 'get',
 		headers: {
 			'Content-Type': 'application/json',

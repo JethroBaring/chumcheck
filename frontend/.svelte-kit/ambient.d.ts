@@ -36,8 +36,8 @@ declare module '$env/static/private' {
 	export const HISTCONTROL: string;
 	export const XDG_MENU_PREFIX: string;
 	export const TERM_PROGRAM_VERSION: string;
-	export const HOSTNAME: string;
 	export const HISTSIZE: string;
+	export const HOSTNAME: string;
 	export const NODE: string;
 	export const SSH_AUTH_SOCK: string;
 	export const MEMORY_PRESSURE_WRITE: string;
@@ -49,14 +49,15 @@ declare module '$env/static/private' {
 	export const npm_config_globalconfig: string;
 	export const EDITOR: string;
 	export const PWD: string;
-	export const XDG_SESSION_DESKTOP: string;
 	export const LOGNAME: string;
+	export const XDG_SESSION_DESKTOP: string;
 	export const XDG_SESSION_TYPE: string;
 	export const npm_config_init_module: string;
 	export const SYSTEMD_EXEC_PID: string;
 	export const _: string;
 	export const XAUTHORITY: string;
 	export const VSCODE_GIT_ASKPASS_NODE: string;
+	export const GJS_DEBUG_TOPICS: string;
 	export const GDM_LANG: string;
 	export const HOME: string;
 	export const USERNAME: string;
@@ -66,7 +67,6 @@ declare module '$env/static/private' {
 	export const XDG_CURRENT_DESKTOP: string;
 	export const npm_package_version: string;
 	export const MEMORY_PRESSURE_WATCH: string;
-	export const VTE_VERSION: string;
 	export const WAYLAND_DISPLAY: string;
 	export const GIT_ASKPASS: string;
 	export const INVOCATION_ID: string;
@@ -74,6 +74,7 @@ declare module '$env/static/private' {
 	export const INIT_CWD: string;
 	export const CHROME_DESKTOP: string;
 	export const npm_lifecycle_script: string;
+	export const GJS_DEBUG_OUTPUT: string;
 	export const MOZ_GMP_PATH: string;
 	export const NVM_DIR: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
@@ -93,7 +94,6 @@ declare module '$env/static/private' {
 	export const QT_IM_MODULE: string;
 	export const npm_config_user_agent: string;
 	export const npm_execpath: string;
-	export const TILIX_ID: string;
 	export const XDG_RUNTIME_DIR: string;
 	export const DEBUGINFOD_URLS: string;
 	export const npm_package_json: string;
@@ -110,10 +110,12 @@ declare module '$env/static/private' {
 	export const npm_config_global_prefix: string;
 	export const MAIL: string;
 	export const NVM_BIN: string;
+	export const GIO_LAUNCHED_DESKTOP_FILE_PID: string;
 	export const npm_node_execpath: string;
 	export const npm_config_engine_strict: string;
-	export const OLDPWD: string;
+	export const GIO_LAUNCHED_DESKTOP_FILE: string;
 	export const TERM_PROGRAM: string;
+	export const NODE_ENV: string;
 }
 
 /**
@@ -155,8 +157,8 @@ declare module '$env/dynamic/private' {
 		HISTCONTROL: string;
 		XDG_MENU_PREFIX: string;
 		TERM_PROGRAM_VERSION: string;
-		HOSTNAME: string;
 		HISTSIZE: string;
+		HOSTNAME: string;
 		NODE: string;
 		SSH_AUTH_SOCK: string;
 		MEMORY_PRESSURE_WRITE: string;
@@ -168,14 +170,15 @@ declare module '$env/dynamic/private' {
 		npm_config_globalconfig: string;
 		EDITOR: string;
 		PWD: string;
-		XDG_SESSION_DESKTOP: string;
 		LOGNAME: string;
+		XDG_SESSION_DESKTOP: string;
 		XDG_SESSION_TYPE: string;
 		npm_config_init_module: string;
 		SYSTEMD_EXEC_PID: string;
 		_: string;
 		XAUTHORITY: string;
 		VSCODE_GIT_ASKPASS_NODE: string;
+		GJS_DEBUG_TOPICS: string;
 		GDM_LANG: string;
 		HOME: string;
 		USERNAME: string;
@@ -185,7 +188,6 @@ declare module '$env/dynamic/private' {
 		XDG_CURRENT_DESKTOP: string;
 		npm_package_version: string;
 		MEMORY_PRESSURE_WATCH: string;
-		VTE_VERSION: string;
 		WAYLAND_DISPLAY: string;
 		GIT_ASKPASS: string;
 		INVOCATION_ID: string;
@@ -193,6 +195,7 @@ declare module '$env/dynamic/private' {
 		INIT_CWD: string;
 		CHROME_DESKTOP: string;
 		npm_lifecycle_script: string;
+		GJS_DEBUG_OUTPUT: string;
 		MOZ_GMP_PATH: string;
 		NVM_DIR: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
@@ -212,7 +215,6 @@ declare module '$env/dynamic/private' {
 		QT_IM_MODULE: string;
 		npm_config_user_agent: string;
 		npm_execpath: string;
-		TILIX_ID: string;
 		XDG_RUNTIME_DIR: string;
 		DEBUGINFOD_URLS: string;
 		npm_package_json: string;
@@ -229,10 +231,12 @@ declare module '$env/dynamic/private' {
 		npm_config_global_prefix: string;
 		MAIL: string;
 		NVM_BIN: string;
+		GIO_LAUNCHED_DESKTOP_FILE_PID: string;
 		npm_node_execpath: string;
 		npm_config_engine_strict: string;
-		OLDPWD: string;
+		GIO_LAUNCHED_DESKTOP_FILE: string;
 		TERM_PROGRAM: string;
+		NODE_ENV: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
