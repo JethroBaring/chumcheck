@@ -16,6 +16,7 @@
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Info } from 'lucide-svelte';
 	import Assessment from './Assessment.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	const access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1NjI0NjA0LCJpYXQiOjE3MjUzNjQ0MzIsImp0aSI6IjM3MWQ4NWNkMjlhZTQ3NWFiY2Y3YzBkMzQ4MmFjNjk0IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.hlZnRNMwzxM2TJZJ2twMcZhu64toUUte4iX7sMWAKMw';
 	export let data;
@@ -35,7 +36,7 @@
 	let inf: any, que: any, ans: any, calc: any;
 
 	async function getStartupInformation(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/`, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json',
@@ -45,7 +46,7 @@
 
 		const data = await response.json();
 		if (response.ok) {
-			const urat_questions = await fetch('http://127.0.0.1:8000/readinesslevel/urat-questions/', {
+			const urat_questions = await fetch('${PUBLIC_API_URL}/readinesslevel/urat-questions/', {
 				method: 'get',
 				headers: {
 					Authorization: `Bearer ${access}`
@@ -55,7 +56,7 @@
 			const questions_data = await urat_questions.json();
 
 			const urat_answers = await fetch(
-				`http://127.0.0.1:8000/urat-question-answers/?startup_id=${startupId}`,
+				`${PUBLIC_API_URL}/urat-question-answers/?startup_id=${startupId}`,
 				{
 					method: 'get',
 					headers: {
@@ -67,7 +68,7 @@
 			const answers_data = await urat_answers.json();
 
 			const calculator = await fetch(
-				`http://127.0.0.1:8000/startups/${startupId}/calculator-final-scores/`,
+				`${PUBLIC_API_URL}/startups/${startupId}/calculator-final-scores/`,
 				{
 					method: 'get',
 					headers: {
@@ -98,7 +99,7 @@
 	}
 
 	async function saveRating(startupId: string) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/rate-applicant/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/rate-applicant/`, {
 			method: 'post',
 			headers: {
 				'Content-type': 'application/json',

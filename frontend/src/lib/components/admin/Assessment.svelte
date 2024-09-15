@@ -3,6 +3,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	const access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1NjI0NjA0LCJpYXQiOjE3MjUzNjQ0MzIsImp0aSI6IjM3MWQ4NWNkMjlhZTQ3NWFiY2Y3YzBkMzQ4MmFjNjk0IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.hlZnRNMwzxM2TJZJ2twMcZhu64toUUte4iX7sMWAKMw';
 
@@ -11,7 +12,7 @@
 		newScore: number,
 	) => {
 		try {
-			const d = await fetch(`http://127.0.0.1:8000/urat-question-answers/${id}/`, {
+			const d = await fetch(`${PUBLIC_API_URL}/urat-question-answers/${id}/`, {
 			method: 'PATCH',
 			headers: {
 				'Content-type': 'application/json',

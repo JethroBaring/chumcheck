@@ -13,6 +13,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	const access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyMDQ2LCJpYXQiOjE3MTcwNTI4NDYsImp0aSI6ImM5ZmQ0ODA2MjhkZDRiOWNiMjNhYjU3ZTRjY2I4MzFlIiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.d_W0LM7ljx5NF4NQ4czZzA5I0bWM7-4ux80yJvMzC-w';
 	export let data;
@@ -37,7 +38,7 @@
 	}
 
 	async function getStartupInformation(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/`, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json',
@@ -47,7 +48,7 @@
 
 		const data = await response.json();
 		if (response.ok) {
-			const urat_questions = await fetch('http://127.0.0.1:8000/readinesslevel/urat-questions/', {
+			const urat_questions = await fetch('${PUBLIC_API_URL}/readinesslevel/urat-questions/', {
 				method: 'get',
 				headers: {
 					Authorization: `Bearer ${access}`
@@ -57,7 +58,7 @@
 			const questions_data = await urat_questions.json();
 
 			const urat_answers = await fetch(
-				`http://127.0.0.1:8000/urat-question-answers/?startup_id=${startupId}`,
+				`${PUBLIC_API_URL}/urat-question-answers/?startup_id=${startupId}`,
 				{
 					method: 'get',
 					headers: {
@@ -69,7 +70,7 @@
 			const answers_data = await urat_answers.json();
 
 			const calculator = await fetch(
-				`http://127.0.0.1:8000/startups/${startupId}/calculator-final-scores/`,
+				`${PUBLIC_API_URL}/startups/${startupId}/calculator-final-scores/`,
 				{
 					method: 'get',
 					headers: {
@@ -121,7 +122,7 @@
 	}
 
 	async function approveStartup(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/approve-applicant/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/approve-applicant/`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json',
@@ -131,7 +132,7 @@
 
 		if (response.ok) {
 			const assignmentor = await fetch(
-				`http://127.0.0.1:8000/startups/${selectedMentor}/appoint-mentors/`,
+				`${PUBLIC_API_URL}/startups/${selectedMentor}/appoint-mentors/`,
 				{
 					method: 'post',
 					headers: {
@@ -153,7 +154,7 @@
 	}
 
 	async function rejectStartup(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/reject-applicant/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/reject-applicant/`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json',

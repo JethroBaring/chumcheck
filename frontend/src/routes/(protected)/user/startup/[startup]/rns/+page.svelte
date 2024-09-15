@@ -12,6 +12,7 @@
 	import { goto } from '$app/navigation';
 	import Label from '$lib/components/ui/label/label.svelte';
 	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	const flipDurationMs = 300;
 
 	function toggleOpen() {
@@ -27,7 +28,7 @@
 	async function generateRNS() {
 		generated = [];
 		generating = true;
-		const response = await fetch('http://127.0.0.1:8000/tasks/tasks/create-initial-tasks/', {
+		const response = await fetch(`${PUBLIC_API_URL}/tasks/tasks/create-initial-tasks/`, {
 			method: 'POST',
 			headers: {
 				'Content-type': 'application/json',
@@ -41,7 +42,7 @@
 		});
 
 		if (response.ok) {
-			const another = await fetch('http://127.0.0.1:8000/tasks/tasks/create-initial-tasks/', {
+			const another = await fetch(`${PUBLIC_API_URL}/tasks/tasks/create-initial-tasks/`, {
 				method: 'POST',
 				headers: {
 					'Content-type': 'application/json',
@@ -64,7 +65,7 @@
 		try {
 			await Promise.all(
 				tasks.map(async (task: any, i: number) => {
-					await fetch(`http://127.0.0.1:8000/tasks/tasks/${task.id}/`, {
+					await fetch(`${PUBLIC_API_URL}/tasks/tasks/${task.id}/`, {
 						method: 'PATCH',
 						headers: {
 							'Content-type': 'application/json',
@@ -77,7 +78,7 @@
 					});
 				})
 			).then(async (values) => {
-				const response = await fetch('http://127.0.0.1:8000/tasks/tasks/?startup_id=7', {
+				const response = await fetch('${PUBLIC_API_URL}/tasks/tasks/?startup_id=7', {
 					method: 'get',
 					headers: {
 						'Content-type': 'application/json',
@@ -149,7 +150,7 @@
 		if (e.detail.info.trigger == 'droppedIntoZone') {
 			const task = e.detail.items.find((t) => t.id == e.detail.info.id);
 
-			const response = await fetch(`http://127.0.0.1:8000/tasks/tasks/${task.id}/`, {
+			const response = await fetch(`${PUBLIC_API_URL}/tasks/tasks/${task.id}/`, {
 				method: 'PATCH',
 				headers: {
 					'Content-type': 'application/json',

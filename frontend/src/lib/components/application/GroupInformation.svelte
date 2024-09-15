@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_API_URL } from '$env/static/public';
 	export let currentActive: number;
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
@@ -9,7 +10,7 @@
 	let search: string;
 	let searchedUsers: any[] = [];
 	async function searchUsers() {
-		const response = await fetch(`http://127.0.0.1:8000/users/?search=${search}`, {
+		const response = await fetch(`${PUBLIC_API_URL}/users/?search=${search}`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MTQ3NzEyLCJpYXQiOjE3MTY4ODg1MTIsImp0aSI6ImQzNmI1NmZkMWY5ZTRjNGM5MmVmMTFjODkxNjIxNjI2IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiUyJ9.qpHPEX-uj-UDDrkkkO_RMH_oRu5qDAq7D2PCtJvVUZs`
