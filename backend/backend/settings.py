@@ -27,7 +27,9 @@ SECRET_KEY = "django-insecure-vak*mz%99+#882*g*87x8$%!r=trnnqd)zh2)i$w51ra4cd&eg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'chumcheck-production.up.railway.app'
+]
 
 
 # Application definition
