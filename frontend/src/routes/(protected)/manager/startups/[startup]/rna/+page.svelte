@@ -1,14 +1,10 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Table from '$lib/components/ui/table/index.js';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import Spinner from 'lucide-svelte/icons/loader-circle';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Select from '$lib/components/ui/select';
-	import Assessment from '$lib/components/admin/Assessment.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import { number } from 'zod';
 	import { PUBLIC_API_URL } from '$env/static/public';
 
 	let readiness = [

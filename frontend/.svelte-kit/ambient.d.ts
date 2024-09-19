@@ -26,6 +26,7 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const NIXPACKS_START_CMD: string;
 	export const SHELL: string;
 	export const npm_command: string;
 	export const LSCOLORS: string;
@@ -150,6 +151,7 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		NIXPACKS_START_CMD: string;
 		SHELL: string;
 		npm_command: string;
 		LSCOLORS: string;

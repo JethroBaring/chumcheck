@@ -4,8 +4,6 @@ import { C as Card } from "../../../../../../../chunks/card.js";
 import "clsx";
 import { T as Textarea } from "../../../../../../../chunks/textarea.js";
 import { R as Root, D as Dialog_content } from "../../../../../../../chunks/index8.js";
-import "dequal";
-import "../../../../../../../chunks/create.js";
 import { L as Label } from "../../../../../../../chunks/label.js";
 import { B as Button } from "../../../../../../../chunks/button.js";
 const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
