@@ -78,7 +78,7 @@
 					});
 				})
 			).then(async (values) => {
-				const response = await fetch('${PUBLIC_API_URL}/tasks/tasks/?startup_id=7', {
+				const response = await fetch(`${PUBLIC_API_URL}/tasks/tasks/?startup_id=7`, {
 					method: 'get',
 					headers: {
 						'Content-type': 'application/json',

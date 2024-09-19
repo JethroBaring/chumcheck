@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 
 export const load = async ({ cookies }: Parameters<PageServerLoad>[0]) => {
 	const response = await fetch(`${PUBLIC_API_URL}/startups/ranking-by-urat/`, {
-		method: 'get',
+		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${cookies.get('Access')}`

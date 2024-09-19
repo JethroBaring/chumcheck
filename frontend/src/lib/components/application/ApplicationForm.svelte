@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	export async function getData() {
-		const uratQuestions = await fetch('${PUBLIC_API_URL}/readinesslevel/urat-questions/');
+		const uratQuestions = await fetch(`${PUBLIC_API_URL}/readinesslevel/urat-questions/`);
 
 		const data = await uratQuestions.json();
 		if (uratQuestions.ok) {

@@ -103,7 +103,7 @@ export const actions = {
 		});
 		try {
 			const rubrics_scores = await fetch(
-				'${PUBLIC_API_URL}/readiness-level-criterion-answers/bulk-create/',
+				`${PUBLIC_API_URL}/readiness-level-criterion-answers/bulk-create/`,
 				{
 					method: 'post',
 					headers: {
@@ -117,7 +117,7 @@ export const actions = {
 			);
 
 			if (rubrics_scores.ok) {
-				const levels = await fetch('${PUBLIC_API_URL}/startup-readiness-levels/bulk-create/', {
+				const levels = await fetch(`${PUBLIC_API_URL}/startup-readiness-levels/bulk-create/`, {
 					method: 'post',
 					headers: {
 						'Content-type': 'application/json',

@@ -48,7 +48,7 @@
 
 		const data = await response.json();
 		if (response.ok) {
-			const urat_questions = await fetch('${PUBLIC_API_URL}/readinesslevel/urat-questions/', {
+			const urat_questions = await fetch(`${PUBLIC_API_URL}/readinesslevel/urat-questions/`, {
 				method: 'get',
 				headers: {
 					Authorization: `Bearer ${access}`
