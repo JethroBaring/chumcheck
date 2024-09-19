@@ -10,7 +10,7 @@ return {
 	assets: new Set(["aboutus.svg","acceptance.png","calculator.png","data-privacy.png","eligibility-agreement.png","email.png","group-information.png","images/placeholder.jpg","images/placeholder.png","investment.png","launchlab_logo.png","login.png","loginv1.svg","loginv2.svg","logo copy.png","logo.png","market.png","organizational.png","project-details.png","register.svg","regulatory.png","rocketship.png","sample.pdf","startup copy.png","startup.png","startup.svg","tasks.svg","technology.png"]),
 	mimeTypes: {".svg":"image/svg+xml",".png":"image/png",".jpg":"image/jpeg",".pdf":"application/pdf"},
 	_: {
-		client: {"start":"_app/immutable/entry/start.BUSVZjWT.js","app":"_app/immutable/entry/app.B-1n-bLf.js","imports":["_app/immutable/entry/start.BUSVZjWT.js","_app/immutable/chunks/entry.BUvncCIv.js","_app/immutable/chunks/scheduler.C5Rd-ZIZ.js","_app/immutable/chunks/index.NQB3_1Bs.js","_app/immutable/entry/app.B-1n-bLf.js","_app/immutable/chunks/scheduler.C5Rd-ZIZ.js","_app/immutable/chunks/index.GzWkxjRN.js"],"stylesheets":[],"fonts":[],"uses_env_dynamic_public":false},
+		client: {"start":"_app/immutable/entry/start.D2QU2OQ0.js","app":"_app/immutable/entry/app.D6Tf81f1.js","imports":["_app/immutable/entry/start.D2QU2OQ0.js","_app/immutable/chunks/entry.BoktTKZC.js","_app/immutable/chunks/scheduler.C5Rd-ZIZ.js","_app/immutable/chunks/index.NQB3_1Bs.js","_app/immutable/entry/app.D6Tf81f1.js","_app/immutable/chunks/scheduler.C5Rd-ZIZ.js","_app/immutable/chunks/index.GzWkxjRN.js"],"stylesheets":[],"fonts":[],"uses_env_dynamic_public":false},
 		nodes: [
 			__memo(() => import('./nodes/0.js')),
 			__memo(() => import('./nodes/1.js')),
