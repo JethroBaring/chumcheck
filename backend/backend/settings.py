@@ -91,10 +91,10 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "verceldb",
-        "USER": "default",
-        "PASSWORD": "bTIe5SdLMhn8",
-        "HOST": "ep-lucky-bird-a1l3odyz-pooler.ap-southeast-1.aws.neon.tech",
+        "NAME": "chumcheck",
+        "USER": "postgres",
+        "PASSWORD": "NHJjTXMJcIJsWcFb",
+        "HOST": "chumcheck-database-40194f",
         "PORT": "5432",
     }
 }
