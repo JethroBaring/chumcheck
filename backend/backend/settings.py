@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'api.chumcheck.jethdev.tech',
-    'chumcheck-production.up.railway.app'
 ]
 
 
