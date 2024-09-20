@@ -28,6 +28,7 @@ SECRET_KEY = "django-insecure-vak*mz%99+#882*g*87x8$%!r=trnnqd)zh2)i$w51ra4cd&eg
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'api.chumcheck.jethdev.tech,
     'chumcheck-production.up.railway.app'
 ]
 
