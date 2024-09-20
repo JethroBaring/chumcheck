@@ -11,6 +11,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Set environment variable
+        run: echo "PUBLIC_API_URL=https://chumcheck-production.up.railway.app" >> $GITHUB_ENV
+
       - name: Checkout code
         uses: actions/checkout@v3
 
