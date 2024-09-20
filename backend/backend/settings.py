@@ -94,7 +94,7 @@ DATABASES = {
         "NAME": "chumcheck",
         "USER": "postgres",
         "PASSWORD": "NHJjTXMJcIJsWcFb",
-        "HOST": "chumcheck-database-40194f",
+        "HOST": "51.195.116.88",
         "PORT": "5432",
     }
 }
