@@ -2,16 +2,29 @@ name: Test Project
 
 on:
   push:
-    branches: ['master']
-    paths: ['frontend/**']
+    branches: 
+      - master
+    paths: 
+      - 'frontend/**'  # Only trigger on changes in the frontend directory
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    container:
-      image: node:18
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
-      - run: npm run build
+          node-version: 18  # Use the Node.js version you need
+
+      - name: Install dependencies
+        run: |
+          cd frontend  # Navigate to the frontend directory
+          npm install
+
+      - name: Build frontend
+        run: |
+          cd frontend  # Navigate to the frontend directory
+          npm run build
