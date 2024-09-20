@@ -9,7 +9,6 @@
 
 <div class="bg-grid">
 	<div class="mx-auto w-full">
-		{PUBLIC_API_URL}
 		<Header />
 		<Hero />
 		<HowItWork />
