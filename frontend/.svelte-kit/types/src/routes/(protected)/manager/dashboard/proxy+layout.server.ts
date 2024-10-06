@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PUBLIC_API_URL } from '$env/static/public'; 
 
 export const load = async ({ locals, url, fetch, cookies }: Parameters<LayoutServerLoad>[0]) => {
 	const current = url.pathname.split('/').pop();

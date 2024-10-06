@@ -3,7 +3,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import { z } from 'zod';
 import { dev } from '$app/environment';
 import type { PageServerLoad } from './$types';
-import { message, superValidate } from 'sveltekit-superforms';
+import { message, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { fail, redirect } from '@sveltejs/kit';
 
@@ -29,7 +29,7 @@ export const actions = {
 			});
 		}
 
-		const { email, password } = form.data
+		const { email, password } = form.data;
 
 		try {
 			const response = await fetch(`${PUBLIC_API_URL}/tokens/acquire/`, {
@@ -45,31 +45,30 @@ export const actions = {
 
 			const data = await response.json();
 
-		if (response.ok) {
-			cookies.set('Refresh', data.refresh, {
-				path: '/',
-				httpOnly: true,
-				sameSite: 'strict',
-				maxAge: 60 * 60 * 24,
-				secure: !dev
-			});
+			if (response.ok) {
+				cookies.set('Refresh', data.refresh, {
+					path: '/',
+					httpOnly: true,
+					sameSite: 'strict',
+					maxAge: 60 * 60 * 24,
+					secure: !dev
+				});
 
-			cookies.set('Access', data.access, {
-				path: '/',
-				httpOnly: true,
-				sameSite: 'strict',
-				maxAge: 5 * 60,
-				secure: !dev
-			});
-			throw redirect(302, '/');
-		}
-
-		return message(form, { text: data.message });
+				cookies.set('Access', data.access, {
+					path: '/',
+					httpOnly: true,
+					sameSite: 'strict',
+					maxAge: 5 * 60,
+					secure: !dev
+				});
+				throw redirect(302, '/');
+			} else {
+				return setError(form, data.message);
+			}
+			return message(form, { text: data.message });
 		} catch (error) {
-			console.log(error)
+			console.log(error);
 		}
-
-		
 	}
 };
 ;null as any as PageServerLoad;

@@ -1,3 +1,5 @@
+import { getContext, setContext } from "svelte";
+
 export const useManagerRatedStore = (applicantsData: unknown[]) => {
 	const applicants = $state(applicantsData);
 	let showApplicantCapsuleProposal = $state(false);
@@ -41,3 +43,13 @@ export const useManagerRatedStore = (applicantsData: unknown[]) => {
     saveApplicantRating
   }
 };
+
+const RATED_KEY = Symbol('rated');
+
+export function setManagerRatedStoreState(applicantsData: unknown[]) {
+  return setContext(RATED_KEY, useManagerRatedStore(applicantsData))
+}
+
+export function getManagerRatedStoreState() {
+  return getContext(RATED_KEY)
+}

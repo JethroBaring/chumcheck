@@ -1,3 +1,5 @@
+import { getContext, setContext } from "svelte";
+
 export const useManagerPendingStore = (applicantsData: unknown[]) => {
 	const applicants = $state(applicantsData);
 	let showApplicantCapsuleProposal = $state(false);
@@ -41,3 +43,13 @@ export const useManagerPendingStore = (applicantsData: unknown[]) => {
     saveApplicantRating
   }
 };
+
+const PENDING_KEY = Symbol('pending');
+
+export function setManagerPendingStoreState(applicantsData: unknown[]) {
+  return setContext(PENDING_KEY, useManagerPendingStore(applicantsData))
+}
+
+export function getManagerPendingStoreState() {
+  return getContext(PENDING_KEY)
+}
