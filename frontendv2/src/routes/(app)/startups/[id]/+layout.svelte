@@ -19,51 +19,10 @@
 			</Breadcrumb.Item>
 		</Breadcrumb.List>
 	</Breadcrumb.Root>
-	<div class="flex items-center justify-between">
+	<!-- <div class="flex items-center justify-between">
 		<div>
 			<h2 class="text-3xl font-bold">Alliance Tech</h2>
 		</div>
-	</div>
-	<div class="flex justify-between">
-    <Tabs.Root value={data.pathname} class="">
-      <Tabs.List class="grid grid-cols-5">
-        <a
-          href={`/startups/${data.id}/readiness_level`}
-          class={cn(
-            'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-[6px] text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-            data.pathname === 'readiness_level' && 'bg-background text-foreground shadow'
-          )}>Readiness Level</a
-        >
-        <a
-          href={`/startups/${data.id}/rna`}
-          class={cn(
-            'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-[6px] text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-            data.pathname === 'rna' && 'bg-background text-foreground shadow'
-          )}>RNA</a
-        >
-        <a
-          href={`/startups/${data.id}/rns`}
-          class={cn(
-            'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-[6px] text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-            data.pathname === 'rns' && 'bg-background text-foreground shadow'
-          )}>RNS</a
-        >
-        <a
-          href={`/startups/${data.id}/initiatives`}
-          class={cn(
-            'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-[6px] text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-            data.pathname === 'initiatives' && 'bg-background text-foreground shadow'
-          )}>Initiatives</a
-        >
-        <a
-          href={`/startups/${data.id}/roadblocks`}
-          class={cn(
-            'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-[6px] text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-            data.pathname === 'roadblocks' && 'bg-background text-foreground shadow'
-          )}>Roadblocks</a
-        >
-      </Tabs.List>
-    </Tabs.Root>
-  </div>
+	</div> -->
   {@render children()}
 </div>

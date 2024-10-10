@@ -6,7 +6,7 @@ export const access = {
 				subModule: []
 			},
 			{
-				module: 'Settings',
+				module: 'Account Settings',
 				subModule: ['Profile', 'Appearance', 'ChangePassword']
 			}
 		],
@@ -16,7 +16,7 @@ export const access = {
 				subModule: []
 			},
 			{
-				module: 'Settings',
+				module: 'Account Settings',
 				subModule: ['Profile', 'Appearance', 'Change Password']
 			}
 		],
@@ -30,7 +30,7 @@ export const access = {
 				subModule: ['Profile', 'Appearance', 'Change Password']
 			},
 			{
-				module: 'Settings',
+				module: 'Account Settings',
 				subModule: ['Profile', 'Appearance', 'Change Password']
 			}
 		]

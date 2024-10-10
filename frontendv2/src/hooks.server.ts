@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	let access = event.cookies.get('Access');
+	console.log(access)
 	if (!access) {
 		try {
 			const refresh = event.cookies.get('Refresh');
@@ -22,7 +23,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 					refresh: refresh
 				})
 			});
-1
+
 			if (response.ok) {
 				const data = await response.json();
 				event.cookies.set('Access', data?.access, {
@@ -58,7 +59,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				const data = await response.json();
 				event.locals.user = {
 					id: Number.parseInt(decoded.user_id!),
-					type: data?.user_type,
+					role: data?.user_type,
 					email: data?.email,
 					firstName: data?.first_name,
 					lastName: data?.last_name

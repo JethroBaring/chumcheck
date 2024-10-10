@@ -15,49 +15,14 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { cn } from '$lib/utils.js';
 	import { Input } from '$lib/components/ui/input/index.js';
+	import type { Applicant } from '$lib/types';
   import * as Tabs from "$lib/components/ui/tabs";
 
-	type Payment = {
-		id: string;
-		amount: number;
-		status: 'Pending' | 'Processing' | 'Success' | 'Failed';
-		email: string;
-	};
-
-	const data: Payment[] = [
-		{
-			id: 'm5gr84i9',
-			amount: 316,
-			status: 'Success',
-			email: 'ken99@yahoo.com'
-		},
-		{
-			id: '3u1reuv4',
-			amount: 242,
-			status: 'Success',
-			email: 'Abe45@gmail.com'
-		},
-		{
-			id: 'derv1ws0',
-			amount: 837,
-			status: 'Processing',
-			email: 'Monserrat44@gmail.com'
-		},
-		{
-			id: '5kma53ae',
-			amount: 874,
-			status: 'Success',
-			email: 'Silas22@gmail.com'
-		},
-		{
-			id: 'bhqecj4p',
-			amount: 721,
-			status: 'Failed',
-			email: 'carmella@hotmail.com'
-		}
-	];
-
-	const table = createTable(readable(data), {
+	export let data
+	let currentTab = 'pending'
+	$: status = currentTab === 'pending' ? 1 : currentTab === 'rated' ? 2 : 0
+	$: currentData = data ? data.applicants.filter((d) => d.qualification_status === status) : []
+	const table = createTable(readable(data ? data.applicants.filter((d) => d.qualification_status === 2) : []), {
 		sort: addSortBy({ disableMultiSort: true }),
 		page: addPagination(),
 		filter: addTableFilter({
@@ -69,38 +34,18 @@
 
 	const columns = table.createColumns([
 		table.column({
-			header: (_, { pluginStates }) => {
-				const { allPageRowsSelected } = pluginStates.select;
-				return createRender(DataTableCheckbox, {
-					checked: allPageRowsSelected
-				});
-			},
+			header: '',
 			accessor: 'id',
-			cell: ({ row }, { pluginStates }) => {
-				const { getRowState } = pluginStates.select;
-				const { isSelected } = getRowState(row);
-
-				return createRender(DataTableCheckbox, {
-					checked: isSelected
-				});
-			},
-			plugins: {
-				sort: {
-					disable: true
-				},
-				filter: {
-					exclude: true
-				}
-			}
-		}),
-		table.column({
-			header: 'Status',
-			accessor: 'status',
 			plugins: { sort: { disable: true }, filter: { exclude: true } }
 		}),
 		table.column({
-			header: 'Email',
-			accessor: 'email',
+			header: 'Startup',
+			accessor: 'name',
+			plugins: { sort: { disable: true }, filter: { exclude: true } }
+		}),
+		table.column({
+			header: 'Group',
+			accessor: 'group_name',
 			cell: ({ value }) => value.toLowerCase(),
 			plugins: {
 				filter: {
@@ -111,36 +56,22 @@
 			}
 		}),
 		table.column({
-			header: 'Amount',
-			accessor: 'amount',
-			cell: ({ value }) => {
-				const formatted = new Intl.NumberFormat('en-US', {
-					style: 'currency',
-					currency: 'USD'
-				}).format(value);
-				return formatted;
-			},
-			plugins: {
-				sort: {
-					disable: true
-				},
-				filter: {
-					exclude: true
-				}
-			}
+			header: 'Leader',
+			accessor: 'user',
+			plugins: { sort: { disable: true }, filter: { exclude: true } }
 		}),
-		table.column({
-			header: '',
-			accessor: ({ id }) => id,
-			cell: (item) => {
-				return createRender(Actions, { id: item.value });
-			},
-			plugins: {
-				sort: {
-					disable: true
-				}
-			}
-		})
+		// table.column({
+		// 	header: '',
+		// 	accessor: ({ id }) => id,
+		// 	cell: (item) => {
+		// 		return createRender(Actions, { id: item.value });
+		// 	},
+		// 	plugins: {
+		// 		sort: {
+		// 			disable: true
+		// 		}
+		// 	}
+		// })
 	]);
 
 	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, flatColumns, pluginStates, rows } =
@@ -160,36 +91,25 @@
 	const { filterValue } = pluginStates.filter;
 
 	const { selectedDataIds } = pluginStates.select;
-
-	const hideableCols = ['status', 'email', 'amount'];
+	
 </script>
-<Tabs.Root value="rl" class="w-[400px]">
-  <Tabs.List class="grid grid-cols-2">
-    <Tabs.Trigger value="rl">Applications</Tabs.Trigger>
-    <Tabs.Trigger value="rna">Statistics</Tabs.Trigger>
-  </Tabs.List>
-  <Tabs.Content value="account">
-    Make changes to your account here.
-  </Tabs.Content>
-  <Tabs.Content value="password">Change your password here.</Tabs.Content>
-</Tabs.Root>
+
 <div class="w-full">
 	<div class="flex items-center py-4">
-		<Input class="max-w-sm" placeholder="Filter emails..." type="text" bind:value={$filterValue} />
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger asChild let:builder>
-				<Button variant="outline" class="ml-auto" builders={[builder]}>Columns</Button>
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content>
-				{#each flatColumns as col}
-					{#if hideableCols.includes(col.id)}
-						<DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
-							{col.header}
-						</DropdownMenu.CheckboxItem>
-					{/if}
-				{/each}
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+		<div class="flex justify-between rounded-lg bg-background">
+			<Tabs.Root value={currentTab}>
+				<Tabs.List class="border bg-flutter-gray/20">
+					<Tabs.Trigger value="pending" on:click={() => currentTab = 'pending'}>Pending</Tabs.Trigger>
+					<Tabs.Trigger value="rated" on:click={() => currentTab = 'rated'}>Rated</Tabs.Trigger>
+					<Tabs.Trigger value="qualified" on:click={() => currentTab = 'qualified'}>Qualified</Tabs.Trigger>
+				</Tabs.List>
+				<!-- <Tabs.Content value="account">
+					Make changes to your account here.
+				</Tabs.Content>
+				<Tabs.Content value="password">Change your password here.</Tabs.Content> -->
+			</Tabs.Root>
+		</div>
+		<Input class="ml-auto max-w-sm" placeholder="Search..." type="text" bind:value={$filterValue} />
 	</div>
 	<div class="rounded-lg border">
 		<Table.Root {...$tableAttrs}>

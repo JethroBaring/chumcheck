@@ -17,12 +17,12 @@
 		<h2 class="text-3xl font-bold">Startups</h2>
 		<p class="text-muted-foreground">Manage your startups</p>
 	</div>
-	<div>
-		<Button class="text-white flex gap-2 items-center justify-center" onclick={toggleApplicationForm}><RocketIcon class="h-5 w-5"/> Apply</Button>
+	<div class="flex gap-5">
+		<Button class="h-9 rounded-lg flex gap-2 items-center justify-center" size="sm" onclick={toggleApplicationForm}><RocketIcon class="h-4 w-4"/> Apply</Button>
 	</div>
 </div>
 
-<div class="grid grid-cols-3 gap-5 mt-5">
+<div class="grid grid-cols-3 gap-3 mt-3">
 	{#each [1, 2, 3] as item}
 		<a href="/startups/12312/readiness_level">
       <Card.Root class="h-40 hover:bg-secondary cursor-pointer">
