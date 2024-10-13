@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_API_URL } from '$env/static/public';
 	export let currentActive: number;
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
@@ -27,7 +28,7 @@
 		const formData = new FormData();
 		formData.append('capsule_proposal', files[0]);
 
-		const response = await fetch('http://127.0.0.1:8000/capsule-proposal-infos/extract-info/', {
+		const response = await fetch(`${PUBLIC_API_URL}/capsule-proposal-infos/extract-info/`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzA3MTA2LCJpYXQiOjE3MTcwNDc5MDYsImp0aSI6ImI0NmQ1NTBiMzk2NDQyMDY5N2VlY2U3ZGIyNTc1YjM1IiwidXNlcl9pZCI6NSwidXNlcl90eXBlIjoiUyJ9.MAurYWvb8pQ_KV6UBajOfj_Bq8-huQjgCohxqo2MJCI`

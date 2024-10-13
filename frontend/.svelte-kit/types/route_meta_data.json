@@ -12,8 +12,6 @@
 		"src/routes/(auth)/logout/+page.server.ts"
 	],
 	"/(protected)/manager": [
-		"src/routes/(protected)/manager/+page.server.ts",
-		"src/routes/(protected)/manager/+layout.server.ts",
 		"src/routes/(protected)/manager/+layout.server.ts"
 	],
 	"/(protected)/manager/dashboard": [

@@ -1,35 +1,12 @@
 <script lang="ts">
-	import File from 'lucide-svelte/icons/file';
-	import Home from 'lucide-svelte/icons/home';
-	import LineChart from 'lucide-svelte/icons/line-chart';
-	import ListFilter from 'lucide-svelte/icons/list-filter';
-	import Ellipsis from 'lucide-svelte/icons/ellipsis';
-	import Package from 'lucide-svelte/icons/package';
-	import Package2 from 'lucide-svelte/icons/package-2';
-	import CirclePlus from 'lucide-svelte/icons/circle-plus';
-	import Search from 'lucide-svelte/icons/search';
-	import ShoppingCart from 'lucide-svelte/icons/shopping-cart';
-	import { toggleMode } from 'mode-watcher';
-	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import * as Sheet from '$lib/components/ui/sheet/index.js';
-	import * as Table from '$lib/components/ui/table/index.js';
-	import * as Tabs from '$lib/components/ui/tabs/index.js';
-	import Users from 'lucide-svelte/icons/users';
-	import Sun from 'svelte-radix/Sun.svelte';
-	import Moon from 'svelte-radix/Moon.svelte';
-	import Menu from 'lucide-svelte/icons/menu';
-	import ChevronLeft from 'lucide-svelte/icons/chevron-left';
-	import ChevronRight from 'lucide-svelte/icons/chevron-right';
-	import * as Pagination from '$lib/components/ui/pagination/index.js';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import Spinner from 'lucide-svelte/icons/loader-circle';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
-	let access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
 	let readiness = [
 		'Technology',
 		'Market',
@@ -40,8 +17,8 @@
 	];
 
 	export let data;
-	console.log("rna ni")
-	console.log(data.rna)
+	let access = data.access
+	console.log(data.rna);
 	let rna = data.rna;
 
 	let generating = false;
@@ -49,7 +26,7 @@
 	async function generateRNA() {
 		generated = [];
 		generating = true;
-		const response = await fetch(`http://127.0.0.1:8000/startups/${data.startupId}/generate-rna`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${data.startupId}/generate-rna`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${access}`
@@ -59,7 +36,6 @@
 		const x = await response.json();
 
 		if (response.ok) {
-			console.log(x)
 			generated.push(x.trl);
 			generated.push(x.mrl);
 			generated.push(x.arl);
@@ -70,8 +46,49 @@
 		}
 	}
 
+	let open = false;
+	let openUnsave = false;
+	function toggleOpen() {
+		open = !open;
+	}
+
+	function toggleOpenUnsave() {
+		openUnsave = !openUnsave;
+	}
+
+	let currItemUnsave = 0;
+	let currItem = rna[0];
+	let curType = 0;
+	function changeCurr(index: number, type: number) {
+		currItem = rna.filter((d) => d.readiness_level_id === index)[0];
+		curType = type;
+	}
+
+	function changeCurrUnsave(index: number) {
+		currItemUnsave = index;
+	}
+
+	async function updateRNA(id: number) {
+		const response = await fetch(`${PUBLIC_API_URL}/startup-rna/${id}/`, {
+			method: 'PATCH',
+			headers: {
+				'Content-type': 'application/json',
+				Authorization: `Bearer ${access}`
+			},
+			body: JSON.stringify({
+				rna: currItem.rna
+			})
+		});
+
+		if (response.ok) {
+			window.location.href = `/mentor/startup/${data.startupId}/rna`;
+		}
+	}
 </script>
 
+<svelte:head>
+	<title>Readiness and Needs Assessment</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Readiness and Needs Assessment</h1>
@@ -82,73 +99,56 @@
 </div>
 <div class="flex flex-1 flex-col">
 	{#if rna.length > 0}
-		<Card.Root
-			data-x-chunk-name="dashboard-06-chunk-1"
-			data-x-chunk-description="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions."
-		>
-			<Card.Content class="pt-[24px] ">
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>Readiness Level</Table.Head>
-							<Table.Head>Current Level</Table.Head>
-							<Table.Head>Details</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each readiness as r, index}
-							<Table.Row class="h-[80px]">
-								<Table.Cell class="font-medium">{r}</Table.Cell>
-								<Table.Cell>{data.readiness[index].readiness_level}</Table.Cell>
-								<Table.Cell>
-									<Textarea
-										readonly
-										value={rna.filter(
-											(d) => d.readiness_level_id === data.readiness[index].readiness_level_id
-										)[0].rna}
-									/>
-								</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
-			</Card.Content>
-		</Card.Root>
-	{:else if generated.length > 0}
-		<Card.Root
-			data-x-chunk-name="dashboard-06-chunk-1"
-			data-x-chunk-description="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions."
-		>
-			<Card.Content class="pt-[24px] ">
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>Readiness Level</Table.Head>
-							<Table.Head>Current Level</Table.Head>
-							<Table.Head>Details</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each readiness as r, index}
-							<Table.Row class="h-[80px]">
-								<Table.Cell class="font-medium">{r}</Table.Cell>
-								<Table.Cell>{data.readiness[index].readiness_level}</Table.Cell>
-								<Table.Cell>
-									<Textarea bind:value={generated[index]} />
-								</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
-			</Card.Content>
-		</Card.Root>
-		<form method="post" class="flex flex-col gap-3">
+		<div class="flex flex-col items-center gap-6">
 			{#each readiness as r, index}
-				<input type="hidden" name={`${r}`} value={data.readiness[index].readiness_level_id} />
-				<input type="hidden" name={`${r}rna`} value={generated[index]} />
+				<Card.Root
+					class="flex w-1/2 cursor-pointer flex-col gap-2 p-5"
+					on:click={() => {
+						toggleOpen();
+						changeCurr(data.readiness[index].readiness_level_id, index);
+					}}
+				>
+					<div>
+						<span class="text-base font-semibold">{r} Level</span>
+						<span class="rounded-lg bg-muted px-2 py-1">7</span>
+					</div>
+					<div>
+						{rna
+							.filter((d) => d.readiness_level_id === data.readiness[index].readiness_level_id)[0]
+							.rna.substring(0, 100) + '...'}
+					</div>
+				</Card.Root>
 			{/each}
-			<div class="flex justify-end"><Button type="submit">Save</Button></div>
-		</form>
+		</div>
+	{:else if generated.length > 0}
+		<div class="flex flex-col items-center gap-6">
+			{#each readiness as r, index}
+				<Card.Root
+					class="flex w-1/2 cursor-pointer flex-col gap-2 p-5 "
+					on:click={() => {
+						toggleOpenUnsave();
+						changeCurrUnsave(index);
+					}}
+				>
+					<div>
+						<span class="text-base font-semibold">{r} Level</span>
+						<span class="rounded-lg bg-muted px-2 py-1"
+							>{data.readiness[index].readiness_level}</span
+						>
+					</div>
+					<div>
+						{generated[index].substring(0, 100) + '...'}
+					</div>
+				</Card.Root>
+			{/each}
+			<form method="post" class="flex flex-col gap-3">
+				{#each readiness as r, index}
+					<input type="hidden" name={`${r}`} value={data.readiness[index].readiness_level_id} />
+					<input type="hidden" name={`${r}rna`} value={generated[index]} />
+				{/each}
+				<div class="flex justify-end"><Button type="submit">Save</Button></div>
+			</form>
+		</div>
 	{:else if generating}
 		<div class="flex flex-1 items-center justify-center">
 			<div class="flex flex-col items-center gap-3">
@@ -162,7 +162,38 @@
 		</div>
 	{:else}
 		<div class="flex flex-1 items-center justify-center">
-			<h1>Finish the rubrics first to be able to generate Readiness and Needs Assessment for startup</h1>
+			<h1>
+				Finish the rubrics first to be able to generate Readiness and Needs Assessment for startup
+			</h1>
 		</div>
 	{/if}
 </div>
+
+<Dialog.Root {open} onOpenChange={toggleOpen}>
+	<Dialog.Content class="h-[400px] max-w-[800px]">
+		<div>
+			<span class="text-base font-semibold">{readiness[curType]} Level</span>
+			<span class="rounded-lg bg-muted px-2 py-1">7</span>
+		</div>
+		<div class="grid h-[250px] w-full gap-1.5">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.rna} rows={20} class="text-lg" />
+		</div>
+		<div class="flex justify-end">
+			<Button on:click={() => updateRNA(currItem.id)}>Save</Button>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root open={openUnsave} onOpenChange={toggleOpenUnsave}>
+	<Dialog.Content class="h-[400px] max-w-[800px]">
+		<div>
+			<span class="text-base font-semibold">{readiness[curType]} Level</span>
+			<span class="rounded-lg bg-muted px-2 py-1">7</span>
+		</div>
+		<div class="grid h-[250px] w-full gap-1.5">
+			<Label>Description</Label>
+			<Textarea bind:value={generated[currItemUnsave]} rows={20} class="text-lg" />
+		</div>
+	</Dialog.Content>
+</Dialog.Root>

@@ -5,6 +5,8 @@
 	import { onMount } from 'svelte';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import Rubrics from '$lib/components/mentor/Rubrics.svelte';
+	import ReadOnlyRubics from '$lib/components/mentor/ReadOnlyRubrics.svelte'
+	import ReadOnlyRubrics from '$lib/components/mentor/ReadOnlyRubrics.svelte';
 	export let data;
 
 	let trl: number = 0,
@@ -75,7 +77,9 @@
 		}
 	});
 </script>
-
+<svelte:head>
+	<title>Readiness Level</title>
+</svelte:head>
 <div class="flex items-center">
 	<h1 class="text-lg font-semibold md:text-2xl">Readiness Level</h1>
 </div>
@@ -90,27 +94,77 @@
 					</Tabs.List>
 				</div>
 				<Tabs.Content value="chart" class="h-[700px]">
-					<canvas id="chart"/>
+					<canvas id="chart" />
 				</Tabs.Content>
-				<Tabs.Content value="detailed" class="bg-red-500">
-					<div></div>
+				<Tabs.Content value="detailed">
+						<Tabs.Root value="technology" class="h-full">
+							<div class="flex items-center">
+								<Tabs.List>
+									<Tabs.Trigger value="technology">Technology</Tabs.Trigger>
+									<Tabs.Trigger value="market">Market</Tabs.Trigger>
+									<Tabs.Trigger value="organizational">Organizational</Tabs.Trigger>
+									<Tabs.Trigger value="acceptance">Acceptance</Tabs.Trigger>
+									<Tabs.Trigger value="regulatory">Regulatory</Tabs.Trigger>
+									<Tabs.Trigger value="investment">Investment</Tabs.Trigger>
+								</Tabs.List>
+							</div>
+							<div class="overflow-scroll h-full">
+									<ReadOnlyRubrics
+										questions={data.questions.filter((q) => q.readiness_type === 'Technology')}
+										scores={data.scores.filter((score) => score.readiness_type === 'Technology')}
+										readiness_level={data.readiness.filter((r) => r.readiness_type==="Technology")[0]}
+										type="technology"
+									/>
+									<ReadOnlyRubrics
+										questions={data.questions.filter((q) => q.readiness_type === 'Market')}
+										scores={data.scores.filter((score) => score.readiness_type === 'Market')}
+										readiness_level={data.readiness.filter((r) => r.readiness_type==="Market")[0]}
+										type="market"
+									/>
+									<ReadOnlyRubrics
+										questions={data.questions.filter((q) => q.readiness_type === 'Acceptance')}
+										scores={data.scores.filter((score) => score.readiness_type === 'Acceptance')}
+										readiness_level={data.readiness.filter((r) => r.readiness_type==="Acceptance")[0]}
+										type="acceptance"
+									/>
+									<ReadOnlyRubrics
+										questions={data.questions.filter((q) => q.readiness_type === 'Organizational')}
+										scores={data.scores.filter((score) => score.readiness_type === 'Organizational')}
+										readiness_level={data.readiness.filter((r) => r.readiness_type==="Organizational")[0]}
+										type="organizational"
+									/>
+									<ReadOnlyRubrics
+										questions={data.questions.filter((q) => q.readiness_type === 'Regulatory')}
+										scores={data.scores.filter((score) => score.readiness_type === 'Regulatory')}
+										readiness_level={data.readiness.filter((r) => r.readiness_type==="Regulatory")[0]}
+										type="regulatory"
+									/>
+									<ReadOnlyRubrics
+										questions={data.questions.filter((q) => q.readiness_type === 'Investment')}
+										scores={data.scores.filter((score) => score.readiness_type === 'Investment')}
+										readiness_level={data.readiness.filter((r) => r.readiness_type==="Investment")[0]}
+										type="investment"
+									/>
+							</div>
+						</Tabs.Root>
 				</Tabs.Content>
 			</Tabs.Root>
 		</div>
 	{:else}
-		<div class="h-full flex-1">
-			<Tabs.Root value="technology" class="">
-				<div class="flex items-center">
-					<Tabs.List>
-						<Tabs.Trigger value="technology">Technology</Tabs.Trigger>
-						<Tabs.Trigger value="market">Market</Tabs.Trigger>
-						<Tabs.Trigger value="organizational">Organizational</Tabs.Trigger>
-						<Tabs.Trigger value="acceptance">Acceptance</Tabs.Trigger>
-						<Tabs.Trigger value="regulatory">Regulatory</Tabs.Trigger>
-						<Tabs.Trigger value="investment">Investment</Tabs.Trigger>
-					</Tabs.List>
-				</div>
-				<form method="post">
+	<div class="h-full flex-1">
+		<Tabs.Root value="technology" class="h-full">
+			<div class="flex items-center">
+				<Tabs.List>
+					<Tabs.Trigger value="technology">Technology</Tabs.Trigger>
+					<Tabs.Trigger value="market">Market</Tabs.Trigger>
+					<Tabs.Trigger value="organizational">Organizational</Tabs.Trigger>
+					<Tabs.Trigger value="acceptance">Acceptance</Tabs.Trigger>
+					<Tabs.Trigger value="regulatory">Regulatory</Tabs.Trigger>
+					<Tabs.Trigger value="investment">Investment</Tabs.Trigger>
+				</Tabs.List>
+			</div>
+			<div class="overflow-scroll h-full">
+				<form method="post" class="h-0">
 					<Rubrics
 						questions={data.questions.filter((q) => q.readiness_type === 'Technology')}
 						type="technology"
@@ -135,9 +189,10 @@
 						questions={data.questions.filter((q) => q.readiness_type === 'Investment')}
 						type="investment"
 					/>
-					<button>Submit</button>
+					<Button type="submit" class="mt-3">Submit</Button>
 				</form>
-			</Tabs.Root>
-		</div>
+			</div>
+		</Tabs.Root>
+	</div>
 	{/if}
 </div>

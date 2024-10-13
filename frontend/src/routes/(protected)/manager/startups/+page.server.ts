@@ -1,7 +1,8 @@
 import type { PageServerLoad } from './$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ cookies }) => {
-	const response = await fetch('http://127.0.0.1:8000/startups/?qualification_status=3', {
+	const response = await fetch(`${PUBLIC_API_URL}/startups/`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${cookies.get('Access')}`

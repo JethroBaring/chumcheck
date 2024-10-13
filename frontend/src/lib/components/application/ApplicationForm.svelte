@@ -1,11 +1,11 @@
 <script lang="ts" context="module">
 	export async function getData() {
-		const uratQuestions = await fetch('http://127.0.0.1:8000/readinesslevel/urat-questions/');
+		const uratQuestions = await fetch(`${PUBLIC_API_URL}/readinesslevel/urat-questions/`);
 
 		const data = await uratQuestions.json();
 		if (uratQuestions.ok) {
 			const calculatorQuestions = await fetch(
-				'http://127.0.0.1:8000/readinesslevel/calculator-categories/'
+				`${PUBLIC_API_URL}/readinesslevel/calculator-categories/`
 			);
 
 			const data2 = await calculatorQuestions.json();
@@ -43,6 +43,7 @@
 	import Organizational from './Organizational.svelte';
 	import TechnologyCalculator from './Calculator.svelte';
 	import { enhance } from '$app/forms';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	let data: any;
 

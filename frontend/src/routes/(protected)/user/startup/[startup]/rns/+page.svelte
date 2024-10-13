@@ -10,16 +10,17 @@
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import Target from 'lucide-svelte/icons/target';
 	import { goto } from '$app/navigation';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	const flipDurationMs = 300;
-	let access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
 
 	function toggleOpen() {
 		open = !open;
 	}
 
 	export let data;
-
+	let access = data.access
 	let tasks = data.tasks;
 	let generating = false;
 	let generated: any = [];
@@ -27,7 +28,7 @@
 	async function generateRNS() {
 		generated = [];
 		generating = true;
-		const response = await fetch('http://127.0.0.1:8000/tasks/tasks/create-initial-tasks/', {
+		const response = await fetch(`${PUBLIC_API_URL}/tasks/tasks/create-initial-tasks/`, {
 			method: 'POST',
 			headers: {
 				'Content-type': 'application/json',
@@ -41,7 +42,7 @@
 		});
 
 		if (response.ok) {
-			const another = await fetch('http://127.0.0.1:8000/tasks/tasks/create-initial-tasks/', {
+			const another = await fetch(`${PUBLIC_API_URL}/tasks/tasks/create-initial-tasks/`, {
 				method: 'POST',
 				headers: {
 					'Content-type': 'application/json',
@@ -64,7 +65,7 @@
 		try {
 			await Promise.all(
 				tasks.map(async (task: any, i: number) => {
-					await fetch(`http://127.0.0.1:8000/tasks/tasks/${task.id}/`, {
+					await fetch(`${PUBLIC_API_URL}/tasks/tasks/${task.id}/`, {
 						method: 'PATCH',
 						headers: {
 							'Content-type': 'application/json',
@@ -77,7 +78,7 @@
 					});
 				})
 			).then(async (values) => {
-				const response = await fetch('http://127.0.0.1:8000/tasks/tasks/?startup_id=7', {
+				const response = await fetch(`${PUBLIC_API_URL}/tasks/tasks/?startup_id=7`, {
 					method: 'get',
 					headers: {
 						'Content-type': 'application/json',
@@ -149,7 +150,7 @@
 		if (e.detail.info.trigger == 'droppedIntoZone') {
 			const task = e.detail.items.find((t) => t.id == e.detail.info.id);
 
-			const response = await fetch(`http://127.0.0.1:8000/tasks/tasks/${task.id}/`, {
+			const response = await fetch(`${PUBLIC_API_URL}/tasks/tasks/${task.id}/`, {
 				method: 'PATCH',
 				headers: {
 					'Content-type': 'application/json',
@@ -169,7 +170,9 @@
 		currItem = items[index].items[subIndex].subItems[i];
 	}
 </script>
-
+<svelte:head>
+	<title>Recommended Next Steps</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Recommended Next Steps</h1>
@@ -217,10 +220,10 @@
 												}}
 											>
 												<p>{item.description.substring(0, 80) + '...'}</p>
-												<Badge class="w-fit">Technology</Badge>
+												<Badge class="w-fit">{item.readiness_type_rl_type}</Badge>
 												<div class="flex items-center gap-1">
 													<Target class="h-4 w-4" />
-													<p class="text-sm">Target Level: {5}</p>
+													<p class="text-sm">Target Level: {item.target_level_level}</p>
 												</div>
 											</div>
 										{/each}
@@ -238,7 +241,7 @@
 		</div>
 	{/if}
 </div>
-
+<!-- 
 <Dialog.Root {open} onOpenChange={toggleOpen}>
 	<Dialog.Content>
 		<p class="text-lg">{currItem.description}</p>
@@ -246,6 +249,19 @@
 		<div class="flex items-center gap-1">
 			<Target class="h-4 w-4" />
 			<p class="text-sm">Target Level: {5}</p>
+		</div>
+	</Dialog.Content>
+</Dialog.Root> -->
+<Dialog.Root {open} onOpenChange={toggleOpen}>
+	<Dialog.Content class="h-[450px] max-w-[800px]">
+		<div class="grid w-full gap-1.5 h-[250px]">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.description} rows={20} class="text-lg" disabled/>
+		</div>
+		<Badge class="h-fit w-fit">Technology</Badge>
+		<div class="flex items-center gap-1">
+			<Target class="h-4 w-4" />
+			<p class="text-sm">Target Level: {currItem.target_level_level}</p>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

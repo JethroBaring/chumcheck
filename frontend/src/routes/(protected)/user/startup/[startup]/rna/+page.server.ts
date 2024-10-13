@@ -1,7 +1,8 @@
 import type { PageServerLoad } from './$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
-	const rna = await fetch(`http://127.0.0.1:8000/startup-rna/?startup_id=${params.startup}`, {
+	const rna = await fetch(`${PUBLIC_API_URL}/startup-rna/?startup_id=${params.startup}`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${cookies.get('Access')}`
@@ -12,7 +13,7 @@ export const load: PageServerLoad = async ({ params, cookies, fetch }) => {
 
 		if (rna.ok) {
 			const readiness = await fetch(
-				`http://127.0.0.1:8000/startup-readiness-levels/?startup_id=${params.startup}`,
+				`${PUBLIC_API_URL}/startup-readiness-levels/?startup_id=${params.startup}`,
 				{
 					method: 'get',
 					headers: {

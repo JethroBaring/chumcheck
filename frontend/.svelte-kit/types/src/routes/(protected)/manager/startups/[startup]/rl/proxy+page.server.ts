@@ -1,9 +1,10 @@
 // @ts-nocheck
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from '../rns/$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load = async ({ params, fetch, cookies }: Parameters<PageServerLoad>[0]) => {
-	const response = await fetch(`http://127.0.0.1:8000/startups/${params.startup}/`, {
+	const response = await fetch(`${PUBLIC_API_URL}/startups/${params.startup}/`, {
 		method: 'get',
 		headers: {
 			'Content-Type': 'application/json',
@@ -13,14 +14,14 @@ export const load = async ({ params, fetch, cookies }: Parameters<PageServerLoad
 
 	const data = await response.json();
 	if (response.ok) {
-		const rubrics = await fetch('http://127.0.0.1:8000/readinesslevel/readiness-levels/', {
+		const rubrics = await fetch(`${PUBLIC_API_URL}/readinesslevel/readiness-levels/`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${cookies.get('Access')}`
 			}
 		});
 
-		const rubrics2 = await fetch('http://127.0.0.1:8000/readinesslevel/readiness-levels/?page=2', {
+		const rubrics2 = await fetch(`${PUBLIC_API_URL}/readinesslevel/readiness-levels/?page=2`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${cookies.get('Access')}`
@@ -28,7 +29,7 @@ export const load = async ({ params, fetch, cookies }: Parameters<PageServerLoad
 		});
 
 		const haveScores = await fetch(
-			`http://127.0.0.1:8000/readiness-level-criterion-answers/?page_size=324&startup_id=${params.startup}`,
+			`${PUBLIC_API_URL}/readiness-level-criterion-answers/?page_size=324&startup_id=${params.startup}`,
 			{
 				method: 'get',
 				headers: {
@@ -38,7 +39,7 @@ export const load = async ({ params, fetch, cookies }: Parameters<PageServerLoad
 		);
 
 		const readiness_level = await fetch(
-			`http://127.0.0.1:8000/startup-readiness-levels/?startup_id=${params.startup}`,
+			`${PUBLIC_API_URL}/startup-readiness-levels/?startup_id=${params.startup}`,
 			{
 				method: 'get',
 				headers: {
@@ -103,7 +104,7 @@ export const actions = {
 		});
 		try {
 			const rubrics_scores = await fetch(
-				'http://127.0.0.1:8000/readiness-level-criterion-answers/bulk-create/',
+				`${PUBLIC_API_URL}/readiness-level-criterion-answers/bulk-create/`,
 				{
 					method: 'post',
 					headers: {
@@ -117,7 +118,7 @@ export const actions = {
 			);
 
 			if (rubrics_scores.ok) {
-				const levels = await fetch('http://127.0.0.1:8000/startup-readiness-levels/bulk-create/', {
+				const levels = await fetch(`${PUBLIC_API_URL}/startup-readiness-levels/bulk-create/`, {
 					method: 'post',
 					headers: {
 						'Content-type': 'application/json',
