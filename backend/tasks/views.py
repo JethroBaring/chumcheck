@@ -131,8 +131,8 @@ class TaskViewSet(
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-tasks")
-    def initial_tasks(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-tasks")
+    def generate_tasks(self, request):
         """Generate Tasks Using AI
 
         generate tasks based on capsule proposal and initial readiness level.
@@ -332,8 +332,8 @@ class InitiativeViewSet(
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-initiatives")
-    def initial_initiatives(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-initiatives")
+    def generate_initiatives(self, request):
         """Generate Initatives Using AI
 
         generate initatives based on capsule proposal,
@@ -512,8 +512,8 @@ class RoadblockViewSet(
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-roadblocks")
-    def initial_roadblocks(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-roadblocks")
+    def generate_roadblocks(self, request):
         """Generate Roadblocks Using AI
 
         generate roadblocks based on capsule proposal,
