@@ -4,7 +4,7 @@ from tasks import models as tasks_models
 from readinesslevel import models as readinesselvels_models
 
 
-class CreateInitialTaskRequestSerializer(serializers.Serializer):
+class GenerateTaskRequestSerializer(serializers.Serializer):
     startup_id = serializers.PrimaryKeyRelatedField(
         queryset=startups_models.Startup.objects, source="startup"
     )
@@ -18,14 +18,14 @@ class CreateInitialTaskRequestSerializer(serializers.Serializer):
     no_of_tasks_to_create = serializers.IntegerField()
 
 
-class CreateInitialInitiativeRequestSerializer(serializers.Serializer):
+class GenerateInitiativeRequestSerializer(serializers.Serializer):
     task_id = serializers.PrimaryKeyRelatedField(
         queryset=tasks_models.Task.objects, source="task"
     )
     no_of_initiatives_to_create = serializers.IntegerField()
 
 
-class CreateInitialRoadblockRequestSerializer(serializers.Serializer):
+class GenerateRoadblockRequestSerializer(serializers.Serializer):
     startup_id = serializers.PrimaryKeyRelatedField(
         queryset=startups_models.Startup.objects, source="startup"
     )
