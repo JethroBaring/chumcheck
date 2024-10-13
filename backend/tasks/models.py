@@ -48,6 +48,7 @@ class Task(BaseModel):
     startup = models.ForeignKey(
         startups_models.Startup, on_delete=models.CASCADE, related_name="tasks"
     )
+    is_ai_generated = models.BooleanField(default=False)
     task_type = models.IntegerField(choices=TaskType.choices)
     due_date = models.DateTimeField(default=None, null=True)
     # output = ??
@@ -77,6 +78,7 @@ class Initiative(BaseModel):
         choices=TaskStatus.choices, default=TaskStatus.FOR_REVIEW
     )
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="initiatives")
+    is_ai_generated = models.BooleanField(default=False)
 
     class Meta:
         db_table = "initiatives"
@@ -97,6 +99,7 @@ class Roadblock(BaseModel):
     startup = models.ForeignKey(
         startups_models.Startup, on_delete=models.CASCADE, related_name="roadblocks"
     )
+    is_ai_generated = models.BooleanField(default=False)
 
     class Meta:
         db_table = "roadblocks"

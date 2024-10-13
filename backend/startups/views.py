@@ -668,14 +668,6 @@ class ReadinessLevelCriterionAnswerViewSet(
         startups_serializers.base.ReadinessLevelCriterionAnswerBaseSerializer
     )
 
-    def get_permissions(self):
-        viewset_action = self.action
-
-        if viewset_action == "partial_updated":
-            return [startups_permissions.IsMentorPermission()]
-
-        return super().get_permissions()
-
     def get_queryset(self):
         queryset = super().get_queryset()
         request = self.request

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from startups import models as startups_models
 from tasks import models as tasks_models
+from readinesslevel import models as readinesselvels_models
 
 
 class CreateInitialTaskRequestSerializer(serializers.Serializer):
@@ -10,6 +11,9 @@ class CreateInitialTaskRequestSerializer(serializers.Serializer):
     term = serializers.ChoiceField(
         choices=tasks_models.Task.TaskType.choices,
         help_text="1 is for Short Term and 2 is for Long Term",
+    )
+    readiness_type = serializers.ChoiceField(
+        choices=readinesselvels_models.ReadinessType.RLType.choices
     )
     no_of_tasks_to_create = serializers.IntegerField()
 

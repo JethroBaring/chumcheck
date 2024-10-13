@@ -7,11 +7,14 @@ class TaskQuerySerializer(serializers.Serializer):
     task_type = serializers.ChoiceField(
         required=False, choices=tasks_models.TaskStatus.choices
     )
+    is_ai_generated = serializers.BooleanField(required=False)
 
 
 class InititativeQuerySerializer(serializers.Serializer):
     task_id = serializers.IntegerField(required=False)
+    is_ai_generated = serializers.BooleanField(required=False)
 
 
 class RoadblockQuerySerializer(serializers.Serializer):
     startup_id = serializers.IntegerField(required=False)
+    is_ai_generated = serializers.BooleanField(required=False)
