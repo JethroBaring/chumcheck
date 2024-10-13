@@ -7,7 +7,7 @@
 
 <Card.Root>
   <Card.Header>
-    <Card.Title>Store Name</Card.Title>
+    <Card.Title>Password</Card.Title>
     <Card.Description>Used to identify your store in the marketplace.</Card.Description>
   </Card.Header>
   <Card.Content>

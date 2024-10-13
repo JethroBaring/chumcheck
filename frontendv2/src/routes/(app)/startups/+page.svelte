@@ -4,6 +4,7 @@
 	import { RocketIcon } from 'lucide-svelte';
 	import * as Dialog from "$lib/components/ui/dialog";
 	import Application from '$lib/components/startup/Application.svelte';
+	import Gemini from '$lib/components/icons/Gemini.svelte';
 
 	let showApplicationForm = $state(false)
 
@@ -18,7 +19,7 @@
 		<p class="text-muted-foreground">Manage your startups</p>
 	</div>
 	<div class="flex gap-5">
-		<Button class="h-9 rounded-lg flex gap-2 items-center justify-center" size="sm" onclick={toggleApplicationForm}><RocketIcon class="h-4 w-4"/> Apply</Button>
+		<Button class="rounded-lg flex gap-2 items-center justify-center" onclick={toggleApplicationForm}><RocketIcon class="h-4 w-4" /> Apply</Button>
 	</div>
 </div>
 
@@ -43,7 +44,7 @@
 </div>
 
 <Dialog.Root open={showApplicationForm} onOpenChange={toggleApplicationForm}>
-  <Dialog.Content>
+  <Dialog.Content class="h-4/5 max-w-[700px]">
     <Application />
   </Dialog.Content>
 </Dialog.Root>

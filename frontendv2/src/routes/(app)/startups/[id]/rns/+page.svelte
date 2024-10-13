@@ -4,11 +4,12 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
-	import { MixerHorizontal, MagicWand } from 'svelte-radix';
+	import { MixerHorizontal, MagicWand, DotsHorizontal } from 'svelte-radix';
 	import { WandSparkles } from 'lucide-svelte';
 
 	import { cn } from '$lib/utils';
 	import Gemini from '$lib/components/icons/Gemini.svelte';
+	import Task from '$lib/components/app/rns/Task.svelte';
 	const cards = ['To Do', 'In Progress', 'Done'];
 </script>
 
@@ -29,7 +30,7 @@
 		<DropdownMenu.Trigger asChild let:builder>
 			<Button
 				variant="outline"
-				class="ml-auto hidden h-9 rounded-lg lg:flex"
+				class="ml-auto hidden rounded-lg lg:flex"
 				builders={[builder]}
 			>
 				<MixerHorizontal class="mr-2 h-4 w-4" />
@@ -72,17 +73,11 @@
 				<Gemini />
 			</div>
 		</Card.Header>
-		<Card.Content></Card.Content>
+		<Card.Content>
+			<Task />
+		</Card.Content>
 	</Card.Root>
-	<Card.Root class="h-full min-w-[calc(25%-1.25rem*3/4)]">
-		<Card.Header>
-			<div class="flex items-center justify-between">
-				<h2 class="font-semibold leading-none tracking-tight">Market</h2>
-				<Gemini />
-			</div>
-		</Card.Header>
-		<Card.Content></Card.Content>
-	</Card.Root>
+
 	<Card.Root class="h-full min-w-[calc(25%-1.25rem*3/4)]">
 		<Card.Header>
 			<div class="flex items-center justify-between">
