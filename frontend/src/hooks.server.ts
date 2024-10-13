@@ -1,3 +1,5 @@
+
+import { PUBLIC_API_URL } from '$env/static/public';
 import type { Handle } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 
@@ -10,7 +12,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				return await resolve(event);
 			}
 
-			const response = await fetch('http://127.0.0.1:8000/tokens/refresh/', {
+			const response = await fetch(`${PUBLIC_API_URL}/tokens/refresh/`, {
 				method: 'POST',
 				headers: {
 					'Authorization': `Bearer ${refresh}`,
@@ -45,7 +47,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				'django-insecure-vak*mz%99+#882*g*87x8$%!r=trnnqd)zh2)i$w51ra4cd&eg'
 			) as { user_id?: string };
 
-			const response = await fetch(`http://127.0.0.1:8000/users/${decoded?.user_id}/`, {
+			const response = await fetch(`${PUBLIC_API_URL}/users/${decoded?.user_id}/`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${access}`,

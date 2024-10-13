@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { PUBLIC_API_URL } from '$env/static/public';
 import { z } from 'zod';
 import type { PageServerLoad } from './$types';
 import { message, superValidate } from 'sveltekit-superforms';
@@ -36,7 +37,7 @@ export const actions = {
 			return message(form, { text: 'Password do not match' });
 		}
 
-		const response = await fetch('http://127.0.0.1:8000/users/signup/', {
+		const response = await fetch(`${PUBLIC_API_URL}/users/signup/`, {
 			method: 'POST',
 			headers: {
 				'Content-type': 'application/json'
@@ -55,7 +56,7 @@ export const actions = {
 		if (response.ok) {
 			return message(form, { text: 'Account created successfully' });
 		}
-
+		console.log("WEW")
 		return message(form, { text: data.message });
 	}
 };

@@ -1,8 +1,9 @@
 // @ts-nocheck
+import { PUBLIC_API_URL } from '$env/static/public';
 import { z } from 'zod';
 import { dev } from '$app/environment';
 import type { PageServerLoad } from './$types';
-import { message, superValidate } from 'sveltekit-superforms';
+import { message, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { fail, redirect } from '@sveltejs/kit';
 
@@ -28,41 +29,46 @@ export const actions = {
 			});
 		}
 
-		const { email, password } = form.data
+		const { email, password } = form.data;
 
-		const response = await fetch('http://127.0.0.1:8000/tokens/acquire/', {
-			method: 'POST',
-			headers: {
-				'Content-type': 'application/json'
-			},
-			body: JSON.stringify({
-				email: email,
-				password: password
-			})
-		});
-
-		const data = await response.json();
-
-		if (response.ok) {
-			cookies.set('Refresh', data.refresh, {
-				path: '/',
-				httpOnly: true,
-				sameSite: 'strict',
-				maxAge: 60 * 60 * 24,
-				secure: !dev
+		try {
+			const response = await fetch(`${PUBLIC_API_URL}/tokens/acquire/`, {
+				method: 'POST',
+				headers: {
+					'Content-type': 'application/json'
+				},
+				body: JSON.stringify({
+					email: email,
+					password: password
+				})
 			});
 
-			cookies.set('Access', data.access, {
-				path: '/',
-				httpOnly: true,
-				sameSite: 'strict',
-				maxAge: 5 * 60,
-				secure: !dev
-			});
-			throw redirect(302, '/');
+			const data = await response.json();
+
+			if (response.ok) {
+				cookies.set('Refresh', data.refresh, {
+					path: '/',
+					httpOnly: true,
+					sameSite: 'strict',
+					maxAge: 60 * 60 * 24,
+					secure: !dev
+				});
+
+				cookies.set('Access', data.access, {
+					path: '/',
+					httpOnly: true,
+					sameSite: 'strict',
+					maxAge: 5 * 60,
+					secure: !dev
+				});
+				throw redirect(302, '/');
+			} else {
+				return setError(form, data.message);
+			}
+			return message(form, { text: data.message });
+		} catch (error) {
+			console.log(error);
 		}
-
-		return message(form, { text: data.message });
 	}
 };
 ;null as any as PageServerLoad;

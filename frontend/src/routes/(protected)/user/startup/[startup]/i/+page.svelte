@@ -14,18 +14,20 @@
 	import ListFilter from 'lucide-svelte/icons/list-filter';
 
 	import CirclePlus from 'lucide-svelte/icons/circle-plus';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import Label from '$lib/components/ui/label/label.svelte';
+	import Textarea from '$lib/components/ui/textarea/textarea.svelte';
 	const flipDurationMs = 300;
-	let access =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyNzY2LCJpYXQiOjE3MTcwNTM1NjYsImp0aSI6ImExNmYxNDU1MDAzOTQzNGRiOWRhOGZlYWI5Y2VmNWE5IiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.bVCwaH6ZZjdrvBI1Cahk-tU4t4RiDK7gXH22c9ZQia0';
 
 	function toggleOpen() {
 		open = !open;
 	}
 
 	export let data;
+	let access = data.access
 	let initiatives = data.initiatives;
 	
 
@@ -80,7 +82,7 @@
 		if (e.detail.info.trigger == 'droppedIntoZone') {
 			const task = e.detail.items.find((t) => t.id == e.detail.info.id);
 
-			const response = await fetch(`http://127.0.0.1:8000/tasks/initiatives/${task.id}/`, {
+			const response = await fetch(`${PUBLIC_API_URL}/tasks/initiatives/${task.id}/`, {
 				method: 'PATCH',
 				headers: {
 					'Content-type': 'application/json',
@@ -101,7 +103,9 @@
 	}
 
 </script>
-
+<svelte:head>
+	<title>Initiatives</title>
+</svelte:head>
 <div class="flex items-center">
 	<div class="flex w-full justify-between">
 		<h1 class="text-lg font-semibold md:text-2xl">Initiatives</h1>
@@ -150,11 +154,7 @@
 												}}
 											>
 												<p>{item.description.substring(0, 80) + '...'}</p>
-												<Badge class="w-fit">Technology</Badge>
-												<div class="flex items-center gap-1">
-													<Target class="h-4 w-4" />
-													<p class="text-sm">Target Level: {5}</p>
-												</div>
+												
 											</div>
 										{/each}
 									{/if}
@@ -172,7 +172,7 @@
 	{/if}
 </div>
 
-<Dialog.Root {open} onOpenChange={toggleOpen}>
+<!-- <Dialog.Root {open} onOpenChange={toggleOpen}>
 	<Dialog.Content>
 		<p class="text-lg">{currItem.description}</p>
 		<Badge class="w-fit">Technology</Badge>
@@ -181,4 +181,20 @@
 			<p class="text-sm">Target Level: {5}</p>
 		</div>
 	</Dialog.Content>
+</Dialog.Root> -->
+<Dialog.Root {open} onOpenChange={toggleOpen}>
+	<Dialog.Content class="h-[600px] max-w-[800px]">
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Description</Label>
+			<Textarea bind:value={currItem.description} rows={15} class="text-lg" disabled/>
+		</div>
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Measures</Label>
+			<Textarea bind:value={currItem.measures} rows={15} class="text-lg" disabled/>
+		</div>
+		<div class="grid w-full gap-1.5 h-[150px]">
+			<Label>Targets</Label>
+			<Textarea bind:value={currItem.targets} rows={15} class="text-lg" disabled/>
+		</div>
+		</Dialog.Content>
 </Dialog.Root>

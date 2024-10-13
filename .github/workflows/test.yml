@@ -1,0 +1,33 @@
+name: Test Project
+
+on:
+  push:
+    branches: 
+      - master
+    paths: 
+      - 'frontend/**'  # Only trigger on changes in the frontend directory
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment variable
+        run: echo "PUBLIC_API_URL=https://chumcheck-production.up.railway.app" >> $GITHUB_ENV
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18  # Use the Node.js version you need
+
+      - name: Install dependencies
+        run: |
+          cd frontend  # Navigate to the frontend directory
+          npm install
+
+      - name: Build frontend
+        run: |
+          cd frontend  # Navigate to the frontend directory
+          npm run build

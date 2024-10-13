@@ -1,7 +1,8 @@
 import type { PageServerLoad } from './$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ cookies }) => {
-	const response = await fetch('http://127.0.0.1:8000/startups/ranking-by-urat/', {
+	const response = await fetch(`${PUBLIC_API_URL}/startups/ranking-by-urat/`, {
 		method: 'get',
 		headers: {
 			'Content-Type': 'application/json',
@@ -11,7 +12,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	const data = await response.json();
 
 	if (response.ok) {
-		const mentor = await fetch('http://127.0.0.1:8000/users/?user_type=ME', {
+		const mentor = await fetch(`${PUBLIC_API_URL}/users/?user_type=ME`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${cookies.get('Access')}`
@@ -45,7 +46,7 @@ export const actions = {
 		try {
 			await Promise.all(
 				startups.map(async (startup) => {
-					await fetch(`http://127.0.0.1:8000/startups/${startup.startup_id}/approve-applicant/`, {
+					await fetch(`${PUBLIC_API_URL}/startups/${startup.startup_id}/approve-applicant/`, {
 						method: 'post',
 						headers: {
 							'Content-type': 'application/json',
@@ -53,7 +54,7 @@ export const actions = {
 						}
 					});
 
-					await fetch(`http://127.0.0.1:8000/startups/${startup.startup_id}/appoint-mentors/`, {
+					await fetch(`${PUBLIC_API_URL}/startups/${startup.startup_id}/appoint-mentors/`, {
 						method: 'post',
 						headers: {
 							'Content-type': 'application/json',

@@ -1,8 +1,9 @@
 import type { PageServerLoad } from '../rns/$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
-export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
-	const response = await fetch(
-		`http://127.0.0.1:8000/startups/${params.startup}/allow-roadblocks/`,
+export const load: PageServerLoad = async ({ fetch, cookies, params, locals }) => {
+	const roadblocks = await fetch(
+		`${PUBLIC_API_URL}/tasks/roadblocks/?startup_id=${params.startup}`,
 		{
 			method: 'get',
 			headers: {
@@ -11,26 +12,30 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 		}
 	);
 
-	const data = await response.json();
+	const rb_data = await roadblocks.json();
 
-	if (response.ok) {
-		const roadblocks = await fetch(
-			`http://127.0.0.1:8000/tasks/roadblocks/?startup_id=${params.startup}`,
-			{
-				method: 'get',
-				headers: {
-					Authorization: `Bearer ${cookies.get('Access')}`
-				}
+	if (roadblocks.ok) {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${params.startup}`, {
+			method: 'get',
+			headers: {
+				Authorization: `Bearer ${cookies.get('Access')}`
 			}
-		);
+		});
 
-		const rb_data = await roadblocks.json();
+		const s = await response.json();
+			s.members.push({
+				user_id: s.user_id,
+				first_name: s.leader_first_name,
+				last_name: s.leader_last_name
+			})
 
-		if (roadblocks.ok) {
+		if (response.ok) {
 			return {
-				allow: data,
+				startup: s,
 				roadblocks: rb_data.results,
-				startupId: params.startup
+				startupId: params.startup,
+				userId: locals.user.id,
+				access: cookies.get('Access')
 			};
 		}
 	}
@@ -40,7 +45,7 @@ export const actions = {
 	default: async ({ request, cookies, params }) => {
 		const formData = await request.formData();
 
-		let readiness = [
+		const readiness = [
 			'Technology',
 			'Market',
 			'Acceptance',
@@ -52,7 +57,7 @@ export const actions = {
 		try {
 			await Promise.all(
 				readiness.map(async (r) => {
-					await fetch(`http://127.0.0.1:8000/startup-rna/`, {
+					await fetch(`${PUBLIC_API_URL}/startup-rna/`, {
 						method: 'post',
 						headers: {
 							'Content-type': 'application/json',

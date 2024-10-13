@@ -131,6 +131,7 @@
 				/>
 				<span class="sr-only">Toggle theme</span>
 			</Button>
+			<Badge>Manager</Badge>
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger asChild let:builder>
 					<Button

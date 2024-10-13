@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 GEMINI_KEY = "AIzaSyDwLPKzexRfCby7a9lQZYelhlWbx3Smylc"
@@ -27,12 +28,15 @@ SECRET_KEY = "django-insecure-vak*mz%99+#882*g*87x8$%!r=trnnqd)zh2)i$w51ra4cd&eg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'api.chumcheck.jethdev.tech',
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -51,6 +55,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -85,16 +90,12 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "chumcheckv2",
-        "USER": "root",
-        "PASSWORD": "",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
-        "OPTIONS": {
-            "init_command": "SET SQL_MODE = 'STRICT_TRANS_TABLES'",
-            "charset": "utf8mb4",
-        },
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "chumcheck",
+        "USER": "postgres",
+        "PASSWORD": "NHJjTXMJcIJsWcFb",
+        "HOST": "51.195.116.88",
+        "PORT": "5432",
     }
 }
 
@@ -138,6 +139,9 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Example: your frontend URL
+    "https://chumcheck.vercel.app",
+    "https://chumcheck-jethro-barings-projects.vercel.app",
+    "https://chumcheck-git-master-jethro-barings-projects.vercel.app"
 ]
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

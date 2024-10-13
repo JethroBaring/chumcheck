@@ -1,8 +1,9 @@
 import type { PageServerLoad } from '../rns/$types';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 	const response = await fetch(
-		`http://127.0.0.1:8000/startups/${params.startup}/allow-initatives/`,
+		`${PUBLIC_API_URL}/startups/${params.startup}/allow-initatives/`,
 		{
 			method: 'get',
 			headers: {
@@ -14,7 +15,7 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 	const data = await response.json();
 
 	if (response.ok) {
-		const tasks = await fetch(`http://127.0.0.1:8000/tasks/tasks/?startup_id=${params.startup}`, {
+		const tasks = await fetch(`${PUBLIC_API_URL}/tasks/tasks/?startup_id=${params.startup}`, {
 			method: 'get',
 			headers: {
 				Authorization: `Bearer ${cookies.get('Access')}`
@@ -30,7 +31,7 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 				const initiativesResults = await Promise.all(
 					tasks_ids.map(async (task) => {
 						const response = await fetch(
-							`http://127.0.0.1:8000/tasks/initiatives/?task_id=${task}`,
+							`${PUBLIC_API_URL}/tasks/initiatives/?task_id=${task}`,
 							{
 								method: 'get',
 								headers: {
@@ -53,7 +54,8 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 				return {
 					allow: data,
 					tasks: tasks_data.results,
-					initiatives: initiativesResults
+					initiatives: initiativesResults,
+					access: cookies.get('Access')
 				};
 			} catch (error) {
 				console.log(error);

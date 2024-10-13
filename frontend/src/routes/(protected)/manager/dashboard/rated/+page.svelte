@@ -13,6 +13,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	const access =
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE3MzEyMDQ2LCJpYXQiOjE3MTcwNTI4NDYsImp0aSI6ImM5ZmQ0ODA2MjhkZDRiOWNiMjNhYjU3ZTRjY2I4MzFlIiwidXNlcl9pZCI6MSwidXNlcl90eXBlIjoiTSJ9.d_W0LM7ljx5NF4NQ4czZzA5I0bWM7-4ux80yJvMzC-w';
 	export let data;
@@ -23,6 +24,12 @@
 		showCapsule = !showCapsule;
 	}
 	let inf: any, que, ans, calc;
+	let trl = 0,
+		orl = 0,
+		mrl = 0,
+		rrl = 0,
+		arl = 0,
+		irl = 0;
 
 	let showRatedDialog = false;
 
@@ -31,7 +38,7 @@
 	}
 
 	async function getStartupInformation(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/`, {
 			method: 'get',
 			headers: {
 				'Content-Type': 'application/json',
@@ -41,7 +48,7 @@
 
 		const data = await response.json();
 		if (response.ok) {
-			const urat_questions = await fetch('http://127.0.0.1:8000/readinesslevel/urat-questions/', {
+			const urat_questions = await fetch(`${PUBLIC_API_URL}/readinesslevel/urat-questions/`, {
 				method: 'get',
 				headers: {
 					Authorization: `Bearer ${access}`
@@ -51,7 +58,7 @@
 			const questions_data = await urat_questions.json();
 
 			const urat_answers = await fetch(
-				`http://127.0.0.1:8000/urat-question-answers/?startup_id=${startupId}`,
+				`${PUBLIC_API_URL}/urat-question-answers/?startup_id=${startupId}`,
 				{
 					method: 'get',
 					headers: {
@@ -63,7 +70,7 @@
 			const answers_data = await urat_answers.json();
 
 			const calculator = await fetch(
-				`http://127.0.0.1:8000/startups/${startupId}/calculator-final-scores/`,
+				`${PUBLIC_API_URL}/startups/${startupId}/calculator-final-scores/`,
 				{
 					method: 'get',
 					headers: {
@@ -79,13 +86,43 @@
 				que = questions_data.results;
 				ans = answers_data.results;
 				calc = calculator_data;
+				trl = ans
+					.filter((d) => d.readiness_type === 'Technology')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				orl = ans
+					.filter((d) => d.readiness_type === 'Organizational')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				mrl = ans
+					.filter((d) => d.readiness_type === 'Market')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				rrl = ans
+					.filter((d) => d.readiness_type === 'Regulatory')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				arl = ans
+					.filter((d) => d.readiness_type === 'Acceptance')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
+				irl = ans
+					.filter((d) => d.readiness_type === 'Investment')
+					.reduce((accumulator: any, currentValue: any) => {
+						return accumulator + currentValue.score;
+					}, 0);
 				toggleRatedDialog();
 			}
 		}
 	}
 
 	async function approveStartup(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/approve-applicant/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/approve-applicant/`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json',
@@ -95,7 +132,7 @@
 
 		if (response.ok) {
 			const assignmentor = await fetch(
-				`http://127.0.0.1:8000/startups/${selectedMentor}/appoint-mentors/`,
+				`${PUBLIC_API_URL}/startups/${selectedMentor}/appoint-mentors/`,
 				{
 					method: 'post',
 					headers: {
@@ -117,7 +154,7 @@
 	}
 
 	async function rejectStartup(startupId: number) {
-		const response = await fetch(`http://127.0.0.1:8000/startups/${startupId}/reject-applicant/`, {
+		const response = await fetch(`${PUBLIC_API_URL}/startups/${startupId}/reject-applicant/`, {
 			method: 'post',
 			headers: {
 				'Content-Type': 'application/json',
@@ -157,7 +194,9 @@
 						<Table.Row class="h-[80px]">
 							<Table.Cell class="font-medium">{applicant.name}</Table.Cell>
 							<Table.Cell>{applicant.group_name}</Table.Cell>
-							<Table.Cell class="hidden md:table-cell">{applicant.user}</Table.Cell>
+							<Table.Cell class="hidden md:table-cell"
+								>{applicant.leader_first_name} {applicant.leader_last_name}</Table.Cell
+							>
 							<Table.Cell>
 								<DropdownMenu.Root>
 									<DropdownMenu.Trigger asChild let:builder>
@@ -193,7 +232,14 @@
 					<h1 class="text-lg font-semibold">Project Details</h1>
 					<div class="grid gap-2">
 						<Label for="email">Startup Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
+						<Input
+							readonly
+							name="email"
+							id="email"
+							type="email"
+							placeholder="m@example.com"
+							value={inf.name}
+						/>
 					</div>
 
 					<div class="grid gap-2">
@@ -229,47 +275,110 @@
 					<h1 class="text-lg font-semibold">Group Information</h1>
 					<div class="grid gap-2">
 						<Label for="email">Group Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
+						<Input
+							readonly
+							name="email"
+							id="email"
+							type="email"
+							placeholder="m@example.com"
+							value={inf.group_name}
+						/>
 					</div>
 
 					<div class="grid gap-2">
 						<Label for="email">Leader</Label>
 						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								value={inf.leader_email}
+							/>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="text"
+								placeholder="m@example.com"
+								value={inf.leader_first_name}
+							/>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="text"
+								placeholder="m@example.com"
+								value={inf.leader_last_name}
+							/>
 						</div>
 					</div>
-					<div class="grid gap-2">
-						<Label for="email">Member #1</Label>
-						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+					{#each inf.members as member, i}
+						<div class="grid gap-2">
+							<Label for="email">Member #{i + 1}</Label>
+							<div class="flex gap-3">
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="email"
+									placeholder="m@example.com"
+									value={member.email}
+								/>
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="text"
+									placeholder="m@example.com"
+									value={member.first_name}
+								/>
+								<Input
+									readonly
+									name="email"
+									id="email"
+									type="text"
+									placeholder="m@example.com"
+									value={member.last_name}
+								/>
+							</div>
 						</div>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">Member #2</Label>
-						<div class="flex gap-3">
-							<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
-							<Input readonly name="email" id="email" type="text" placeholder="m@example.com" />
+					{/each}
+
+					{#if inf.university_name}
+						<div class="grid gap-2">
+							<Label for="email">University Name</Label>
+							<Input
+								readonly
+								name="email"
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								value={inf.university_name}
+							/>
 						</div>
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">University Name</Label>
-						<Input readonly name="email" id="email" type="email" placeholder="m@example.com" />
-					</div>
+					{/if}
 				</div>
 				<!-- Calculator -->
 				<div class="flex flex-col gap-3">
 					<h1 class="text-lg font-semibold">Technology and Commercialization Calculator</h1>
+					<div>Technology: {calc.technology_level}</div>
+					<div>Commercialization: {calc.commercialization_level}</div>
 					<div class="p-10">
 						<RadarChart
 							id={inf.id}
 							min={0}
-							max={15}
-							data={[10, 10, 10, 10, 10, 10, 10]}
+							max={5}
+							data={[
+								calc.technology_score,
+								calc.product_development,
+								calc.product_definition,
+								calc.competitive_landscape,
+								calc.team,
+								calc.go_to_market,
+								calc.supply_chain
+							]}
 							labels={[
 								'Technology',
 								'Product Development',
@@ -284,14 +393,13 @@
 				</div>
 				<!-- URAT Assessment -->
 				<div class="flex flex-col gap-3">
-					<h1 class="text-lg font-semibold">URAT Questionnaire Readiness Level</h1>
-
+					<h1 class="text-lg font-semibold">URAT Assessment</h1>
 					<div class="p-20">
 						<RadarChart
 							id={inf.id + 100}
 							min={0}
-							max={9}
-							data={[6, 7, 4, 8, 9, 7]}
+							max={15}
+							data={[trl, orl, mrl, rrl, arl, irl]}
 							labels={[
 								'Technology',
 								'Organizational',
