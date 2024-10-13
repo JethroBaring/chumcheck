@@ -31,7 +31,7 @@ class TaskViewSet(
         if viewset_action in ["partial_update", "destroy"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
 
-        elif viewset_action in ["create", "initial_tasks"]:
+        elif viewset_action in ["create", "generate_tasks"]:
             return [startups_permissions.IsMentorOrManagerPermission()]
 
         return super().get_permissions()
@@ -54,6 +54,10 @@ class TaskViewSet(
         if task_type:
             queryset = queryset.filter(task_type=task_type)
 
+        is_ai_generated = serializer.validated_data.get("is_ai_generated")
+        if is_ai_generated:
+            queryset = queryset.filter(is_ai_generated=is_ai_generated)
+
         return queryset.all()
 
     @swagger_auto_schema(
@@ -61,6 +65,10 @@ class TaskViewSet(
         responses={200: tasks_serializers.base.TaskBaseSerializer(many=True)},
     )
     def list(self, request, *args, **kwargs):
+        """List Tasks
+
+        Returns a list of tasks.
+        """
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -72,6 +80,10 @@ class TaskViewSet(
     )
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
+        """Partial Update Task
+
+        Partially updates a task and returns it.
+        """
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -82,6 +94,10 @@ class TaskViewSet(
     )
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
+        """Delete A Task
+
+        Deletes a task.
+        """
         return super().destroy(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -93,6 +109,10 @@ class TaskViewSet(
     )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
+        """Create A Task
+
+        Creates a task and returns it.
+        """
         serializer = tasks_serializers.base.TaskBaseSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -103,7 +123,7 @@ class TaskViewSet(
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        request_body=tasks_serializers.request.CreateInitialTaskRequestSerializer,
+        request_body=tasks_serializers.request.GenerateTaskRequestSerializer,
         responses={
             200: tasks_serializers.base.TaskBaseSerializer(many=True),
             400: "No capsule proposal found.",
@@ -111,20 +131,19 @@ class TaskViewSet(
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-tasks")
-    def initial_tasks(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-tasks")
+    def generate_tasks(self, request):
         """Generate Tasks Using AI
 
         generate tasks based on capsule proposal and initial readiness level.
         """
-        request_serializer = (
-            tasks_serializers.request.CreateInitialTaskRequestSerializer(
-                data=request.data
-            )
+        request_serializer = tasks_serializers.request.GenerateTaskRequestSerializer(
+            data=request.data
         )
         request_serializer.is_valid(raise_exception=True)
 
         startup = request_serializer.validated_data.get("startup")
+        readiness_type = request_serializer.validated_data.get("readiness_type")
         term = request_serializer.validated_data.get("term")
         no_of_tasks_to_create = request_serializer.validated_data.get(
             "no_of_tasks_to_create"
@@ -137,14 +156,20 @@ class TaskViewSet(
                 "No capusle proposal found.", status=status.HTTP_400_BAD_REQUEST
             )
 
-        startup_rnas = startups_models.StartupRNA.objects.filter(startup_id=startup.id)
-        startup_rna_prompt = "These are the RNA for each Readiness Level Of Startup:\n"
+        rl_type_label = readinesslevel_models.ReadinessType.RLType(readiness_type).label
+        startup_rnas = startups_models.StartupRNA.objects.filter(
+            startup_id=startup.id,
+            is_ai_generated=False,
+            readiness_level__readiness_type=readiness_type,
+        )
+        startup_rna_prompt = (
+            f"These are the RNA for {rl_type_label} Readiness Type Of Startup:\n"
+        )
         for startup_rna in startup_rnas:
             readiness_level = startup_rna.readiness_level
-            rl_type_label = readinesslevel_models.ReadinessType.RLType(
-                readiness_level.readiness_type.rl_type
-            ).label
-            startup_rna_prompt += f"{rl_type_label} Readiness Level {readiness_level.level}: {startup_rna.rna}\n"
+            startup_rna_prompt += (
+                f"Readiness Level {readiness_level.level}: {startup_rna.rna}\n"
+            )
 
         prompt = f"""
         {base_prompt}
@@ -156,10 +181,9 @@ class TaskViewSet(
         TASK: Create me {no_of_tasks_to_create} {term} tasks for the startup's personalized learning path.
         Requirement: The response should be in a JSON format.
         It should consist of readiness level type, target level, description
-        JSON format: [{{"readiness_level_type": "", "target_level": (int), "description": ""}}]
+        JSON format: [{{"target_level": (int), "description": ""}}]
         Requirement note:
         - target_level is from 1-9
-        - readiness_level_type consists of T(Techonology), I(Investment), A(Acceptance), O(Organizational), R(Regulatory), and M(Market)
         - make sure that the tasks will increase the level(target_level) of the specified readiness level type from the initial readiness level type
         - target_level should not exceed to 9
         - description has a max length of 500
@@ -169,13 +193,8 @@ class TaskViewSet(
 
         tasks = []
         for task_data in explanation:
-            rl_type = task_data.get("readiness_level_type")
             target_level = task_data.get("target_level")
             description = task_data.get("description")
-
-            readiness_type = readinesslevel_models.ReadinessType.objects.filter(
-                rl_type=rl_type
-            ).first()
 
             target_readiness_level = (
                 readinesslevel_models.ReadinessLevel.objects.filter(
@@ -190,6 +209,7 @@ class TaskViewSet(
                     description=description,
                     task_type=term,
                     startup_id=startup.id,
+                    is_ai_generated=True,
                 )
             )
 
@@ -215,7 +235,7 @@ class InitiativeViewSet(
         if viewset_action in ["partial_update", "destroy"]:
             return [tasks_permissions.IsMentorThroughInitiativePermission()]
 
-        elif viewset_action in ["create", "initial_initiatives"]:
+        if viewset_action in ["create", "generate_initiatives"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
 
         return super().get_permissions()
@@ -234,6 +254,10 @@ class InitiativeViewSet(
         if task_id:
             queryset = queryset.filter(task_id=task_id)
 
+        is_ai_generated = serializer.validated_data.get("is_ai_generated")
+        if is_ai_generated:
+            queryset = queryset.filter(is_ai_generated=is_ai_generated)
+
         return queryset.all()
 
     @swagger_auto_schema(
@@ -241,6 +265,10 @@ class InitiativeViewSet(
         responses={200: tasks_serializers.base.InitiativeBaseSerializer(many=True)},
     )
     def list(self, request, *args, **kwargs):
+        """List Initiatives
+
+        Returns a list of initatives.
+        """
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -252,6 +280,10 @@ class InitiativeViewSet(
     )
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
+        """Update A Initiative
+
+        Partially updates a initiatives and returns it.
+        """
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -262,6 +294,10 @@ class InitiativeViewSet(
     )
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
+        """Delete A Initiative
+
+        Deletes a initiative.
+        """
         return super().destroy(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -273,6 +309,10 @@ class InitiativeViewSet(
     )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
+        """Create A Initiative
+
+        Creates a initiative and returns it.
+        """
         serializer = tasks_serializers.base.InitiativeBaseSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -283,22 +323,22 @@ class InitiativeViewSet(
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        request_body=tasks_serializers.request.CreateInitialInitiativeRequestSerializer,
+        request_body=tasks_serializers.request.GenerateInitiativeRequestSerializer,
         responses={
             200: tasks_serializers.base.InitiativeBaseSerializer(many=True),
             403: tasks_permissions.IsMentorThroughTaskPermission.message,
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-initiatives")
-    def initial_initiatives(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-initiatives")
+    def generate_initiatives(self, request):
         """Generate Initatives Using AI
 
         generate initatives based on capsule proposal,
         initial readiness level, and task.
         """
         request_serializer = (
-            tasks_serializers.request.CreateInitialInitiativeRequestSerializer(
+            tasks_serializers.request.GenerateInitiativeRequestSerializer(
                 data=request.data
             )
         )
@@ -347,6 +387,7 @@ class InitiativeViewSet(
                     targets=targets,
                     remarks=remarks,
                     task_id=task.id,
+                    is_ai_generated=True,
                 )
             )
 
@@ -371,11 +412,11 @@ class RoadblockViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        # if viewset_action in ["partial_update", "destroy"]:
-        #     return super().get_permission()
+        if viewset_action in ["partial_update", "destroy"]:
+            return [tasks_permissions.IsMentorThroughTaskPermission()]
 
-        # elif viewset_action in ["create", "initial_roadblocks"]:
-        #     return [tasks_permissions.IsMentorThroughTaskPermission()]
+        if viewset_action in ["create", "generate_roadblocks"]:
+            return [startups_permissions.IsMentorOrManagerPermission()]
 
         return super().get_permissions()
 
@@ -393,6 +434,10 @@ class RoadblockViewSet(
         if startup_id:
             queryset = queryset.filter(startup_id=startup_id)
 
+        is_ai_generated = serializer.validated_data.get("is_ai_generated")
+        if is_ai_generated:
+            queryset = queryset.filter(is_ai_generated=is_ai_generated)
+
         return queryset.all()
 
     @swagger_auto_schema(
@@ -400,6 +445,10 @@ class RoadblockViewSet(
         responses={200: tasks_serializers.base.RoadblockBaseSerializer(many=True)},
     )
     def list(self, request, *args, **kwargs):
+        """List Roadblocks
+
+        Returns a list of roadblocks.
+        """
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -411,6 +460,10 @@ class RoadblockViewSet(
     )
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
+        """Update A Roadblock
+
+        Partially updates a roadblocks and returns it.
+        """
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -421,6 +474,10 @@ class RoadblockViewSet(
     )
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
+        """Delete A Roadblock
+
+        Deletes a roadblock.
+        """
         return super().destroy(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -432,6 +489,10 @@ class RoadblockViewSet(
     )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
+        """Create A Roadblock
+
+        Creates a roadblock and returns it.
+        """
         serializer = tasks_serializers.base.RoadblockBaseSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -442,28 +503,31 @@ class RoadblockViewSet(
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        request_body=tasks_serializers.request.CreateInitialRoadblockRequestSerializer,
+        request_body=tasks_serializers.request.GenerateRoadblockRequestSerializer,
         responses={
             200: tasks_serializers.base.RoadblockBaseSerializer(many=True),
             403: tasks_permissions.IsMentorThroughTaskPermission.message,
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-roadblocks")
-    def initial_roadblocks(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-roadblocks")
+    def generate_roadblocks(self, request):
         """Generate Roadblocks Using AI
 
         generate roadblocks based on capsule proposal,
         initial readiness level, tasks, and initiatives.
         """
         request_serializer = (
-            tasks_serializers.request.CreateInitialRoadblockRequestSerializer(
+            tasks_serializers.request.GenerateRoadblockRequestSerializer(
                 data=request.data
             )
         )
         request_serializer.is_valid(raise_exception=True)
 
         startup = request_serializer.validated_data.get("startup")
+
+        self.check_object_permissions(request, startup)
+
         no_of_roadblocks_to_create = request_serializer.validated_data.get(
             "no_of_roadblocks_to_create"
         )
@@ -506,12 +570,13 @@ class RoadblockViewSet(
         Based on these initiatives:
         {initiatives_prompt}
 
-        Task: Create me {no_of_roadblocks_to_create} roadblocks for the startup's personalized tasks, and initiatives.
+        Task: If roadblock exists for the startup's personalized tasks, and initiatives. Create me at least {no_of_roadblocks_to_create} roadblocks. Else return a empty list.
         Requirement: The response should be in a JSON format.
         It should consist of description, and fix
         JSON format: [{{"description": "", "fix": ""}}]
         Requirement note:
         - description and fix have 500 max length
+        - return an empty list if no roadblock exists for it.
         """
 
         explanation, _ = call_gemini_api(prompt)
@@ -526,6 +591,7 @@ class RoadblockViewSet(
                     description=description,
                     fix=fix,
                     startup_id=startup.id,
+                    is_ai_generated=True,
                 )
             )
 

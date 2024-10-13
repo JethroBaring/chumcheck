@@ -475,16 +475,47 @@ class StartupViewSet(
 
         TASK: Generate a RNA(Readiness and Needs Assessment) for each readiness level.
         Requirement: The response should be in a JSON format.
-        It should consist of trl, irl, mrl, rrl, arl, and orl
-        JSON format: {{"trl": "", "irl": "", "mrl": "", "rrl": "", "arl": "", "orl": ""}}
+        JSON format: {{"readiness_level_type": (char), "current_level": (int), "details": ""}}
+        Requirement:
+        - readiness_level_type consists of T(Techonology), I(Investment), A(Acceptance), O(Organizational), R(Regulatory), and M(Market)
+        - current_level is from 1(minimum) to 9(maximum)
+        - details has a max length of 500
+        - details should be for that readiness type only.
         """
 
         explanation, _ = call_gemini_api(prompt)
 
+        to_be_created_startup_rnas = []
+        for task_data in explanation:
+            rl_type = task_data.get("readiness_level_type")
+            current_level = task_data.get("current_level")
+            details = task_data.get("details")
+
+            readiness_type = readinesslevel_models.ReadinessType.objects.filter(
+                rl_type=rl_type
+            ).first()
+
+            current_readiness_level = (
+                readinesslevel_models.ReadinessLevel.objects.filter(
+                    readiness_type=readiness_type, level=current_level
+                )
+            ).first()
+
+            to_be_created_startup_rnas.append(
+                startups_models.StartupRNA(
+                    readiness_level=current_readiness_level,
+                    rna=details,
+                    startup_id=startup.id,
+                    is_ai_generated=True,
+                )
+            )
+
+        startup_rnas = startups_models.StartupRNA.bulk_create(
+            to_be_created_startup_rnas
+        )
+
         return Response(
-            startups_serializers.response.GenerateRNAResponseSerializer(
-                explanation
-            ).data,
+            startups_serializers.base.StartupRNABaseSerializer(startup_rnas).data,
             status=status.HTTP_200_OK,
         )
 
@@ -668,14 +699,6 @@ class ReadinessLevelCriterionAnswerViewSet(
     serializer_class = (
         startups_serializers.base.ReadinessLevelCriterionAnswerBaseSerializer
     )
-
-    def get_permissions(self):
-        viewset_action = self.action
-
-        if viewset_action == "partial_updated":
-            return [startups_permissions.IsMentorPermission()]
-
-        return super().get_permissions()
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -1053,7 +1076,9 @@ class CapsuleProposalInfoViewSet(
         )
 
 
-class StartupRNAViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin):
+class StartupRNAViewSet(
+    BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin
+):
     queryset = startups_models.StartupRNA.objects
     serializer_class = startups_serializers.base.StartupRNABaseSerializer
 
