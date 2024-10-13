@@ -166,12 +166,8 @@ class StartupRNABaseSerializer(serializers.ModelSerializer):
     readiness_level_id = serializers.PrimaryKeyRelatedField(
         source="readiness_level", queryset=readinesslevel_models.ReadinessLevel.objects
     )
+    is_ai_generated = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = startups_models.StartupRNA
-        fields = [
-            "id",
-            "startup_id",
-            "readiness_level_id",
-            "rna",
-        ]
+        fields = ["id", "startup_id", "readiness_level_id", "rna", "is_ai_generated"]

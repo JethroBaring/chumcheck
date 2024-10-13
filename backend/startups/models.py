@@ -155,6 +155,7 @@ class StartupRNA(BaseModel):
         related_name="startup_rnas",
     )
     rna = models.TextField()
+    is_ai_generated = models.BooleanField(default=False)
 
     class Meta:
         db_table = "startup_rnas"
