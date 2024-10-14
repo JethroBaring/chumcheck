@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { PUBLIC_API_URL } from '$env/dynamic/public';
 	export let currentActive: number;
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';

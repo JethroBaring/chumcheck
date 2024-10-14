@@ -1,5 +1,5 @@
 import type { PageServerLoad } from '../rns/$types';
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PUBLIC_API_URL } from '$env/dynamic/public';
 
 export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
 	const response = await fetch(`${PUBLIC_API_URL}/startups/${params.id}/allow-tasks/`, {

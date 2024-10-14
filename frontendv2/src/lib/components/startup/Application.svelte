@@ -42,7 +42,7 @@
 	import Investment from './application/Investment.svelte';
 	import Organizational from './application/Organizational.svelte';
 	import TechnologyCalculator from './application/Calculator.svelte';
-	import { PUBLIC_API_URL } from '$env/static/public';
+	import { PUBLIC_API_URL } from '$env/dynamic/public';
 
 	let data: any;
 
