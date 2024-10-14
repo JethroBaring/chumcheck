@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev --host",
-		"build": "vite build",
+		"build": "node --env-file=.env build",
 		"preview": "vite preview --host",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -42,6 +42,7 @@
 	"dependencies": {
 		"bits-ui": "^0.21.15",
 		"clsx": "^2.1.1",
+		"dotenv": "^16.4.5",
 		"formsnap": "^1.0.1",
 		"jose": "^5.9.2",
 		"jsonwebtoken": "^9.0.2",
