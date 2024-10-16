@@ -39,7 +39,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["chumcheck-production.up.railway.app"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
