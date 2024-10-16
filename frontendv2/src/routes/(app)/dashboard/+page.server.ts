@@ -1,15 +1,6 @@
+import { fetchWithAuth } from "$lib/utils";
 import type { PageServerLoad } from "./$types";
-import { PUBLIC_API_URL } from '$env/static/public';
 
-const fetchWithAuth = (endpoint: string, cookies: any, fetch: any) => {
-  return fetch(`${PUBLIC_API_URL}${endpoint}`, {
-      method: 'GET',
-      headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${cookies.get('Access')}`
-      }
-  });
-};
 
 export const load: PageServerLoad = async ({ cookies, fetch}) => {
   try {

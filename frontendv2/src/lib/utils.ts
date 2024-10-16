@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
+import { PUBLIC_API_URL } from "$env/dynamic/public";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -59,4 +60,14 @@ export const flyAndScale = (
 		},
 		easing: cubicOut
 	};
+};
+
+export const fetchWithAuth = (endpoint: string, cookies: any, fetch: any) => {
+  return fetch(`${PUBLIC_API_URL}${endpoint}`, {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${cookies.get('Access')}`
+      }
+  });
 };

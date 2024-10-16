@@ -31,7 +31,7 @@ class TaskViewSet(
         if viewset_action in ["partial_update", "destroy"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
 
-        elif viewset_action in ["create", "initial_tasks"]:
+        elif viewset_action in ["create", "generate_tasks"]:
             return [startups_permissions.IsMentorOrManagerPermission()]
 
         return super().get_permissions()
@@ -123,7 +123,7 @@ class TaskViewSet(
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        request_body=tasks_serializers.request.CreateInitialTaskRequestSerializer,
+        request_body=tasks_serializers.request.GenerateTaskRequestSerializer,
         responses={
             200: tasks_serializers.base.TaskBaseSerializer(many=True),
             400: "No capsule proposal found.",
@@ -131,16 +131,14 @@ class TaskViewSet(
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-tasks")
-    def initial_tasks(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-tasks")
+    def generate_tasks(self, request):
         """Generate Tasks Using AI
 
         generate tasks based on capsule proposal and initial readiness level.
         """
-        request_serializer = (
-            tasks_serializers.request.CreateInitialTaskRequestSerializer(
-                data=request.data
-            )
+        request_serializer = tasks_serializers.request.GenerateTaskRequestSerializer(
+            data=request.data
         )
         request_serializer.is_valid(raise_exception=True)
 
@@ -237,7 +235,7 @@ class InitiativeViewSet(
         if viewset_action in ["partial_update", "destroy"]:
             return [tasks_permissions.IsMentorThroughInitiativePermission()]
 
-        if viewset_action in ["create", "initial_initiatives"]:
+        if viewset_action in ["create", "generate_initiatives"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
 
         return super().get_permissions()
@@ -325,22 +323,22 @@ class InitiativeViewSet(
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        request_body=tasks_serializers.request.CreateInitialInitiativeRequestSerializer,
+        request_body=tasks_serializers.request.GenerateInitiativeRequestSerializer,
         responses={
             200: tasks_serializers.base.InitiativeBaseSerializer(many=True),
             403: tasks_permissions.IsMentorThroughTaskPermission.message,
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-initiatives")
-    def initial_initiatives(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-initiatives")
+    def generate_initiatives(self, request):
         """Generate Initatives Using AI
 
         generate initatives based on capsule proposal,
         initial readiness level, and task.
         """
         request_serializer = (
-            tasks_serializers.request.CreateInitialInitiativeRequestSerializer(
+            tasks_serializers.request.GenerateInitiativeRequestSerializer(
                 data=request.data
             )
         )
@@ -414,11 +412,11 @@ class RoadblockViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        # if viewset_action in ["partial_update", "destroy"]:
-        #     return super().get_permission()
+        if viewset_action in ["partial_update", "destroy"]:
+            return [tasks_permissions.IsMentorThroughTaskPermission()]
 
-        # elif viewset_action in ["create", "initial_roadblocks"]:
-        #     return [tasks_permissions.IsMentorThroughTaskPermission()]
+        if viewset_action in ["create", "generate_roadblocks"]:
+            return [startups_permissions.IsMentorOrManagerPermission()]
 
         return super().get_permissions()
 
@@ -505,22 +503,22 @@ class RoadblockViewSet(
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        request_body=tasks_serializers.request.CreateInitialRoadblockRequestSerializer,
+        request_body=tasks_serializers.request.GenerateRoadblockRequestSerializer,
         responses={
             200: tasks_serializers.base.RoadblockBaseSerializer(many=True),
             403: tasks_permissions.IsMentorThroughTaskPermission.message,
         },
     )
     @transaction.atomic
-    @action(detail=False, methods=["POST"], url_path="create-initial-roadblocks")
-    def initial_roadblocks(self, request):
+    @action(detail=False, methods=["POST"], url_path="generate-roadblocks")
+    def generate_roadblocks(self, request):
         """Generate Roadblocks Using AI
 
         generate roadblocks based on capsule proposal,
         initial readiness level, tasks, and initiatives.
         """
         request_serializer = (
-            tasks_serializers.request.CreateInitialRoadblockRequestSerializer(
+            tasks_serializers.request.GenerateRoadblockRequestSerializer(
                 data=request.data
             )
         )

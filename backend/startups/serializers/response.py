@@ -37,6 +37,7 @@ class ExtractCapsuleProposalDataResponseSerializer(
             "methodology",
         ]
 
+
 class GenerateRNAResponseSerializer(serializers.Serializer):
     trl = serializers.CharField()
     irl = serializers.CharField()
