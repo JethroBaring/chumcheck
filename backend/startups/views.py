@@ -516,7 +516,7 @@ class StartupViewSet(
                 )
             )
 
-        startup_rnas = startups_models.StartupRNA.bulk_create(
+        startup_rnas = startups_models.StartupRNA.objects.bulk_create(
             to_be_created_startup_rnas
         )
 
