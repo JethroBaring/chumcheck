@@ -171,3 +171,9 @@ class StartupRNABaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = startups_models.StartupRNA
         fields = ["id", "startup_id", "readiness_level_id", "rna", "is_ai_generated"]
+
+
+class CohortBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = startups_models.Cohort
+        fields = ["id", "name"]

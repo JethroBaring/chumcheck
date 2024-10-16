@@ -5,6 +5,7 @@ class StartupQuerySerializer(serializers.Serializer):
     qualification_status = serializers.CharField(
         required=False, allow_null=True, default=None
     )
+    cohort_id = serializers.IntegerField(required=False)
 
 
 class UratQuestionAnswerQuerySerializer(serializers.Serializer):

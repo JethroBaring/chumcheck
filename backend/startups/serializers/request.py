@@ -61,6 +61,7 @@ class AssignMentorsRequestSerializer(serializers.Serializer):
             serializers.PrimaryKeyRelatedField(queryset=users_models.MentorUser.objects)
         )
     )
+    cohort_id = serializers.IntegerField()
 
 
 class BulkCreateCalculatorQuestionAnswerRequestSerializer(serializers.Serializer):

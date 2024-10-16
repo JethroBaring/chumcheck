@@ -4,6 +4,13 @@ from users import models as users_models
 from readinesslevel import models as readinesslevel_models
 
 
+class Cohort(BaseModel):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = "cohorts"
+
+
 class Startup(BaseModel):
     class QualificationStatus(models.IntegerChoices):
         PENDING = 1
@@ -29,6 +36,13 @@ class Startup(BaseModel):
     university_name = models.CharField(max_length=200, null=True, blank=True)
     eligibility = models.BooleanField(default=False)
     mentors = models.ManyToManyField(users_models.MentorUser, related_name="startups")
+    cohort = models.ForeignKey(
+        Cohort,
+        on_delete=models.SET_NULL,
+        related_name="startups",
+        default=None,
+        null=True,
+    )
 
     @property
     def leader_first_name(self):

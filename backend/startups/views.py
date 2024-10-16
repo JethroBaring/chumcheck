@@ -63,6 +63,9 @@ class StartupViewSet(
         request = self.request
         user = request.user
 
+        if user.is_anonymous:
+            return queryset.none()
+
         serializer = startups_serializers.query.StartupQuerySerializer(
             data=request.query_params
         )
@@ -75,17 +78,15 @@ class StartupViewSet(
         if qualification_status is not None:
             queryset = queryset.filter(qualification_status=qualification_status)
 
-        if (
-            not user.is_anonymous
-            and user.user_type == users_models.BaseUser.UserType.STARTUP
-        ):
+        if user.user_type == users_models.BaseUser.UserType.STARTUP:
             queryset = queryset.filter(Q(user_id=user.id) | Q(members__user_id=user.id))
 
-        if (
-            not user.is_anonymous
-            and user.user_type == users_models.BaseUser.UserType.MENTOR
-        ):
+        if user.user_type == users_models.BaseUser.UserType.MENTOR:
             queryset = queryset.filter(mentors=user)
+
+        cohort_id = serializer.validated_data.get("cohort_id")
+        if cohort_id:
+            queryset = queryset.filter(cohort_id=cohort_id)
 
         return queryset.filter(datetime_deleted__isnull=True).distinct().all()
 
@@ -233,6 +234,10 @@ class StartupViewSet(
         request_seralizer.is_valid(raise_exception=True)
 
         mentor_ids = request_seralizer.validated_data.get("mentor_ids")
+        cohort_id = request_seralizer.validated_data.get("cohort_id")
+
+        startup.cohort_id = cohort_id
+        startup.save(update_fields=["cohort_id"])
 
         startup.mentors.set(mentor_ids)
 
@@ -427,7 +432,7 @@ class StartupViewSet(
     @swagger_auto_schema(
         query_serializer=None,
         responses={
-            200: startups_serializers.response.GenerateRNAResponseSerializer,
+            200: startups_serializers.base.StartupRNABaseSerializer,
         },
     )
     @action(url_path="generate-rna", detail=True, methods=["GET"])
@@ -962,10 +967,7 @@ class CapsuleProposalInfoViewSet(
     def get_permissions(self):
         viewset_action = self.action
 
-        if viewset_action in ["create", "extract_capsule_proposal_info"]:
-            return [startups_permissions.IsAuthenticated()]
-
-        elif viewset_action in ["retrieve", "partial_update"]:
+        if viewset_action in ["retrieve", "partial_update"]:
             return [
                 startups_permissions.IsMemberOfStartupPermissionThroughCapsuleProposalInfoPermission()
             ]
@@ -1121,3 +1123,15 @@ class StartupRNAViewSet(
     @transaction.atomic
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
+
+
+class CohortViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
+    queryset = startups_models.Cohort.objects
+    serializer_class = startups_serializers.base.CohortBaseSerializer
+
+    def list(self, request, *args, **kwargs):
+        """List Cohorts
+
+        List collections of Cohort instances.
+        """
+        return super().list(request, *args, **kwargs)
