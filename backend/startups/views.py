@@ -1,7 +1,7 @@
 from tasks import models as tasks_models
 from generic.utils import call_gemini_api
 from generic.views import BaseViewSet
-from rest_framework import status, mixins
+from rest_framework import status, mixins, viewsets
 from rest_framework.response import Response
 from startups import models as startups_models
 from startups import serializers as startups_serializers
@@ -11,7 +11,7 @@ from users import models as users_models
 from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
 from django.utils import timezone
-from django.db.models import Q, Sum, Subquery, OuterRef, F
+from django.db.models import Q, Sum, Subquery, OuterRef, F, Min
 from startups import utils as startups_utils
 from drf_yasg import openapi
 from users import permissions as users_permissions
@@ -19,6 +19,7 @@ from startups import permissions as startups_permissions
 import pymupdf
 from tasks import utils as tasks_utils
 from readinesslevel import models as readinesslevel_models
+from django.db.models import Avg, Count
 
 
 class StartupViewSet(
@@ -831,6 +832,14 @@ class StartupReadinessLevelViewSet(
     queryset = startups_models.StartupReadinessLevel.objects
     serializer_class = startups_serializers.base.StartupReadinessLevelBaseSerializer
 
+    def get_permissions(self):
+        viewset_action = self.action
+
+        if viewset_action == "create":
+            return [startups_permissions.IsMentorOrManagerPermission()]
+
+        return super().get_permissions()
+
     def get_queryset(self):
         queryset = super().get_queryset()
         request = self.request
@@ -877,6 +886,40 @@ class StartupReadinessLevelViewSet(
 
         Creates a new Startup Readiness Level instance.
         """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        startup = serializer.validated_data.get("startup")
+        readiness_level = serializer.validated_data.get("readiness_level")
+        readiness_type_id = readiness_level.readiness_type_id
+        new_level = readiness_level.level
+
+        self.check_object_permissions(request, startup)
+
+        # Fetch the current readiness level for the startup and readiness type
+        current_level_instance = (
+            startups_models.StartupReadinessLevel.objects.filter(
+                startup=startup,
+                readiness_level__readiness_type_id=readiness_type_id,
+            )
+            .order_by("-datetime_created")
+            .select_related("readiness_level")
+            .first()
+        )
+
+        if (
+            current_level_instance
+            and new_level > current_level_instance.readiness_level.level
+        ):
+            # Create an elevateLog if the new level is higher
+            startups_models.ElevateLog.objects.create(
+                startup=startup,
+                previous_level=current_level_instance.readiness_level.level,
+                new_level=new_level,
+                readiness_type_id=readiness_type_id,
+                mentor=request.user,
+            )
+
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
@@ -1135,3 +1178,79 @@ class CohortViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin)
         List collections of Cohort instances.
         """
         return super().list(request, *args, **kwargs)
+
+
+class AnalyticsViewSet(viewsets.ViewSet):
+    queryset = startups_models.Startup.objects
+    serializer_class = None
+
+    @action(detail=False, methods=["get"], url_path="startups")
+    def startup_analytics(self, request):
+        """Startup Analytics
+
+        Responses data for startups' analytics.
+        """
+        query_serializer = startups_serializers.query.StartupAnalyticsQuerySerializer(
+            data=request.query_params
+        )
+        query_serializer.is_valid(raise_exception=True)
+
+        # Filter startups by cohort_id if provided
+        cohort_id = query_serializer.validated_data.get("cohort_id")
+
+        startups_queryset = startups_models.Startup.objects.filter(cohort_id=cohort_id)
+
+        # Number of startups
+        num_startups = startups_queryset.count()
+
+        # Number of elevated startups and per readiness type
+        elevated_startups = (
+            startups_models.StartupReadinessLevel.objects.filter(
+                startup__in=startups_queryset
+            )
+            .annotate(min_level=Min("readiness_level__level"))
+            .filter(readiness_level__level__gt=F("min_level"))
+        )
+        num_elevated_startups = elevated_startups.count()
+        elevated_startups_per_type = elevated_startups.values(
+            "readiness_level__readiness_type"
+        ).annotate(count=Count("id"))
+
+        # Average completed tasks
+        average_completed_tasks = tasks_models.Task.objects.filter(
+            status=tasks_models.TaskStatus.COMPLETED
+        ).aggregate(average=Avg("id"))
+
+        analytics_data = {
+            "num_startups": num_startups,
+            "num_elevated_startups": num_elevated_startups,
+            "elevated_startups_per_type": list(elevated_startups_per_type),
+            "average_completed_tasks": average_completed_tasks["average"],
+        }
+
+        return Response(analytics_data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"], url_path="elevate-logs")
+    def elevate_logs(self, request):
+        """Elevate Logs
+
+        Responses a list of formatted logs.
+        """
+        logs = (
+            startups_models.ElevateLog.objects.select_related("readiness_type")
+            .all()
+            .values(
+                "startup__name",
+                "readiness_type__rl_type",
+                "previous_level",
+                "new_level",
+                "mentor__last_name",
+            )
+        )
+
+        formatted_logs = [
+            f"{log['startup__name']}'s {dict(readinesslevel_models.ReadinessType.RLType.choices).get(log['readiness_type__rl_type'])} Readiness Level was elevated from level {log['previous_level']} to level {log['new_level']} by {log['mentor__last_name']}"
+            for log in logs
+        ]
+
+        return Response({"logs": formatted_logs}, status=status.HTTP_200_OK)

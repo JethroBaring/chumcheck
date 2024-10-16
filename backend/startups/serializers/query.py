@@ -23,3 +23,7 @@ class StartupReadinessLevelQuerySerializer(serializers.Serializer):
 
 class StartupRNAQuerySerializer(serializers.Serializer):
     startup_id = serializers.IntegerField(required=False)
+
+
+class StartupAnalyticsQuerySerializer(serializers.Serializer):
+    cohort_id = serializers.IntegerField()
