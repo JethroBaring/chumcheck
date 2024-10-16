@@ -234,6 +234,10 @@ class StartupViewSet(
         request_seralizer.is_valid(raise_exception=True)
 
         mentor_ids = request_seralizer.validated_data.get("mentor_ids")
+        cohort_id = request_seralizer.validated_data.get("cohort_id")
+
+        startup.cohort_id = cohort_id
+        startup.save(update_fields=["cohort_id"])
 
         startup.mentors.set(mentor_ids)
 
