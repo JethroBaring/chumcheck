@@ -173,3 +173,27 @@ class StartupRNA(BaseModel):
 
     class Meta:
         db_table = "startup_rnas"
+
+
+class ElevateLog(BaseModel):
+    startup = models.ForeignKey(
+        Startup, on_delete=models.CASCADE, related_name="elevate_logs"
+    )
+    readiness_type = models.ForeignKey(
+        readinesslevel_models.ReadinessType,
+        on_delete=models.CASCADE,
+        related_name="elevate_logs",
+    )
+    mentor = models.ForeignKey(
+        users_models.BaseUser,
+        on_delete=models.CASCADE,
+        related_name="elevate_logs",
+        null=True,
+        default=None,
+    )
+
+    previous_level = models.IntegerField()
+    new_level = models.IntegerField()
+
+    class Meta:
+        db_table = "elevate_logs"
