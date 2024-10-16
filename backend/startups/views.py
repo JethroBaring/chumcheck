@@ -1129,14 +1129,6 @@ class CohortViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin)
     queryset = startups_models.Cohort.objects
     serializer_class = startups_serializers.base.CohortBaseSerializer
 
-    def get_permissions(self):
-        viewset_action = self.action
-
-        if viewset_action == "list":
-            return [users_permissions.IsManagerPermission()]
-
-        return super().get_permissions()
-
     def list(self, request, *args, **kwargs):
         """List Cohorts
 
