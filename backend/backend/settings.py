@@ -91,11 +91,11 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "chumcheck",
+        "NAME": "railway",
         "USER": "postgres",
-        "PASSWORD": "NHJjTXMJcIJsWcFb",
-        "HOST": "51.195.116.88",
-        "PORT": "5432",
+        "PASSWORD": "rQlNPxAyCxQQdCPfSQxnjYiAzjjPURSq",
+        "HOST": "junction.proxy.rlwy.net",
+        "PORT": "23465",
     }
 }
 
