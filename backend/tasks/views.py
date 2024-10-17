@@ -143,12 +143,14 @@ class TaskViewSet(
         request_serializer.is_valid(raise_exception=True)
 
         startup = request_serializer.validated_data.get("startup")
-        readiness_type = request_serializer.validated_data.get("readiness_type")
+        rl_type = request_serializer.validated_data.get("readiness_type")
         term = request_serializer.validated_data.get("term")
         no_of_tasks_to_create = request_serializer.validated_data.get(
             "no_of_tasks_to_create"
         )
-
+        readiness_type = readinesslevel_models.ReadinessType.objects.filter(
+            rl_type=rl_type
+        ).last()
         base_prompt = tasks_utils.create_base_prompt(startup)
 
         if not base_prompt:
@@ -156,7 +158,7 @@ class TaskViewSet(
                 "No capusle proposal found.", status=status.HTTP_400_BAD_REQUEST
             )
 
-        rl_type_label = readinesslevel_models.ReadinessType.RLType(readiness_type).label
+        rl_type_label = readinesslevel_models.ReadinessType.RLType(rl_type).label
         startup_rnas = startups_models.StartupRNA.objects.filter(
             startup_id=startup.id,
             is_ai_generated=False,
