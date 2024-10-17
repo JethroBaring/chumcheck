@@ -10,11 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import os
-import environ
 import json
-from pathlib import Path
+import os
 from datetime import timedelta
+from pathlib import Path
+
+import environ
 from google.cloud import storage
 from google.oauth2 import service_account
 
@@ -140,7 +141,8 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=3),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
-    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.base.MyTokenObtainPairSerializer",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 CORS_ALLOWED_ORIGINS = [

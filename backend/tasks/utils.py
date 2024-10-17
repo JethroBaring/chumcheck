@@ -1,6 +1,6 @@
 from readinesslevel import models as readinesslevel_models
-from tasks import models as tasks_models
 from startups import utils as startups_utils
+from tasks import models as tasks_models
 
 
 def create_base_prompt(startup):

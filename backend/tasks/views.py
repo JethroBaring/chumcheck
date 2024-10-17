@@ -1,18 +1,18 @@
-from generic.views import BaseViewSet
-from rest_framework import mixins
-from drf_yasg.utils import swagger_auto_schema
-from tasks import models as tasks_models
-from tasks import serializers as tasks_serializers
 from django.db import transaction
-from tasks import permissions as tasks_permissions
-from startups import permissions as startups_permissions
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
-from readinesslevel import models as readinesslevel_models
+
 from generic.utils import call_gemini_api
-from tasks import utils as tasks_utils
+from generic.views import BaseViewSet
+from readinesslevel import models as readinesslevel_models
 from startups import models as startups_models
+from startups import permissions as startups_permissions
+from tasks import models as tasks_models
+from tasks import permissions as tasks_permissions
+from tasks import serializers as tasks_serializers
+from tasks import utils as tasks_utils
 
 
 class TaskViewSet(

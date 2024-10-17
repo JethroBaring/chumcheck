@@ -1,8 +1,9 @@
-from generic.views import BaseViewSet
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins
+
+from generic.views import BaseViewSet
 from readinesslevel import models as readinesslevel_models
 from readinesslevel import serializers as readinesslevel_serializers
-from drf_yasg.utils import swagger_auto_schema
 
 
 class UratQuestionViewSet(

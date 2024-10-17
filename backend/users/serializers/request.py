@@ -1,7 +1,9 @@
-from rest_framework import serializers
-from users import models as users_models
-from rest_framework.validators import UniqueValidator
 import re
+
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+
+from users import models as users_models
 
 
 def validate_signup_password(password):

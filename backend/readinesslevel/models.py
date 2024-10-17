@@ -1,7 +1,7 @@
 from django.db import models
-from generic.models import BaseModel
-
 from django.utils.translation import gettext_lazy as _
+
+from generic.models import BaseModel
 
 
 class ReadinessType(BaseModel):

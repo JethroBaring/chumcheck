@@ -1,7 +1,8 @@
 from rest_framework import serializers
+
+from readinesslevel import models as readinesselvels_models
 from startups import models as startups_models
 from tasks import models as tasks_models
-from readinesslevel import models as readinesselvels_models
 
 
 class GenerateTaskRequestSerializer(serializers.Serializer):

@@ -15,25 +15,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include, re_path
-from startups.urls import urlpatterns as startups_urlpatterns
-from users.urls import urlpatterns as users_urlpatterns
-from readinesslevel.urls import urlpatterns as readinesslevels_urlpatterns
-from tasks.urls import urlpatterns as tasks_urlpatterns
-from rest_framework import permissions
+from django.urls import include, path, re_path
+from django.views.generic import TemplateView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-from django.conf.urls.static import static
-from .settings import (
-    STATIC_ROOT,
-    STATIC_URL,
-)
-from django.views.generic import TemplateView
+from rest_framework import permissions
+from rest_framework_simplejwt.views import (TokenObtainPairView,
+                                            TokenRefreshView)
+
+from readinesslevel.urls import urlpatterns as readinesslevels_urlpatterns
+from startups.urls import urlpatterns as startups_urlpatterns
+from tasks.urls import urlpatterns as tasks_urlpatterns
+from users.urls import urlpatterns as users_urlpatterns
+
+from .settings import STATIC_ROOT, STATIC_URL
 
 urlpatterns = [
     path("admin/", admin.site.urls),

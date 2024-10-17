@@ -1,6 +1,7 @@
 from rest_framework.permissions import IsAuthenticated
-from users import models as users_models
+
 from startups import models as startups_models
+from users import models as users_models
 
 
 class IsManagerOrMemberOrMentorOfStartUpPermission(IsAuthenticated):

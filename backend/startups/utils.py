@@ -1,9 +1,10 @@
-from users import models as users_models
-from generic.email import send_email
-from generic import utils as generic_utils
 from django.template.loader import render_to_string
-from startups import models as startups_models
+
+from generic import utils as generic_utils
+from generic.email import send_email
 from readinesslevel import models as readinesslevel_models
+from startups import models as startups_models
+from users import models as users_models
 
 
 def send_approval_email(email, startup_name):
