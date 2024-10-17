@@ -18,4 +18,9 @@ urlpatterns = router.urls + [
         views.CustomTokenRenewCreateView.as_view(),
         name="token_refresh",
     ),
+    re_path(
+        "tokens/logout",
+        views.LogoutView.as_view(),
+        name="token_logout",
+    ),
 ]
