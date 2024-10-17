@@ -1,9 +1,10 @@
 from django.db import models
-from generic.models import BaseModel
-from users import models as users_models
-from readinesslevel import models as readinesslevel_models
 from django.utils.translation import gettext_lazy as _
+
+from generic.models import BaseModel
+from readinesslevel import models as readinesslevel_models
 from startups import models as startups_models
+from users import models as users_models
 
 
 class TaskStatus(models.IntegerChoices):

@@ -1,9 +1,9 @@
-from rest_framework import serializers
 from drf_yasg.utils import swagger_serializer_method
-from readinesslevel import models as readinesslevel_models
-from tasks import models as tasks_models
-from startups import models as startups_models
+from rest_framework import serializers
 
+from readinesslevel import models as readinesslevel_models
+from startups import models as startups_models
+from tasks import models as tasks_models
 from users import models as users_models
 
 

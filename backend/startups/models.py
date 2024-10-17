@@ -1,7 +1,8 @@
 from django.db import models
+
 from generic.models import BaseModel
-from users import models as users_models
 from readinesslevel import models as readinesslevel_models
+from users import models as users_models
 
 
 class Cohort(BaseModel):

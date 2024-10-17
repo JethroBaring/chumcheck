@@ -1,10 +1,12 @@
+import json
+import logging
+import os
 import secrets
 import string
-from backend.settings import GEMINI_KEY
-import os
-import logging
+
 import google.generativeai as genai
-import json
+
+from backend.settings import GEMINI_KEY
 
 MAX_RETRIES = 3
 

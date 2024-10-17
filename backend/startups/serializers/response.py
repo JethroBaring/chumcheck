@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from users import serializers as users_serializers
+
 from startups import serializers as startups_serializers
+from users import serializers as users_serializers
 
 
 class CalculatorFinalScoresResponseSerializer(serializers.Serializer):

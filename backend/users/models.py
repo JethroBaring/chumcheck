@@ -1,7 +1,8 @@
-from django.db import models
-from generic.models import BaseModel
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from generic.models import BaseModel
 from users import managers
 
 
