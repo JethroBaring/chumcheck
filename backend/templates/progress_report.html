@@ -28,12 +28,8 @@
 </head>
 <body>
     <h1>Progress Report for {{ data.name }}</h1>
-    <p><strong>User ID:</strong> {{ data.user_id }}</p>
-    <p><strong>Qualification Status:</strong> {{ data.qualification_status }}</p>
-    <p><strong>Links:</strong> {{ data.links }}</p>
     <p><strong>Group Name:</strong> {{ data.group_name }}</p>
     <p><strong>University Name:</strong> {{ data.university_name }}</p>
-    <p><strong>Eligibility:</strong> {{ data.eligibility }}</p>
     <p><strong>Leader:</strong> {{ data.leader_first_name }} {{ data.leader_last_name }} ({{ data.leader_email }})</p>
 
     <h2>Readiness Levels</h2>
@@ -43,7 +39,6 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Priority</th>
                 <th>Description</th>
                 <th>Status</th>
@@ -55,7 +50,6 @@
         <tbody>
             {% for task in data.tasks %}
             <tr>
-                <td>{{ task.id }}</td>
                 <td>{{ task.priority_number }}</td>
                 <td>{{ task.description }}</td>
                 <td>{{ task.status }}</td>
@@ -71,7 +65,6 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Risk Number</th>
                 <th>Description</th>
                 <th>Fix</th>
@@ -81,7 +74,6 @@
         <tbody>
             {% for roadblock in data.roadblocks %}
             <tr>
-                <td>{{ roadblock.id }}</td>
                 <td>{{ roadblock.risk_number }}</td>
                 <td>{{ roadblock.description }}</td>
                 <td>{{ roadblock.fix }}</td>

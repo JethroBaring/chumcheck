@@ -182,6 +182,7 @@ class CohortBaseSerializer(serializers.ModelSerializer):
 class ProgressReportResponseSerializer(StartupBaseSerializer):
     class ProgressReportTaskSerializer(tasks_serializers.base.TaskBaseSerializer):
         initiatives = tasks_serializers.base.InitiativeBaseSerializer(many=True)
+        status = serializers.CharField(source="get_status_display", read_only=True)
 
         class Meta:
             model = tasks_serializers.base.TaskBaseSerializer.Meta.model
@@ -229,7 +230,7 @@ class ProgressReportResponseSerializer(StartupBaseSerializer):
         method_name="_readiness_levels"
     )
     rnas = StartupRNABaseSerializer(many=True)
-    tasks = tasks_serializers.base.TaskBaseSerializer(many=True)
+    tasks = ProgressReportTaskSerializer(many=True)
     roadblocks = ProgressReportRoadblockSerializer(many=True)
 
     class Meta:
