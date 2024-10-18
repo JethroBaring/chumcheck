@@ -1225,6 +1225,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
         # Filter startups by cohort_id if provided
         cohort_id = query_serializer.validated_data.get("cohort_id")
 
+        num_of_users = users_models.StartupUser.objects.count()
         startups_queryset = startups_models.Startup.objects.filter(cohort_id=cohort_id)
 
         # Number of startups
@@ -1249,6 +1250,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
         ).aggregate(average=Avg("id"))
 
         analytics_data = {
+            "num_of_users": num_of_users,
             "num_startups": num_startups,
             "num_elevated_startups": num_elevated_startups,
             "elevated_startups_per_type": list(elevated_startups_per_type),
