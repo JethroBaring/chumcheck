@@ -15,11 +15,18 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            table-layout: fixed; /* Fixes the table layout */
+
         }
         th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
+            border: 1px solid black; /* Add border to cells */
+            padding: 8px;            /* Add some padding */
+            text-align: left;        /* Align text to the left */
+            word-wrap: break-word;   /* Allows long words to be broken */
+            overflow: hidden;        /* Hides overflow content */
+            text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
+            max-height: 50px;       /* Set a maximum height for the cell */
+            white-space: nowrap;     /* Prevents line breaks */
         }
         th {
             background-color: #f2f2f2;
