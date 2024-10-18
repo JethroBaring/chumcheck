@@ -201,6 +201,14 @@ def generate_spider_graph(data):
     ax.set_yticklabels([])
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(labels)
+    for i, label in enumerate(labels):
+        ax.text(
+            angles[i],
+            values[i] + 0.1,
+            label,
+            horizontalalignment="center",
+            fontsize=10,
+        )
 
     # Save it to a BytesIO object
     buf = BytesIO()
