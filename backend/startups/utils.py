@@ -4,6 +4,7 @@ from generic import utils as generic_utils
 from django.template.loader import render_to_string
 from startups import models as startups_models
 from readinesslevel import models as readinesslevel_models
+import base64
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -207,4 +208,6 @@ def generate_spider_graph(data):
     plt.close(fig)
     buf.seek(0)
 
-    return ContentFile(buf.read(), name="spider_graph.png")
+    img_str = base64.b64encode(buf.read()).decode("utf-8")
+
+    return f"data:image/png;base64,{img_str}"

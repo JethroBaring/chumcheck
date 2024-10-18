@@ -37,7 +37,7 @@
     <p><strong>Leader:</strong> {{ data.leader_first_name }} {{ data.leader_last_name }} ({{ data.leader_email }})</p>
 
     <h2>Readiness Levels</h2>
-    <img src="data:image/png;base64,{{ spider_graph.url }}" alt="Spider Graph" style="width:100%; height:auto;"/>
+    <img src="{{ spider_graph }}" alt="Spider Graph" style="width:100%; height:auto;"/>
 
     <h2>Tasks</h2>
     <table>

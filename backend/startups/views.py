@@ -591,12 +591,14 @@ class StartupViewSet(
         startup = self.get_object()
         serializer = startups_serializers.base.ProgressReportResponseSerializer(startup)
 
-        spider_graph_image = generate_spider_graph(serializer.data["readiness_levels"])
+        spider_graph_image_str = generate_spider_graph(
+            serializer.data["readiness_levels"]
+        )
 
         # Render the HTML for the PDF, including the spider graph image
         html_string = render_to_string(
             "progress_report.html",
-            {"data": serializer.data, "spider_graph": spider_graph_image},
+            {"data": serializer.data, "spider_graph": spider_graph_image_str},
         )
 
         # Create PDF from HTML
