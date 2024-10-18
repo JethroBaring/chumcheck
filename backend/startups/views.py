@@ -20,6 +20,10 @@ import pymupdf
 from tasks import utils as tasks_utils
 from readinesslevel import models as readinesslevel_models
 from django.db.models import Avg, Count
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from startups.utils import generate_spider_graph
+from weasyprint import HTML
 
 
 class StartupViewSet(
@@ -585,10 +589,26 @@ class StartupViewSet(
         Response progress report data.
         """
         startup = self.get_object()
+        serializer = startups_serializers.base.ProgressReportResponseSerializer(startup)
 
-        return Response(
-            startups_serializers.base.ProgressReportResponseSerializer(startup).data
+        spider_graph_image = generate_spider_graph(serializer.data["readiness_levels"])
+
+        # Render the HTML for the PDF, including the spider graph image
+        html_string = render_to_string(
+            "progress_report.html",
+            {"data": serializer.data, "spider_graph": spider_graph_image},
         )
+
+        # Create PDF from HTML
+        pdf_file = HTML(string=html_string).write_pdf()
+
+        # Create the HTTP response
+        response = HttpResponse(pdf_file, content_type="application/pdf")
+        response["Content-Disposition"] = (
+            f'attachment; filename="progress_report_{startup.id}.pdf"'
+        )
+
+        return response
 
 
 class UratQuestionAnswerViewSet(

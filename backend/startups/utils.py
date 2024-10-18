@@ -5,6 +5,11 @@ from django.template.loader import render_to_string
 from startups import models as startups_models
 from readinesslevel import models as readinesslevel_models
 
+import matplotlib.pyplot as plt
+import numpy as np
+from django.core.files.base import ContentFile
+from io import BytesIO
+
 
 def send_approval_email(email, startup_name):
     subject = "LaunchLab Application Approved – Welcome aboard!"
@@ -169,3 +174,37 @@ def get_first_readiness_levels(startup_id):
             break
 
     return trl, irl, mrl, rrl, arl, orl
+
+
+def generate_spider_graph(data):
+    # Example data
+    labels = [level["name"] for level in data]
+    values = [level["level"] for level in data]
+
+    # Number of variables
+    num_vars = len(labels)
+
+    # Compute angle for each axis
+    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+
+    # Repeat the first value to close the circle
+    values += values[:1]
+    angles += angles[:1]
+
+    # Create spider plot
+    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+    ax.fill(angles, values, color="blue", alpha=0.25)
+    ax.plot(angles, values, color="blue", linewidth=2)
+
+    # Labels for each axis
+    ax.set_yticklabels([])
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(labels)
+
+    # Save it to a BytesIO object
+    buf = BytesIO()
+    plt.savefig(buf, format="png", bbox_inches="tight")
+    plt.close(fig)
+    buf.seek(0)
+
+    return ContentFile(buf.read(), name="spider_graph.png")
