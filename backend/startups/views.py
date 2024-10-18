@@ -1265,7 +1265,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
             .annotate(
                 previous_level=Window(
                     expression=Lag("readiness_level__level"),
-                    partition_by=F("startup"),
+                    partition_by=[F("startup"), F("readiness_level__readiness_type")],
                     order_by=F("id").asc(),
                 )
             )
@@ -1273,7 +1273,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
         )
         num_elevated_startups = elevated_startups.count()
         elevated_startups_per_type = elevated_startups.values(
-            "readiness_level__readiness_type"
+            readiness_type="readiness_level__readiness_type"
         ).annotate(count=Count("id"))
 
         # Average completed tasks
