@@ -1315,6 +1315,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
                 "new_level",
                 "mentor__last_name",
             )
+            .order_by("-id")
         )
 
         formatted_logs = [
