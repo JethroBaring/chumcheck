@@ -53,7 +53,6 @@
         <tbody>
             {% for rna in data.rnas %}
             <tr>
-                <td>{{ rna.priority_number }}</td>
                 <td>{{ rna.readiness_type_rl_type }}</td>
                 <td>{{ rna.readiness_level_level }}</td>
                 <td>{{ rna.rna }}</td>
@@ -88,10 +87,10 @@
         </tbody>
     </table>
 
-    IV Priorities
+    <h2>IV Priorities</h2>
     {% for task in data.tasks %}
     {% if task.task_type == 1 %}
-        <h2>Priority {{ task.priority_number }}</h2>
+        <h3>Priority {{ task.priority_number }}</h3>
         <table>
             <thead>
                 <tr>
