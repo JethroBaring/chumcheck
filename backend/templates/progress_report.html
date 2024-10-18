@@ -38,36 +38,111 @@
     <p><strong>University Name:</strong> {{ data.university_name }}</p>
     <p><strong>Leader:</strong> {{ data.leader_first_name }} {{ data.leader_last_name }} ({{ data.leader_email }})</p>
 
-    <h2>Readiness Levels</h2>
+    <h2>I. Readiness Levels</h2>
     <img src="{{ spider_graph }}" alt="Spider Graph" style="width:100%; height:auto;"/>
 
-    <h2>Tasks</h2>
+    <h2>II RNA Results Summary</h2>
     <table>
         <thead>
             <tr>
-                <th>Priority</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Due Date</th>
                 <th>Readiness Type</th>
-                <th>Target Level</th>
+                <th>Current Level</th>
+                <th>Details</th>
             </tr>
         </thead>
         <tbody>
-            {% for task in data.tasks %}
+            {% for rna in data.rnas %}
             <tr>
-                <td>{{ task.priority_number }}</td>
-                <td>{{ task.description }}</td>
-                <td>{{ task.status }}</td>
-                <td>{{ task.due_date }}</td>
-                <td>{{ task.readiness_type_rl_type }}</td>
-                <td>{{ task.target_level_level }}</td>
+                <td>{{ rna.priority_number }}</td>
+                <td>{{ rna.readiness_type_rl_type }}</td>
+                <td>{{ rna.readiness_level_level }}</td>
+                <td>{{ rna.rna }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <h2>Roadblocks</h2>
+    <h2>III Recommended Next Steps (RNS) - Short Term</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Priority Number</th>
+                <th>Readiness Level Type</th>
+                <th>Target Level</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in data.tasks %}
+            {% if task.task_type == 1 %}
+                <tr>
+                    <td>{{ task.priority_number }}</td>
+                    <td>{{ task.readiness_type_rl_type }}</td>
+                    <td>{{ task.target_level_level }}</td>
+                    <td>{{ task.description }}</td>
+                    <td>{{ task.status }}</td>
+                </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    IV Priorities
+    {% for task in data.tasks %}
+    {% if task.task_type == 1 %}
+        <h2>Priority {{ task.priority_number }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Initative Number</th>
+                    <th>Description</th>
+                    <th>Measures</th>
+                    <th>Targets</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for initative in task.initatives %}
+                <tr>
+                    <td>{{ initative.initative_number }}</td>
+                    <td>{{ initative.description }}</td>
+                    <td>{{ initative.measures }}</td>
+                    <td>{{ initative.targets }}</td>
+                    <td>{{ initative.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% endfor %}
+
+    <h2>V Recommended Next Steps (RNS) - Long Term</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Priority Number</th>
+                <th>Readiness Level Type</th>
+                <th>Target Level</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in data.tasks %}
+            {% if task.task_type == 2 %}
+                <tr>
+                    <td>{{ task.priority_number }}</td>
+                    <td>{{ task.readiness_type_rl_type }}</td>
+                    <td>{{ task.target_level_level }}</td>
+                    <td>{{ task.description }}</td>
+                </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <h2>VI Risk And Roadblocks</h2>
     <table>
         <thead>
             <tr>
