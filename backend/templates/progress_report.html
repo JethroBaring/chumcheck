@@ -15,19 +15,18 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            table-layout: fixed; /* Fixes the table layout */
+            table-layout: auto; /* Allow auto layout */
 
+            
         }
         th, td {
-            border: 1px solid black; /* Add border to cells */
-            padding: 8px;            /* Add some padding */
-            text-align: left;        /* Align text to the left */
-            word-wrap: break-word;   /* Allows long words to be broken */
-            overflow: hidden;        /* Hides overflow content */
-            text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
-            max-height: 50px;       /* Set a maximum height for the cell */
-            white-space: nowrap;     /* Prevents line breaks */
-        }
+        border: 1px solid black; /* Add border to cells */
+        padding: 8px;            /* Add some padding */
+        text-align: left;        /* Align text to the left */
+        word-wrap: break-word;   /* Allows long words to be broken */
+        max-width: 200px;        /* Set a maximum width for cells */
+        overflow-wrap: break-word; /* Break words if necessary */
+    }
         th {
             background-color: #f2f2f2;
         }
