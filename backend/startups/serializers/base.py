@@ -253,9 +253,12 @@ class ProgressReportResponseSerializer(StartupBaseSerializer):
         ]
 
     def _readiness_levels(self, instance):
-        readiness_levels = instance.readiness_levels.select_related(
-            "readiness_level"
-        ).values_list("readiness_level", flat=True)
+        latest_readiness_levels = (
+            instance.readiness_levels.select_related("readiness_level__readiness_type")
+            .order_by("readiness_level__readiness_type", "-readiness_level__level")
+            .distinct("readiness_level__readiness_type")
+            .values_list("readiness_level", flat=True)
+        )
         return self.ProgressReportReadinessLevelSerializer(
-            readiness_levels, many=True
+            latest_readiness_levels, many=True
         ).data
