@@ -198,14 +198,11 @@ def generate_spider_graph(data):
     ax.plot(angles, values, color="blue", linewidth=2)
 
     # Labels for each axis
-    ax.set_yticklabels([])
-    ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(labels)
-    for i, label in enumerate(labels):
+    for i, value in enumerate(values):
         ax.text(
             angles[i],
-            values[i] + 0.1,
-            label,
+            value + 0.1,
+            value,
             horizontalalignment="center",
             fontsize=10,
         )
