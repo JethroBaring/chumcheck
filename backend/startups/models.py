@@ -174,6 +174,20 @@ class StartupRNA(BaseModel):
     class Meta:
         db_table = "startup_rnas"
 
+    @property
+    def readiness_level_level(self):
+        return self.readiness_level.level if self.readiness_level else None
+
+    @property
+    def readiness_type_rl_type(self):
+        return (
+            readinesslevel_models.ReadinessType.RLType(
+                self.readiness_level.readiness_type.rl_type
+            ).label
+            if self.readiness_level
+            else None
+        )
+
 
 class ElevateLog(BaseModel):
     startup = models.ForeignKey(
