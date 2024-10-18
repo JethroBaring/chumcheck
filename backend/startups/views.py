@@ -1290,7 +1290,11 @@ class AnalyticsViewSet(viewsets.ViewSet):
             "num_startups": num_startups,
             "num_elevated_startups": num_elevated_startups,
             "elevated_startups_per_type": list(elevated_startups_per_type),
-            "average_completed_tasks": average_completed_tasks["average"],
+            "average_completed_tasks": (
+                average_completed_tasks["average"]
+                if average_completed_tasks["average"]
+                else 0
+            ),
         }
 
         return Response(analytics_data, status=status.HTTP_200_OK)
