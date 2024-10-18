@@ -179,7 +179,7 @@ def get_first_readiness_levels(startup_id):
 
 def generate_spider_graph(data):
     # Example data
-    labels = [level["name"] for level in data]
+    labels = [level["readiness_type"] for level in data]
     values = [level["level"] for level in data]
 
     # Number of variables
