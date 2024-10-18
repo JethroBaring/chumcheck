@@ -525,7 +525,7 @@ class StartupViewSet(
         )
 
         return Response(
-            startups_serializers.base.StartupRNABaseSerializer(startup_rnas).data,
+            startups_serializers.base.StartupRNABaseSerializer(startup_rnas, many=True).data,
             status=status.HTTP_200_OK,
         )
 
