@@ -11,7 +11,7 @@ from users import models as users_models
 from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
 from django.utils import timezone
-from django.db.models import Q, Sum, Subquery, OuterRef, F, Min, Max
+from django.db.models import Q, Sum, Subquery, OuterRef, F, Min, Max, Window
 from startups import utils as startups_utils
 from drf_yasg import openapi
 from users import permissions as users_permissions
@@ -24,6 +24,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from startups.utils import generate_spider_graph
 from weasyprint import HTML
+from django.db.models.functions import Lag
 
 
 class StartupViewSet(
@@ -1250,6 +1251,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
         cohort_id = query_serializer.validated_data.get("cohort_id")
 
         num_of_users = users_models.StartupUser.objects.count()
+
         startups_queryset = startups_models.Startup.objects.filter(cohort_id=cohort_id)
 
         # Number of startups
@@ -1260,8 +1262,14 @@ class AnalyticsViewSet(viewsets.ViewSet):
             startups_models.StartupReadinessLevel.objects.filter(
                 startup__in=startups_queryset
             )
-            .annotate(max_level=Max("readiness_level__level"))
-            .filter(readiness_level__level__lt=F("max_level"))
+            .annotate(
+                previous_level=Window(
+                    expression=Lag("readiness_level__level"),
+                    partition_by=F("startup"),
+                    order_by=F("id").asc(),
+                )
+            )
+            .filter(readiness_level__level__gt=F("previous_level"))
         )
         num_elevated_startups = elevated_startups.count()
         elevated_startups_per_type = elevated_startups.values(
