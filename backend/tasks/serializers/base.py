@@ -22,7 +22,7 @@ class TaskBaseSerializer(serializers.ModelSerializer):
     startup_id = serializers.PrimaryKeyRelatedField(
         source="startup", queryset=startups_models.Startup.objects
     )
-    is_ai_generated = serializers.BooleanField(read_only=True)
+    is_ai_generated = serializers.BooleanField()
 
     class Meta:
         model = tasks_models.Task
@@ -47,7 +47,7 @@ class InitiativeBaseSerializer(serializers.ModelSerializer):
     task_id = serializers.PrimaryKeyRelatedField(
         source="task", queryset=tasks_models.Task.objects
     )
-    is_ai_generated = serializers.BooleanField(read_only=True)
+    is_ai_generated = serializers.BooleanField()
 
     class Meta:
         model = tasks_models.Initiative
@@ -75,7 +75,7 @@ class RoadblockBaseSerializer(serializers.ModelSerializer):
     startup_id = serializers.PrimaryKeyRelatedField(
         source="startup", queryset=startups_models.Startup.objects
     )
-    is_ai_generated = serializers.BooleanField(read_only=True)
+    is_ai_generated = serializers.BooleanField()
 
     class Meta:
         model = tasks_models.Roadblock
