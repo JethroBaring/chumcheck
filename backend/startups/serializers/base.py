@@ -2,7 +2,8 @@ from rest_framework import serializers
 from startups import models as startups_models
 from drf_yasg.utils import swagger_serializer_method
 from readinesslevel import models as readinesslevel_models
-from startups.utils import calculate_levels
+from readinesslevel import serializers as readinesslevel_serializers
+from tasks import serializers as tasks_serializers
 
 
 class StartupMemberBaseSerializer(serializers.ModelSerializer):
@@ -166,7 +167,6 @@ class StartupRNABaseSerializer(serializers.ModelSerializer):
     readiness_level_id = serializers.PrimaryKeyRelatedField(
         source="readiness_level", queryset=readinesslevel_models.ReadinessLevel.objects
     )
-    is_ai_generated = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = startups_models.StartupRNA
@@ -177,3 +177,75 @@ class CohortBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = startups_models.Cohort
         fields = ["id", "name"]
+
+
+class ProgressReportResponseSerializer(StartupBaseSerializer):
+    class ProgressReportTaskSerializer(tasks_serializers.base.TaskBaseSerializer):
+        initiatives = tasks_serializers.base.InitiativeBaseSerializer(many=True)
+
+        class Meta:
+            model = tasks_serializers.base.TaskBaseSerializer.Meta.model
+            fields = [
+                "id",
+                "priority_number",
+                "description",
+                "status",
+                "task_type",
+                "due_date",
+                "readiness_type_rl_type",
+                "target_level_level",
+                "initiatives",
+            ]
+
+    class ProgressReportRoadblockSerializer(
+        tasks_serializers.base.RoadblockBaseSerializer
+    ):
+        class Meta:
+            model = tasks_serializers.base.RoadblockBaseSerializer.Meta.model
+            fields = [
+                "id",
+                "risk_number",
+                "description",
+                "fix",
+                "assignee_last_name",
+                "is_ai_generated",
+            ]
+
+    class ProgressReportReadinessLevelSerializer(
+        readinesslevel_serializers.base.ReadinessLevelBaseSerializer
+    ):
+        class Meta:
+            model = (
+                readinesslevel_serializers.base.ReadinessLevelBaseSerializer.Meta.model
+            )
+            fields = [
+                "id",
+                "level",
+                "name",
+                "readiness_type",
+            ]
+
+    readiness_levels = ProgressReportReadinessLevelSerializer(many=True)
+    rnas = StartupRNABaseSerializer(many=True)
+    tasks = tasks_serializers.base.TaskBaseSerializer(many=True)
+    roadblocks = ProgressReportRoadblockSerializer(many=True)
+
+    class Meta:
+        model = StartupBaseSerializer.Meta.model
+        fields = [
+            "id",
+            "name",
+            "user_id",
+            "qualification_status",
+            "links",
+            "group_name",
+            "university_name",
+            "eligibility",
+            "leader_first_name",
+            "leader_last_name",
+            "leader_email",
+            "readiness_levels",
+            "rnas",
+            "tasks",
+            "roadblocks",
+        ]

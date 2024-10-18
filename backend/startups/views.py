@@ -45,7 +45,7 @@ class StartupViewSet(
         ]:
             return [users_permissions.IsManagerPermission()]
 
-        if viewset_action in ["retrieve", "get_mentors"]:
+        if viewset_action in ["retrieve", "get_mentors", "progress_report"]:
             return [startups_permissions.IsManagerOrMemberOrMentorOfStartUpPermission()]
 
         if viewset_action in [
@@ -573,6 +573,21 @@ class StartupViewSet(
             .exclude(status=tasks_models.TaskStatus.FOR_REVIEW)
             .exists(),
             status=status.HTTP_200_OK,
+        )
+
+    @swagger_auto_schema(
+        responses={200: startups_serializers.base.ProgressReportResponseSerializer}
+    )
+    @action(url_path="progress-report", detail=True, methods=["GET"])
+    def progress_report(self, request, pk):
+        """Progress Report
+
+        Response progress report data.
+        """
+        startup = self.get_object()
+
+        return Response(
+            startups_serializers.base.ProgressReportResponseSerializer(startup).data
         )
 
 
@@ -1122,10 +1137,22 @@ class CapsuleProposalInfoViewSet(
 
 
 class StartupRNAViewSet(
-    BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin, mixins.UpdateModelMixin
+    BaseViewSet,
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
 ):
     queryset = startups_models.StartupRNA.objects
     serializer_class = startups_serializers.base.StartupRNABaseSerializer
+
+    def get_permissions(self):
+        viewset_action = self.action
+
+        if viewset_action == "destroy":
+            return [startups_permissions.IsMemberOfStartupThroughStartupRNAPermission()]
+
+        return super().get_permissions()
 
     def get_queryset(self):
         queryset = super().get_queryset()

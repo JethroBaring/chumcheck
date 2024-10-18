@@ -104,3 +104,7 @@ class Roadblock(BaseModel):
     class Meta:
         db_table = "roadblocks"
         ordering = ["risk_number"]
+
+    @property
+    def assignee_last_name(self):
+        return self.assignee.last_name if self.assignee else None
