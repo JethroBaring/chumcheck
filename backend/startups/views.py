@@ -1272,9 +1272,13 @@ class AnalyticsViewSet(viewsets.ViewSet):
             .filter(readiness_level__level__gt=F("previous_level"))
         )
         num_elevated_startups = elevated_startups.count()
-        elevated_startups_per_type = elevated_startups.values(
-            readiness_type="readiness_level__readiness_type"
-        ).annotate(count=Count("id"))
+        elevated_startups_per_type = (
+            elevated_startups.annotate(
+                readiness_type=F("readiness_level__readiness_type__rl_type")
+            )
+            .values("readiness_type")
+            .annotate(count=Count("id"))
+        )
 
         # Average completed tasks
         average_completed_tasks = tasks_models.Task.objects.filter(
