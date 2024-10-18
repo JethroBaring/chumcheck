@@ -11,7 +11,7 @@ from users import models as users_models
 from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
 from django.utils import timezone
-from django.db.models import Q, Sum, Subquery, OuterRef, F, Min
+from django.db.models import Q, Sum, Subquery, OuterRef, F, Min, Max
 from startups import utils as startups_utils
 from drf_yasg import openapi
 from users import permissions as users_permissions
@@ -525,7 +525,9 @@ class StartupViewSet(
         )
 
         return Response(
-            startups_serializers.base.StartupRNABaseSerializer(startup_rnas, many=True).data,
+            startups_serializers.base.StartupRNABaseSerializer(
+                startup_rnas, many=True
+            ).data,
             status=status.HTTP_200_OK,
         )
 
@@ -1258,8 +1260,8 @@ class AnalyticsViewSet(viewsets.ViewSet):
             startups_models.StartupReadinessLevel.objects.filter(
                 startup__in=startups_queryset
             )
-            .annotate(min_level=Min("readiness_level__level"))
-            .filter(readiness_level__level__gt=F("min_level"))
+            .annotate(max_level=Max("readiness_level__level"))
+            .filter(readiness_level__level__lt=F("max_level"))
         )
         num_elevated_startups = elevated_startups.count()
         elevated_startups_per_type = elevated_startups.values(
