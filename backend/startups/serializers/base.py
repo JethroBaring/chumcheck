@@ -225,7 +225,9 @@ class ProgressReportResponseSerializer(StartupBaseSerializer):
                 "readiness_type",
             ]
 
-    readiness_levels = ProgressReportReadinessLevelSerializer(many=True)
+    readiness_levels = serializers.SerializerMethodField(
+        method_name="_readiness_levels"
+    )
     rnas = StartupRNABaseSerializer(many=True)
     tasks = tasks_serializers.base.TaskBaseSerializer(many=True)
     roadblocks = ProgressReportRoadblockSerializer(many=True)
@@ -249,3 +251,11 @@ class ProgressReportResponseSerializer(StartupBaseSerializer):
             "tasks",
             "roadblocks",
         ]
+
+    def _readiness_levels(self, instance):
+        readiness_levels = instance.readiness_levels.select_related(
+            "readiness_level"
+        ).values_list("readiness_level", flat=True)
+        return self.ProgressReportReadinessLevelSerializer(
+            readiness_levels, many=True
+        ).data
