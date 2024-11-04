@@ -1,0 +1,208 @@
+<script lang="ts">
+	import type { PageData } from './$types';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import { superForm } from 'sveltekit-superforms';
+	import { toast } from 'svelte-sonner';
+	import Cookies from 'js-cookie';
+	import { goto } from '$app/navigation';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import { Loader } from 'lucide-svelte';
+
+	export let data: PageData;
+
+	let isLoading = false;
+
+	async function onSubmit(e: any) {
+		e.preventDefault();
+		isLoading = true;
+
+		setTimeout(() => {
+			isLoading = false;
+		}, 3000);
+	}
+
+	const { form, errors, enhance, message, submitting } = superForm(data.form);
+
+	$: if ($message && !$submitting) {
+		toast.dismiss();
+		toast.success('Login successful');
+		goto('/startups');
+	}
+
+	$: if ($errors.email && !$submitting) {
+		toast.dismiss();
+		toast.error('Login failed');
+	}
+
+	// $effect(() => {
+	// 	if($submitting) {
+	// 		toast.dismiss()
+	// 		toast.info('Logging in...');
+	// 	}
+
+	// 	if($message && !$submitting) {
+	// 		toast.dismiss()
+	// 		toast.success('Login successful');
+	// 		goto('/startups')
+	// 	}
+	// 	if($errors.email && !$submitting) {
+	// 		toast.dismiss()
+	// 		toast.error('Login failed');
+	// 	}
+	// })
+	// let email: string, password: string;
+
+	// async function login() {
+	// 	const response = await fetch(`${PUBLIC_API_URL}/tokens/acquire/`, {
+	// 		method: 'post',
+	// 		headers: {
+	// 			'Content-type': 'application/json'
+	// 		},
+	// 		body: JSON.stringify({
+	// 			email: email,
+	// 			password: password
+	// 		})
+	// 	});
+	//   const inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
+	//   const inOneHour = new Date(new Date().getTime() + 60 * 60 * 1000);
+
+	// 	if (response.status === 200) {
+	// 		const data = await response.json();
+	// 		Cookies.set('Refresh', data.refresh, {
+	//         expires: inFifteenMinutes,
+	//       });
+
+	// 		Cookies.set('Access', data.access, {
+	//         expires: inOneHour,
+	//       });
+	// 		goto('/startups')
+	// 		// return message(form, { text: 'Login successful' });
+	// 	}
+	// }
+</script>
+
+<svelte:head>
+	<title>Login</title>
+</svelte:head>
+
+<div
+	class="relative flex h-full flex-1 flex-col items-center rounded-bl-xl rounded-tl-xl bg-muted/40 text-flutter-gray dark:text-flutter-white"
+>
+	<div class="absolute flex w-full cursor-pointer items-center gap-2 p-5">
+		<img src="launchlab_logo.png" alt="citeams_logo" class="h-7 w-7" />
+		<a href="/" class="cursor-pointer text-xl font-black normal-case">ChumCheck</a>
+	</div>
+
+	<div class="flex flex-1 items-center justify-center">
+		<img src="loginv2.svg" alt="" class="h-3/4 w-3/4" />
+	</div>
+</div>
+<div
+	class="flex h-full flex-1 items-center justify-center rounded-br-xl rounded-tr-xl bg-background text-flutter-gray dark:text-flutter-white"
+>
+	<form
+		method="post"
+		use:enhance
+		on:submit={onSubmit}
+		class="flex items-center justify-center py-12"
+	>
+		<div class="mx-auto grid w-[350px] gap-6">
+			<div class="grid gap-2 text-center">
+				<h1 class="text-3xl font-bold">Login</h1>
+				<p class="text-balance text-[15px] text-muted-foreground">
+					Enter your email below to login to your account
+				</p>
+			</div>
+			<div class="grid gap-4">
+				<div class="grid gap-2">
+					<Label for="email">Email</Label>
+					<Input
+						name="email"
+						id="email"
+						type="email"
+						placeholder="m@example.com"
+						required
+						bind:value={$form.email}
+					/>
+				</div>
+				<div class="grid gap-2">
+					<div class="flex items-center">
+						<Label for="password">Password</Label>
+						<a href="/forgotpassword" class="ml-auto inline-block text-sm underline">
+							Forgot your password?
+						</a>
+					</div>
+					<Input
+						name="password"
+						id="password"
+						type="password"
+						required
+						bind:value={$form.password}
+					/>
+				</div>
+				<Button type="submit" class="w-full" disabled={$submitting}>
+					{#if $submitting}
+						<Loader class="mr-2 h-4 w-4 animate-spin" />
+					{/if}
+					Login
+				</Button>
+			</div>
+			<div class="mt-4 text-center text-sm">
+				Don&apos;t have an account?
+				<a href="/register" class="underline"> Sign up </a>
+			</div>
+		</div>
+	</form>
+	<!-- <div
+		class="flex items-center justify-center py-12"
+	>
+		<div class="mx-auto grid w-[350px] gap-6">
+			<div class="grid gap-2 text-center">
+				<h1 class="text-3xl font-bold">Login</h1>
+				<p class="text-balance text-[15px] text-muted-foreground">
+					Enter your email below to login to your account
+				</p>
+			</div>
+			<div class="grid gap-4">
+				<div class="grid gap-2">
+					<Label for="email">Email</Label>
+					<Input
+						name="email"
+						id="email"
+						type="email"
+						placeholder="m@example.com"
+						required
+						bind:value={email}
+					/>
+				</div>
+				<div class="grid gap-2">
+					<div class="flex items-center">
+						<Label for="password">Password</Label>
+						<a href="/forgotpassword" class="ml-auto inline-block text-sm underline">
+							Forgot your password?
+						</a>
+					</div>
+					<Input
+						name="password"
+						id="password"
+						type="password"
+						required
+						bind:value={password}
+					/>
+				</div>
+				<Button class="w-full" disabled={isLoading} on:click={login}>
+					{#if isLoading}
+						<Spinner class="mr-2 h-4 w-4 animate-spin" />
+					{/if}
+					Login
+				</Button>
+			</div>
+			<div class="mt-4 text-center text-sm">
+				Don&apos;t have an account?
+				<a href="/register" class="underline"> Sign up </a>
+			</div>
+		</div>
+	</div> -->
+</div>
