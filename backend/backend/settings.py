@@ -38,7 +38,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["chumcheck-production.up.railway.app"]
+ALLOWED_HOSTS = ["api.chumcheck.jethdev.tech"]
 
 # Application definition
 
