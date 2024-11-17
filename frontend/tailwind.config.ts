@@ -16,6 +16,9 @@ const config: Config = {
 		},
 		extend: {
 			colors: {
+				'flutter-blue': '#1C83E5',
+				'flutter-gray': '#394e6a',
+				'flutter-white': '#f8fafc',
 				border: "hsl(var(--border) / <alpha-value>)",
 				input: "hsl(var(--input) / <alpha-value>)",
 				ring: "hsl(var(--ring) / <alpha-value>)",
@@ -67,7 +70,7 @@ const config: Config = {
 				sm: "calc(var(--radius) - 4px)"
 			},
 			fontFamily: {
-				sans: [...fontFamily.sans]
+				sans: ['Geist', 'sans-serif']
 			},
 			keyframes: {
 				"accordion-down": {

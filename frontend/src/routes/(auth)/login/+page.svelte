@@ -5,82 +5,26 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { superForm } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
-	import Cookies from 'js-cookie';
 	import { goto } from '$app/navigation';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { Loader } from 'lucide-svelte';
 
-	export let data: PageData;
-
-	let isLoading = false;
-
-	async function onSubmit(e: any) {
-		e.preventDefault();
-		isLoading = true;
-
-		setTimeout(() => {
-			isLoading = false;
-		}, 3000);
-	}
+	let { data }: { data: PageData } = $props();
 
 	const { form, errors, enhance, message, submitting } = superForm(data.form);
 
-	$: if ($message && !$submitting) {
-		toast.dismiss();
-		toast.success('Login successful');
-		goto('/startups');
-	}
+	$effect(() => {
+		if ($message && !$submitting) {
+			toast.dismiss();
+			toast.success('Login successful');
+			goto('/startups');
+		}
 
-	$: if ($errors.email && !$submitting) {
-		toast.dismiss();
-		toast.error('Login failed');
-	}
-
-	// $effect(() => {
-	// 	if($submitting) {
-	// 		toast.dismiss()
-	// 		toast.info('Logging in...');
-	// 	}
-
-	// 	if($message && !$submitting) {
-	// 		toast.dismiss()
-	// 		toast.success('Login successful');
-	// 		goto('/startups')
-	// 	}
-	// 	if($errors.email && !$submitting) {
-	// 		toast.dismiss()
-	// 		toast.error('Login failed');
-	// 	}
-	// })
-	// let email: string, password: string;
-
-	// async function login() {
-	// 	const response = await fetch(`${PUBLIC_API_URL}/tokens/acquire/`, {
-	// 		method: 'post',
-	// 		headers: {
-	// 			'Content-type': 'application/json'
-	// 		},
-	// 		body: JSON.stringify({
-	// 			email: email,
-	// 			password: password
-	// 		})
-	// 	});
-	//   const inFifteenMinutes = new Date(new Date().getTime() + 15 * 60 * 1000);
-	//   const inOneHour = new Date(new Date().getTime() + 60 * 60 * 1000);
-
-	// 	if (response.status === 200) {
-	// 		const data = await response.json();
-	// 		Cookies.set('Refresh', data.refresh, {
-	//         expires: inFifteenMinutes,
-	//       });
-
-	// 		Cookies.set('Access', data.access, {
-	//         expires: inOneHour,
-	//       });
-	// 		goto('/startups')
-	// 		// return message(form, { text: 'Login successful' });
-	// 	}
-	// }
+		if ($errors.email && !$submitting) {
+			toast.dismiss();
+			toast.error('Login failed');
+		}
+	});
 </script>
 
 <svelte:head>
@@ -102,12 +46,7 @@
 <div
 	class="flex h-full flex-1 items-center justify-center rounded-br-xl rounded-tr-xl bg-background text-flutter-gray dark:text-flutter-white"
 >
-	<form
-		method="post"
-		use:enhance
-		on:submit={onSubmit}
-		class="flex items-center justify-center py-12"
-	>
+	<form method="post" use:enhance class="flex items-center justify-center py-12">
 		<div class="mx-auto grid w-[350px] gap-6">
 			<div class="grid gap-2 text-center">
 				<h1 class="text-3xl font-bold">Login</h1>
@@ -142,6 +81,9 @@
 						bind:value={$form.password}
 					/>
 				</div>
+				{#if $errors.email}
+					<p class="text-sm text-red-500">Invalid credentials</p>
+				{/if}
 				<Button type="submit" class="w-full" disabled={$submitting}>
 					{#if $submitting}
 						<Loader class="mr-2 h-4 w-4 animate-spin" />
@@ -155,54 +97,4 @@
 			</div>
 		</div>
 	</form>
-	<!-- <div
-		class="flex items-center justify-center py-12"
-	>
-		<div class="mx-auto grid w-[350px] gap-6">
-			<div class="grid gap-2 text-center">
-				<h1 class="text-3xl font-bold">Login</h1>
-				<p class="text-balance text-[15px] text-muted-foreground">
-					Enter your email below to login to your account
-				</p>
-			</div>
-			<div class="grid gap-4">
-				<div class="grid gap-2">
-					<Label for="email">Email</Label>
-					<Input
-						name="email"
-						id="email"
-						type="email"
-						placeholder="m@example.com"
-						required
-						bind:value={email}
-					/>
-				</div>
-				<div class="grid gap-2">
-					<div class="flex items-center">
-						<Label for="password">Password</Label>
-						<a href="/forgotpassword" class="ml-auto inline-block text-sm underline">
-							Forgot your password?
-						</a>
-					</div>
-					<Input
-						name="password"
-						id="password"
-						type="password"
-						required
-						bind:value={password}
-					/>
-				</div>
-				<Button class="w-full" disabled={isLoading} on:click={login}>
-					{#if isLoading}
-						<Spinner class="mr-2 h-4 w-4 animate-spin" />
-					{/if}
-					Login
-				</Button>
-			</div>
-			<div class="mt-4 text-center text-sm">
-				Don&apos;t have an account?
-				<a href="/register" class="underline"> Sign up </a>
-			</div>
-		</div>
-	</div> -->
 </div>
