@@ -1,9 +1,9 @@
 from django.db import models
-from generic.models import BaseModel
-from users import models as users_models
-from readinesslevel import models as readinesslevel_models
 from django.utils.translation import gettext_lazy as _
+from generic.models import BaseModel
+from readinesslevel import models as readinesslevel_models
 from startups import models as startups_models
+from users import models as users_models
 
 
 class TaskStatus(models.IntegerChoices):
@@ -51,6 +51,14 @@ class Task(BaseModel):
     is_ai_generated = models.BooleanField(default=False)
     task_type = models.IntegerField(choices=TaskType.choices)
     due_date = models.DateTimeField(default=None, null=True)
+    assignee = models.ForeignKey(
+        users_models.BaseUser,
+        on_delete=models.SET_NULL,
+        default=None,
+        null=True,
+        related_name="tasks",
+    )
+
     # output = ??
 
     class Meta:
@@ -79,6 +87,13 @@ class Initiative(BaseModel):
     )
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="initiatives")
     is_ai_generated = models.BooleanField(default=False)
+    assignee = models.ForeignKey(
+        users_models.BaseUser,
+        on_delete=models.SET_NULL,
+        default=None,
+        null=True,
+        related_name="initiatives",
+    )
 
     class Meta:
         db_table = "initiatives"

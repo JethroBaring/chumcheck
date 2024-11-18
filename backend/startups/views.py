@@ -1,30 +1,29 @@
-from tasks import models as tasks_models
-from generic.utils import call_gemini_api
-from generic.views import BaseViewSet
-from rest_framework import status, mixins, viewsets
-from rest_framework.response import Response
-from startups import models as startups_models
-from startups import serializers as startups_serializers
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from rest_framework.decorators import action
-from users import models as users_models
-from django.db import transaction
-from drf_yasg.utils import swagger_auto_schema
-from django.utils import timezone
-from django.db.models import Q, Sum, Subquery, OuterRef, F, Min, Max, Window
-from startups import utils as startups_utils
-from drf_yasg import openapi
-from users import permissions as users_permissions
-from startups import permissions as startups_permissions
 import pymupdf
-from tasks import utils as tasks_utils
-from readinesslevel import models as readinesslevel_models
-from django.db.models import Avg, Count
+from django.db import transaction
+from django.db.models import Avg, Count, F, Max, Min, OuterRef, Q, Subquery, Sum, Window
+from django.db.models.functions import Lag
 from django.http import HttpResponse
 from django.template.loader import render_to_string
+from django.utils import timezone
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from generic.utils import call_gemini_api
+from generic.views import BaseViewSet
+from readinesslevel import models as readinesslevel_models
+from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.response import Response
+from startups import models as startups_models
+from startups import permissions as startups_permissions
+from startups import serializers as startups_serializers
+from startups import utils as startups_utils
 from startups.utils import generate_spider_graph
+from tasks import models as tasks_models
+from tasks import utils as tasks_utils
+from users import models as users_models
+from users import permissions as users_permissions
 from weasyprint import HTML
-from django.db.models.functions import Lag
 
 
 class StartupViewSet(
@@ -113,13 +112,33 @@ class StartupViewSet(
         serializer.is_valid(raise_exception=True)
 
         members = serializer.validated_data.pop("set_members", [])
+        contracted_members = serializer.validated_data.pop("set_contracted_members", [])
+
         startup_user = users_models.StartupUser.objects.filter(id=user.id).first()
         startup = startups_models.Startup.objects.create(
             user=startup_user, **serializer.validated_data
         )
 
+        to_be_created_members = []
+        to_be_created_contracted_members = []
         for member in members:
-            startups_models.StartupMember.objects.create(user=member, startup=startup)
+            to_be_created_members.append(
+                startups_models.StartupMember(user=member, startup=startup)
+            )
+
+        for contracted_member in contracted_members:
+            to_be_created_contracted_members.append(
+                startups_models.StartupContractedMember(
+                    startup=startup,
+                    first_name=contracted_member.get("first_name"),
+                    last_name=contracted_member.get("last_name"),
+                )
+            )
+
+        startups_models.StartupMember.objects.bulk_create(to_be_created_members)
+        startups_models.StartupContractedMember.objects.bulk_create(
+            to_be_created_contracted_members
+        )
 
         return Response(self.serializer_class(startup).data, status=status.HTTP_200_OK)
 
@@ -592,28 +611,10 @@ class StartupViewSet(
         Response progress report data.
         """
         startup = self.get_object()
-        serializer = startups_serializers.base.ProgressReportResponseSerializer(startup)
 
-        spider_graph_image_str = generate_spider_graph(
-            serializer.data["readiness_levels"]
+        return Response(
+            startups_serializers.base.ProgressReportResponseSerializer(startup).data
         )
-
-        # Render the HTML for the PDF, including the spider graph image
-        html_string = render_to_string(
-            "progress_report.html",
-            {"data": serializer.data, "spider_graph": spider_graph_image_str},
-        )
-
-        # Create PDF from HTML
-        pdf_file = HTML(string=html_string).write_pdf()
-
-        # Create the HTTP response
-        response = HttpResponse(pdf_file, content_type="application/pdf")
-        response["Content-Disposition"] = (
-            f'attachment; filename="progress_report_{startup.id}.pdf"'
-        )
-
-        return response
 
 
 class UratQuestionAnswerViewSet(
@@ -624,10 +625,6 @@ class UratQuestionAnswerViewSet(
 
     def get_permissions(self):
         viewset_action = self.action
-        print("hello world")
-
-        if viewset_action in ["create", "bulk_create"]:
-            return []
 
         if viewset_action in ["partial_update", "list"]:
             return [users_permissions.IsManagerPermission()]

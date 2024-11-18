@@ -1,7 +1,7 @@
 from django.db import models
 from generic.models import BaseModel
-from users import models as users_models
 from readinesslevel import models as readinesslevel_models
+from users import models as users_models
 
 
 class Cohort(BaseModel):
@@ -80,6 +80,14 @@ class StartupMember(BaseModel):
     @property
     def email(self):
         return self.user.email if self.user else ""
+
+
+class StartupContractedMember(BaseModel):
+    startup = models.ForeignKey(
+        Startup, on_delete=models.CASCADE, related_name="contracted_members"
+    )
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
 
 
 class StartupReadinessLevel(BaseModel):
