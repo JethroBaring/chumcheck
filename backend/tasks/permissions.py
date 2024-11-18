@@ -1,6 +1,8 @@
 from startups import permissions as startups_permissions
 from tasks import models as tasks_models
 
+from backend.startups.models import Startup
+
 
 class IsManagerOrMemberOrMentorOfStartUpThroughTaskPermission(
     startups_permissions.IsManagerOrMemberOrMentorOfStartUpPermission

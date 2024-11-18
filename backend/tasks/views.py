@@ -245,6 +245,7 @@ class InitiativeViewSet(
     mixins.UpdateModelMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
     BaseViewSet,
 ):
     queryset = tasks_models.Initiative.objects
@@ -258,6 +259,11 @@ class InitiativeViewSet(
 
         if viewset_action in ["create", "generate_initiatives"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
+
+        if viewset_action == "retrieve":
+            return [
+                tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughInitiativePermission()
+            ]
 
         return super().get_permissions()
 
@@ -320,6 +326,19 @@ class InitiativeViewSet(
         Deletes a initiative.
         """
         return super().destroy(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        responses={
+            200: tasks_serializers.base.InitiativeBaseSerializer(many=True),
+            403: tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughInitiativePermission.message,
+        },
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve Initiative
+
+        Retrieves a initiative.
+        """
+        return super().retrieve(request, *args, **kwargs)
 
     @swagger_auto_schema(
         request_body=tasks_serializers.base.InitiativeBaseSerializer,
@@ -425,6 +444,7 @@ class RoadblockViewSet(
     mixins.UpdateModelMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
     BaseViewSet,
 ):
     queryset = tasks_models.Roadblock.objects
@@ -438,6 +458,11 @@ class RoadblockViewSet(
 
         if viewset_action in ["create", "generate_roadblocks"]:
             return [startups_permissions.IsMentorOrManagerPermission()]
+
+        if viewset_action == "retrieve":
+            return [
+                tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughTaskPermission()
+            ]
 
         return super().get_permissions()
 
@@ -522,6 +547,19 @@ class RoadblockViewSet(
         self.check_object_permissions(request, startup)
 
         return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        responses={
+            200: tasks_serializers.base.RoadblockBaseSerializer(many=True),
+            403: tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughTaskPermission.message,
+        },
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve a Roadblock
+
+        Retrieves a Roadblock.
+        """
+        return super().retrieve(request, *args, **kwargs)
 
     @swagger_auto_schema(
         request_body=tasks_serializers.request.GenerateRoadblockRequestSerializer,
