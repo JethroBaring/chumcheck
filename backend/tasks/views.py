@@ -1,18 +1,17 @@
-from generic.views import BaseViewSet
-from rest_framework import mixins
-from drf_yasg.utils import swagger_auto_schema
-from tasks import models as tasks_models
-from tasks import serializers as tasks_serializers
 from django.db import transaction
-from tasks import permissions as tasks_permissions
-from startups import permissions as startups_permissions
+from drf_yasg.utils import swagger_auto_schema
+from generic.utils import call_gemini_api
+from generic.views import BaseViewSet
+from readinesslevel import models as readinesslevel_models
+from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
-from readinesslevel import models as readinesslevel_models
-from generic.utils import call_gemini_api
-from tasks import utils as tasks_utils
 from startups import models as startups_models
+from startups import permissions as startups_permissions
+from tasks import models as tasks_models
+from tasks import permissions as tasks_permissions
+from tasks import serializers as tasks_serializers
+from tasks import utils as tasks_utils
 
 
 class TaskViewSet(
@@ -20,6 +19,7 @@ class TaskViewSet(
     mixins.UpdateModelMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
     BaseViewSet,
 ):
     queryset = tasks_models.Task.objects
@@ -31,8 +31,13 @@ class TaskViewSet(
         if viewset_action in ["partial_update", "destroy"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
 
-        elif viewset_action in ["create", "generate_tasks"]:
+        if viewset_action in ["create", "generate_tasks"]:
             return [startups_permissions.IsMentorOrManagerPermission()]
+
+        if viewset_action == "retrieve":
+            return [
+                tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughTaskPermission()
+            ]
 
         return super().get_permissions()
 
@@ -123,6 +128,19 @@ class TaskViewSet(
         return super().create(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        responses={
+            200: tasks_serializers.base.TaskBaseSerializer(),
+            403: tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughTaskPermission.message,
+        },
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve A Task
+
+        retrieves a Tasks.
+        """
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
         request_body=tasks_serializers.request.GenerateTaskRequestSerializer,
         responses={
             200: tasks_serializers.base.TaskBaseSerializer(many=True),
@@ -204,7 +222,7 @@ class TaskViewSet(
                     readiness_type=readiness_type, level=min(target_level, 9)
                 )
             ).first()
-            
+
             tasks.append(
                 tasks_models.Task.objects.create(
                     readiness_type=readiness_type,
@@ -227,6 +245,7 @@ class InitiativeViewSet(
     mixins.UpdateModelMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
     BaseViewSet,
 ):
     queryset = tasks_models.Initiative.objects
@@ -240,6 +259,11 @@ class InitiativeViewSet(
 
         if viewset_action in ["create", "generate_initiatives"]:
             return [tasks_permissions.IsMentorThroughTaskPermission()]
+
+        if viewset_action == "retrieve":
+            return [
+                tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughInitiativePermission()
+            ]
 
         return super().get_permissions()
 
@@ -270,7 +294,7 @@ class InitiativeViewSet(
     def list(self, request, *args, **kwargs):
         """List Initiatives
 
-        Returns a list of initatives.
+        Returns a list of initiatives.
         """
         return super().list(request, *args, **kwargs)
 
@@ -304,6 +328,19 @@ class InitiativeViewSet(
         return super().destroy(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        responses={
+            200: tasks_serializers.base.InitiativeBaseSerializer(many=True),
+            403: tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughInitiativePermission.message,
+        },
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve Initiative
+
+        Retrieves a initiative.
+        """
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
         request_body=tasks_serializers.base.InitiativeBaseSerializer,
         responses={
             200: tasks_serializers.base.InitiativeBaseSerializer(many=True),
@@ -335,9 +372,9 @@ class InitiativeViewSet(
     @transaction.atomic
     @action(detail=False, methods=["POST"], url_path="generate-initiatives")
     def generate_initiatives(self, request):
-        """Generate Initatives Using AI
+        """Generate Initiatives Using AI
 
-        generate initatives based on capsule proposal,
+        generate initiatives based on capsule proposal,
         initial readiness level, and task.
         """
         request_serializer = (
@@ -407,6 +444,7 @@ class RoadblockViewSet(
     mixins.UpdateModelMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
     BaseViewSet,
 ):
     queryset = tasks_models.Roadblock.objects
@@ -420,6 +458,11 @@ class RoadblockViewSet(
 
         if viewset_action in ["create", "generate_roadblocks"]:
             return [startups_permissions.IsMentorOrManagerPermission()]
+
+        if viewset_action == "retrieve":
+            return [
+                tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughTaskPermission()
+            ]
 
         return super().get_permissions()
 
@@ -504,6 +547,19 @@ class RoadblockViewSet(
         self.check_object_permissions(request, startup)
 
         return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        responses={
+            200: tasks_serializers.base.RoadblockBaseSerializer(many=True),
+            403: tasks_permissions.IsManagerOrMemberOrMentorOfStartUpThroughTaskPermission.message,
+        },
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve a Roadblock
+
+        Retrieves a Roadblock.
+        """
+        return super().retrieve(request, *args, **kwargs)
 
     @swagger_auto_schema(
         request_body=tasks_serializers.request.GenerateRoadblockRequestSerializer,

@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ cookies, fetch, params }) => {
 	try {
 		const [allowInitiatives, tasks] = await Promise.all([
-			fetchWithAuth(`/startups/${params.id}/allow-initatives/`, cookies, fetch),
+			fetchWithAuth(`/startups/${params.id}/allow-initiatives/`, cookies, fetch),
 			fetchWithAuth(`/tasks/tasks/?startup_id=${params.id}`, cookies, fetch)
 		]);
 

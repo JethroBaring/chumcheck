@@ -9,6 +9,12 @@ class StartupRequestSerializer(startups_base_serializers.StartupBaseSerializer):
     set_members = serializers.PrimaryKeyRelatedField(
         queryset=users_models.StartupUser.objects, write_only=True, many=True
     )
+    set_contracted_members = (
+        startups_base_serializers.StartupContractedMemberBaseSerializer(
+            many=True, required=False
+        )
+    )
+
     user_id = serializers.PrimaryKeyRelatedField(source="user", read_only=True)
 
     class Meta:
@@ -25,6 +31,7 @@ class StartupRequestSerializer(startups_base_serializers.StartupBaseSerializer):
             "university_name",
             "eligibility",
             "set_members",
+            "set_contracted_members",
         ]
 
 

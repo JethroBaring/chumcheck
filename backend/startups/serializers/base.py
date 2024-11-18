@@ -1,8 +1,8 @@
-from rest_framework import serializers
-from startups import models as startups_models
 from drf_yasg.utils import swagger_serializer_method
 from readinesslevel import models as readinesslevel_models
 from readinesslevel import serializers as readinesslevel_serializers
+from rest_framework import serializers
+from startups import models as startups_models
 from tasks import serializers as tasks_serializers
 
 
@@ -13,6 +13,14 @@ class StartupMemberBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = startups_models.StartupMember
         fields = ["id", "user_id", "startup_id", "first_name", "last_name", "email"]
+
+
+class StartupContractedMemberBaseSerializer(serializers.ModelSerializer):
+    startup_id = serializers.PrimaryKeyRelatedField(source="startup", read_only=True)
+
+    class Meta:
+        model = startups_models.StartupContractedMember
+        fields = ["id", "startup_id", "first_name", "last_name"]
 
 
 class StartupBaseSerializer(serializers.ModelSerializer):

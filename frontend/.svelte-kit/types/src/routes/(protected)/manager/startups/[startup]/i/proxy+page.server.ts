@@ -4,7 +4,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load = async ({ fetch, cookies, params }: Parameters<PageServerLoad>[0]) => {
 	const response = await fetch(
-		`${PUBLIC_API_URL}/startups/${params.startup}/allow-initatives/`,
+		`${PUBLIC_API_URL}/startups/${params.startup}/allow-initiatives/`,
 		{
 			method: 'get',
 			headers: {

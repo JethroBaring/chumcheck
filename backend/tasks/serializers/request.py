@@ -1,7 +1,7 @@
+from readinesslevel import models as readinesselvels_models
 from rest_framework import serializers
 from startups import models as startups_models
 from tasks import models as tasks_models
-from readinesslevel import models as readinesselvels_models
 
 
 class GenerateTaskRequestSerializer(serializers.Serializer):
@@ -20,7 +20,10 @@ class GenerateTaskRequestSerializer(serializers.Serializer):
 
 class GenerateInitiativeRequestSerializer(serializers.Serializer):
     task_id = serializers.PrimaryKeyRelatedField(
-        queryset=tasks_models.Task.objects, source="task"
+        queryset=tasks_models.Task.objects.filter(
+            task_type=tasks_models.Task.TaskType.SHORT_TERM
+        ),
+        source="task",
     )
     no_of_initiatives_to_create = serializers.IntegerField()
 
