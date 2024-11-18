@@ -294,7 +294,7 @@ class InitiativeViewSet(
     def list(self, request, *args, **kwargs):
         """List Initiatives
 
-        Returns a list of initatives.
+        Returns a list of initiatives.
         """
         return super().list(request, *args, **kwargs)
 
@@ -372,9 +372,9 @@ class InitiativeViewSet(
     @transaction.atomic
     @action(detail=False, methods=["POST"], url_path="generate-initiatives")
     def generate_initiatives(self, request):
-        """Generate Initatives Using AI
+        """Generate Initiatives Using AI
 
-        generate initatives based on capsule proposal,
+        generate initiatives based on capsule proposal,
         initial readiness level, and task.
         """
         request_serializer = (

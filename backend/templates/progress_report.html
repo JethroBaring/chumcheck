@@ -94,7 +94,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Initative Number</th>
+                    <th>Initiative Number</th>
                     <th>Description</th>
                     <th>Measures</th>
                     <th>Targets</th>
@@ -102,13 +102,13 @@
                 </tr>
             </thead>
             <tbody>
-                {% for initative in task.initatives %}
+                {% for initiative in task.initiatives %}
                 <tr>
-                    <td>{{ initative.initative_number }}</td>
-                    <td>{{ initative.description }}</td>
-                    <td>{{ initative.measures }}</td>
-                    <td>{{ initative.targets }}</td>
-                    <td>{{ initative.status }}</td>
+                    <td>{{ initiative.initiative_number }}</td>
+                    <td>{{ initiative.description }}</td>
+                    <td>{{ initiative.measures }}</td>
+                    <td>{{ initiative.targets }}</td>
+                    <td>{{ initiative.status }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

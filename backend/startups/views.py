@@ -1,6 +1,7 @@
 import pymupdf
 from django.db import transaction
-from django.db.models import Avg, Count, F, Max, Min, OuterRef, Q, Subquery, Sum, Window
+from django.db.models import (Avg, Count, F, Max, Min, OuterRef, Q, Subquery,
+                              Sum, Window)
 from django.db.models.functions import Lag
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -55,7 +56,7 @@ class StartupViewSet(
         if viewset_action in [
             "allow_rnas",
             "allow_tasks",
-            "allow_initatives",
+            "allow_initiatives",
             "allow_roadblocks",
             "generate_rna",
         ]:
@@ -575,11 +576,11 @@ class StartupViewSet(
             status=status.HTTP_200_OK,
         )
 
-    @action(url_path="allow-initatives", detail=True, methods=["GET"])
-    def allow_initatives(self, request, pk):
-        """Check Allow Initatives
+    @action(url_path="allow-initiatives", detail=True, methods=["GET"])
+    def allow_initiatives(self, request, pk):
+        """Check Allow Initiatives
 
-        Checks if manager can create initatives.
+        Checks if manager can create initiatives.
         """
         return Response(
             tasks_models.Task.objects.filter(startup_id=pk)
