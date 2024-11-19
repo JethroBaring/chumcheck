@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Progress Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: auto; /* Allow auto layout */
+
+            
+        }
+        th, td {
+        border: 1px solid black; /* Add border to cells */
+        padding: 8px;            /* Add some padding */
+        text-align: left;        /* Align text to the left */
+        word-wrap: break-word;   /* Allows long words to be broken */
+        max-width: 200px;        /* Set a maximum width for cells */
+        overflow-wrap: break-word; /* Break words if necessary */
+    }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Progress Report for {{ data.name }}</h1>
+    <p><strong>Group Name:</strong> {{ data.group_name }}</p>
+    <p><strong>University Name:</strong> {{ data.university_name }}</p>
+    <p><strong>Leader:</strong> {{ data.leader_first_name }} {{ data.leader_last_name }} ({{ data.leader_email }})</p>
+
+    <h2>I. Readiness Levels</h2>
+    <img src="{{ spider_graph }}" alt="Spider Graph" style="width:100%; height:auto;"/>
+
+    <h2>II RNA Results Summary</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Readiness Type</th>
+                <th>Current Level</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rna in data.rnas %}
+            <tr>
+                <td>{{ rna.readiness_type_rl_type }}</td>
+                <td>{{ rna.readiness_level_level }}</td>
+                <td>{{ rna.rna }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>III Recommended Next Steps (RNS) - Short Term</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Priority Number</th>
+                <th>Readiness Level Type</th>
+                <th>Target Level</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in data.tasks %}
+            {% if task.task_type == 1 %}
+                <tr>
+                    <td>{{ task.priority_number }}</td>
+                    <td>{{ task.readiness_type_rl_type }}</td>
+                    <td>{{ task.target_level_level }}</td>
+                    <td>{{ task.description }}</td>
+                    <td>{{ task.status }}</td>
+                </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>IV Priorities</h2>
+    {% for task in data.tasks %}
+    {% if task.task_type == 1 %}
+        <h3>Priority {{ task.priority_number }}</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Initiative Number</th>
+                    <th>Description</th>
+                    <th>Measures</th>
+                    <th>Targets</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for initiative in task.initiatives %}
+                <tr>
+                    <td>{{ initiative.initiative_number }}</td>
+                    <td>{{ initiative.description }}</td>
+                    <td>{{ initiative.measures }}</td>
+                    <td>{{ initiative.targets }}</td>
+                    <td>{{ initiative.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% endfor %}
+
+    <h2>V Recommended Next Steps (RNS) - Long Term</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Priority Number</th>
+                <th>Readiness Level Type</th>
+                <th>Target Level</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in data.tasks %}
+            {% if task.task_type == 2 %}
+                <tr>
+                    <td>{{ task.priority_number }}</td>
+                    <td>{{ task.readiness_type_rl_type }}</td>
+                    <td>{{ task.target_level_level }}</td>
+                    <td>{{ task.description }}</td>
+                </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <h2>VI Risk And Roadblocks</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Risk Number</th>
+                <th>Description</th>
+                <th>Fix</th>
+                <th>Assignee</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for roadblock in data.roadblocks %}
+            <tr>
+                <td>{{ roadblock.risk_number }}</td>
+                <td>{{ roadblock.description }}</td>
+                <td>{{ roadblock.fix }}</td>
+                <td>{{ roadblock.assignee_last_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
