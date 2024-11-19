@@ -14,4 +14,3 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .history/
 backend/media/
-.pnpm-store/
