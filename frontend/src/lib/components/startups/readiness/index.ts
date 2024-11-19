@@ -1,0 +1,1 @@
+export { default as RubricTable } from './rubric-table.svelte'
