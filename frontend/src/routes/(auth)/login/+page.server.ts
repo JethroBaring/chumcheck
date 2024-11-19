@@ -20,6 +20,7 @@ export const load: PageServerLoad = async () => {
 
 export const actions = {
 	default: async ({ fetch, request, cookies }) => {
+		console.log(PUBLIC_API_URL)
 		const form = await superValidate(request, zod(loginSchema));
 
 		if (!form.valid) {
@@ -29,7 +30,7 @@ export const actions = {
 		}
 
 		const { email, password } = form.data;
-		console.log({email, password})
+
 		try {
 			const response = await fetch(`${PUBLIC_API_URL}/tokens/acquire/`, {
 				method: 'POST',
@@ -41,8 +42,7 @@ export const actions = {
 					password: password
 				})
 			});
-
-			console.log(response);
+			console.log(response)
 			if (response.status === 200) {
 				const data = await response.json();
 				cookies.set('Refresh', data.refresh, {
@@ -65,6 +65,7 @@ export const actions = {
 				return setError(form, 'email', 'Credentials are incorrect');
 			}
 		} catch (error) {
+			console.log("HANNAH")
 			console.log(error);
 		}
 	}

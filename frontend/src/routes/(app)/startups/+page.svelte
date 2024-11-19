@@ -2,15 +2,37 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { RocketIcon } from 'lucide-svelte';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import { StartupCard } from '$lib/components/startups';
 	import { Can } from '$lib/components/shared';
+	import { useQuery } from '@sveltestack/svelte-query';
+	import axiosInstance from '$lib/axios';
+	import type { Role } from '$lib/types.js';
 
-	let isLoading: boolean = $state(false);
-	let isError: boolean = $state(false);
-	let hasStartups: boolean = $state(true);
-	let role = 'Startup';
-	let message = 'test';
+	let { data } = $props()
+
+	const queryResult = useQuery(
+		'startupData',
+		async () =>
+			(
+				await axiosInstance.get(`/startups`, {
+					headers: {
+						Authorization: `Bearer ${data.access}`
+					}
+				})
+			).data,
+		{
+			cacheTime: 0,
+			staleTime: 0
+		}
+	);
+	
+	const role: Role = data.role as Role
+	const message = role === 'Mentor' || role === 'Manager as Mentor' ? 'Manage assigned startups' : role === 'Startup' ? 'Manage startups' : '' ;
+
+	const isLoading = $derived($queryResult.isLoading);
+	const isError = $derived($queryResult.isError);
+	const hasStartups = $derived($queryResult.data ? $queryResult.data.results.length > 0 : false);
+	const listOfStartups = $derived($queryResult.isSuccess ? $queryResult.data.results : []);
 </script>
 
 <div class="flex items-center justify-between">
@@ -18,7 +40,7 @@
 		<h2 class="text-3xl font-bold">Startups</h2>
 		<p class="text-muted-foreground">{message}</p>
 	</div>
-	<Can role="Startup" userRole="Startup">
+	<Can role={['Startup']} userRole={role}>
 		<div class="flex gap-5">
 			<Button class="flex items-center justify-center gap-2 rounded-lg" onclick={() => {}}>
 				<RocketIcon class="h-4 w-4" /> Apply</Button
@@ -51,10 +73,8 @@
 
 {#snippet startups()}
 	<div class="mt-3 grid grid-cols-4 gap-3">
-		{#each [{ name: 'FinEdge Tech' }, { name: 'Tech Solution' }] as startup}
+		{#each listOfStartups as startup}
 			<StartupCard {startup} />
 		{/each}
 	</div>
 {/snippet}
-
-{#snippet empty()}{/snippet}

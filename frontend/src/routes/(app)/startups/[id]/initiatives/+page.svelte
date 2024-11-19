@@ -1,93 +1,99 @@
 <script lang="ts">
-	import { AIColumn, Column } from '$lib/components/shared';
-	import * as Tabs from '$lib/components/ui/tabs/index.js';
-	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
-	import { Kanban, Table, SlidersHorizontal } from 'lucide-svelte';
-	let isLoading: boolean = $state(false);
-	let isError: boolean = $state(false);
-	let isAccessible = $state(true);
-	let selectedTab: 'initiatives' | 'ai-initiatives' = $state('initiatives');
-	const columns = $state([
+	import { AIColumn, AITabs, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
+	import {
+		getColumns,
+		getReadiness,
+		getSavedTab,
+		getSelectedTab,
+		updateTab
+	} from '$lib/utils';
+	import { page } from '$app/stores';
+	import { useQueries, useQuery } from '@sveltestack/svelte-query';
+	import axiosInstance from '$lib/axios';
+	import axios from 'axios';
+	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
+
+	let { data } = $props();
+
+	const initiativesQueries = useQueries([
 		{
-			name: 'Scheduled',
-			value: 4,
-			items: [],
-			show: true
+			queryKey: ['allowRNS', data.startupId],
+			queryFn: async () =>
+				(
+					await axiosInstance.get(`/startups/${data.startupId}/allow-initatives/`, {
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					})
+				).data,
+			cacheTime: 0,
+			staleTime: 0
 		},
 		{
-			name: 'Track',
-			value: 5,
-			items: [],
-			show: true
-		},
-		{
-			name: 'Delayed',
-			value: 3,
-			items: [],
-			show: true
-		},
-		{
-			name: 'Completed',
-			value: 6,
-			items: [],
-			show: true
-		},
-		{
-			name: 'Discontinued',
-			value: 2,
-			items: [],
-			show: true
+			queryKey: ['rnsData'],
+			queryFn: async () =>
+				(
+					await axiosInstance.get(`/tasks/tasks/?startup_id=${data.startupId}`, {
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					})
+				).data,
+			cacheTime: 0,
+			staleTime: 0
 		}
 	]);
+	const initiativeQuery = useQuery(
+		'initiativesData',
+		async () => {
+			const ids = $initiativesQueries[1].data.results.map((d: any) => d.id);
 
-	const readiness = $state([
-		{
-			name: 'Technology',
-			show: true
+			if (ids.length > 0) {
+				const requests = ids.map((id: any) =>
+					axiosInstance.get(`/tasks/initiatives?task_id=${id}`, {
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					})
+				);
+
+				const responses = await axios.all(requests);
+				const allData = responses.reduce(
+					(acc: any, response: any) => acc.concat(response.data.results),
+					[]
+				);
+				return allData;
+			} else {
+				return [];
+			}
 		},
 		{
-			name: 'Investment',
-			show: true
-		},
-		{
-			name: 'Regulatory',
-			show: true
-		},
-		{
-			name: 'Acceptance',
-			show: true
-		},
-		{
-			name: 'Organizational',
-			show: true
-		},
-		{
-			name: 'Market',
-			show: true
+			cacheTime: 0,
+			staleTime: 0,
+			enabled: !!$initiativesQueries[1]
 		}
-	]);
+	);
 
-	const views = $derived(selectedTab === 'initiatives' ? columns : readiness);
+	let selectedTab = $state(getSelectedTab('initiatives'));
 
-	const updateTab = (tab: 'initiatives' | 'ai-initiatives') => {
-		selectedTab = tab;
+	const updateInitiativeTab = (tab: string) => {
+		selectedTab = updateTab('initiatives', tab);
 	};
 
-	let members = $state([
+	const { isLoading, isError, isAccessible } = $derived(useQueriesState($initiativesQueries))
+
+	const columns = $state(getColumns());
+	const readiness = $state(getReadiness());
+	const views = $derived(selectedTab === 'initiatives' ? columns : readiness);
+	const members = [
 		{ name: 'Jethro Baring', role: 'Lead', selected: false },
 		{ name: 'Hannah Gimena', role: 'Mentor', selected: false }
-	]);
-
-	const zIndex = [
-		'z-50 bg-red-500',
-		'z-40 bg-blue-500',
-		'z-30 bg-pink-500',
-		'z-20 bg-orange-500',
-		'z-10 bg-yellow-500',
-		'z-0 bg-green-500'
 	];
+
+	$effect(() => {
+		const searchParam = $page.url.searchParams.get('tab');
+		selectedTab = getSavedTab('initiatives', searchParam);
+	});
 </script>
 
 {#if isLoading}
@@ -108,77 +114,13 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<div class="flex h-fit justify-between rounded-lg bg-background">
-				<Tabs.Root value="initiatives">
-					<Tabs.List class="border bg-flutter-gray/20">
-						<Tabs.Trigger value="initiatives" onclick={() => updateTab('initiatives')}
-							>Initiatives</Tabs.Trigger
-						>
-						<Tabs.Trigger value="ai-initiatives" onclick={() => updateTab('ai-initiatives')}
-							>AI Initiatives</Tabs.Trigger
-						>
-					</Tabs.List>
-				</Tabs.Root>
+				<AITabs {selectedTab} name="initiatives" updateTab={updateInitiativeTab} />
 			</div>
 			{#if selectedTab === 'initiatives'}
-				<div class="flex h-fit justify-between rounded-lg bg-background">
-					<Tabs.Root value="initiatives">
-						<Tabs.List class="border bg-flutter-gray/20">
-							<Tabs.Trigger
-								class="flex items-center gap-1"
-								value="initiatives"
-								onclick={() => updateTab('initiatives')}
-							>
-								<Kanban class="h-4 w-4" />
-								Board</Tabs.Trigger
-							>
-							<Tabs.Trigger
-								class="flex items-center gap-1"
-								value="ai-initiatives"
-								onclick={() => updateTab('ai-initiatives')}
-							>
-								<Table class="h-4 w-4" />
-								Table</Tabs.Trigger
-							>
-						</Tabs.List>
-					</Tabs.Root>
-				</div>
-				<div class="flex items-center">
-					{#each members as member, index}
-						<Tooltip.Provider>
-							<Tooltip.Root>
-								<Tooltip.Trigger
-									class={`border-2 ${
-										member.selected ? 'ring-2 ring-flutter-blue' : ''
-									} flex h-9 w-9 items-center justify-center rounded-full border-background ${
-										index !== members.length - 1 ? '-mr-1' : ''
-									} ${zIndex[index]}`}
-								>
-									{member.name.charAt(0)}
-								</Tooltip.Trigger>
-								<Tooltip.Content side="bottom">
-									<p>{member.name}</p>
-								</Tooltip.Content>
-							</Tooltip.Root>
-						</Tooltip.Provider>
-					{/each}
-				</div>
+				<MembersFilter {members} updateTab={updateInitiativeTab} />
 			{/if}
 		</div>
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger class={buttonVariants({ variant: 'outline' })}>
-				<SlidersHorizontal class="h-4 w-4" />
-				View</DropdownMenu.Trigger
-			>
-			<DropdownMenu.Content align="end">
-				<DropdownMenu.Group>
-					{#each views as view}
-						<DropdownMenu.CheckboxItem bind:checked={view.show}
-							>{view.name}</DropdownMenu.CheckboxItem
-						>
-					{/each}
-				</DropdownMenu.Group>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+		<ShowHideColumns {views} />
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'initiatives'}

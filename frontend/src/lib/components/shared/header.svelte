@@ -10,25 +10,28 @@
 	import { cubicInOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 
-	export let user, startup;
+	let { user, startup } = $props()
 	// let modules = access.roles[`${user?.role as 'Startup' | 'Mentor' | 'Manager'}`].modules;
 	let modules = access.roles['Startup'].modules;
-  
-	$: currentModule = $page.url.pathname.slice(1).split('/')[
-		$page.url.pathname.slice(1).split('/').length - 1
-	];
 
-	$: module = $page.url.pathname.slice(1).split('/')[0];
-	$: subModule = $page.url.pathname.slice(1).split('/')[
+	$effect(() => {
+		console.log(user)
+	})
+
+	const currentModule = $derived($page.url.pathname.slice(1).split('/')[
 		$page.url.pathname.slice(1).split('/').length - 1
-	];
+	])
+	const module = $derived($page.url.pathname.slice(1).split('/')[0])
+	const subModule = $derived($page.url.pathname.slice(1).split('/')[
+		$page.url.pathname.slice(1).split('/').length - 1
+	])
 
 	const [send, receive] = crossfade({
 		duration: 250,
 		easing: cubicInOut
 	});
 
-	let isBlurred = false;
+	let isBlurred = $state(false);
 
 	function handleScroll() {
 		const scrollY = window.scrollY;
@@ -85,6 +88,7 @@
 				{:else}
 					<!-- module -->
 					{#each modules as item}
+						{@const isActive = currentModule === item.link}
 						<a
 							data-sveltekit-preload-data="tap"
 							href={`/${item.link}${item.subModule.length > 0 ? `/${item.subModule[0].link}` : ''}`}
@@ -93,9 +97,9 @@
 						>
 							<li>
 								{item.name}
-								<!-- {#if currentModule === item.link}
+								{#if isActive}
 									<div class="absolute bottom-0 h-[1px] w-full bg-flutter-blue"></div>
-								{/if} -->
+								{/if}
 							</li>
 						</a>
 					{/each}
@@ -126,12 +130,13 @@
 								data-sveltekit-preload-data="tap"
 								href={`/${module.link}${module.subModule.length > 0 ? `/${module.subModule[0].link}` : ''}`}
 							>
-								<DropdownMenu.Item 								class="cursor-pointer"
-								>{module.name}</DropdownMenu.Item>
+								<DropdownMenu.Item class="cursor-pointer">{module.name}</DropdownMenu.Item>
 							</a>
 						{/each}
 						<form action="/logout" method="post" class="w-full">
-							<button type="submit" class="w-full"> <DropdownMenu.Item class="cursor-pointer">Logout</DropdownMenu.Item> </button>
+							<button type="submit" class="w-full">
+								<DropdownMenu.Item class="cursor-pointer">Logout</DropdownMenu.Item>
+							</button>
 						</form>
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>

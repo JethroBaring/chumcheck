@@ -5,7 +5,7 @@ const startupModule = {
 	subModule: [
 		{
 			name: 'Readiness',
-			link: 'readiness_level',
+			link: 'readiness-level',
 			subModule: []
 		},
 		{
@@ -30,7 +30,7 @@ const startupModule = {
 		},
 		{
 			name: 'Progress',
-			link: 'progress_report',
+			link: 'progress-report',
 			subModule: []
 		},
 		{

@@ -181,6 +181,8 @@
 			}
 		}
 	});
+
+	let selectedTab = $state('pending')
 </script>
 
 <div class="w-full">
@@ -194,9 +196,9 @@
 		<div class="flex h-fit justify-between rounded-lg bg-background">
 			<Tabs.Root value="pending">
 				<Tabs.List class="border bg-flutter-gray/20">
-					<Tabs.Trigger class="flex items-center gap-1" value="pending">Pending</Tabs.Trigger>
-					<Tabs.Trigger class="flex items-center gap-1" value="rated">Rated</Tabs.Trigger>
-					<Tabs.Trigger class="flex items-center gap-1" value="qualified">Qualified</Tabs.Trigger>
+					<Tabs.Trigger class="flex items-center gap-1" value="pending" onclick={() => selectedTab = 'pending'}>Pending</Tabs.Trigger>
+					<Tabs.Trigger class="flex items-center gap-1" value="rated" onclick={() => selectedTab = 'rated'}>Rated</Tabs.Trigger>
+					<Tabs.Trigger class="flex items-center gap-1" value="qualified" onclick={() => selectedTab = 'qualified'}>Qualified</Tabs.Trigger>
 				</Tabs.List>
 			</Tabs.Root>
 		</div>
@@ -235,5 +237,5 @@
 			</DropdownMenu.Root>
 		</div>
 	</div>
-	<DataTable {table} />
+	<DataTable {table} {selectedTab}/>
 </div>

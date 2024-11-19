@@ -6,13 +6,12 @@
 	import { superForm } from 'sveltekit-superforms';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
-	import { PUBLIC_API_URL } from '$env/static/public';
 	import { Loader } from 'lucide-svelte';
 
 	let { data }: { data: PageData } = $props();
 
 	const { form, errors, enhance, message, submitting } = superForm(data.form);
-
+	
 	$effect(() => {
 		if ($message && !$submitting) {
 			toast.dismiss();
@@ -25,6 +24,7 @@
 			toast.error('Login failed');
 		}
 	});
+
 </script>
 
 <svelte:head>
