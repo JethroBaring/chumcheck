@@ -1,0 +1,32 @@
+import { useDebounce } from "../useDebounce/useDebounce.svelte.js";
+import { watch } from "../watch/watch.svelte.js";
+import { noop } from "../../internal/utils/function.js";
+/**
+ * Description placeholder
+ *
+ * @export
+ * @class Debounced
+ */
+export class Debounced {
+    #current = $state();
+    #debounceFn;
+    constructor(getter, wait = 250) {
+        this.#current = getter(); // immediately set the initial value
+        this.#debounceFn = useDebounce(() => {
+            this.#current = getter();
+        }, wait);
+        watch(getter, () => {
+            this.#debounceFn().catch(noop);
+        });
+    }
+    get current() {
+        return this.#current;
+    }
+    cancel() {
+        this.#debounceFn.cancel();
+    }
+    setImmediately(v) {
+        this.cancel();
+        this.#current = v;
+    }
+}

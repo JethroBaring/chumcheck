@@ -1,3 +1,0 @@
-<div>
-  Apply now
-</div>
