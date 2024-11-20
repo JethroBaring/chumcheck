@@ -114,6 +114,9 @@ class Roadblock(BaseModel):
     startup = models.ForeignKey(
         startups_models.Startup, on_delete=models.CASCADE, related_name="roadblocks"
     )
+    status = models.IntegerField(
+        choices=TaskStatus.choices, default=TaskStatus.FOR_REVIEW
+    )
     is_ai_generated = models.BooleanField(default=False)
 
     class Meta:
