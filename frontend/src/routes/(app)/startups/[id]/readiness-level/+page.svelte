@@ -4,9 +4,10 @@
 	import { useQueries } from '@sveltestack/svelte-query';
 	import { getData, isMentor } from '$lib/utils';
 	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
-	import { Check } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import Rubric from '$lib/components/startups/readiness/rubric.svelte';
+	import * as Card from '$lib/components/ui/card/index.js';
+	import * as Chart from "$lib/components/ui/chart/index.js";
 
 	const { data } = $props();
 	const { access, startupId, role } = data;
@@ -34,7 +35,7 @@
 		}
 	]);
 	const { isLoading, isError } = $derived(useQueriesState($readinessLevelQueries));
-	const isRated: boolean = $state(true);
+	const isRated: boolean = $derived($readinessLevelQueries[2].isSuccess ? $readinessLevelQueries[2].data.results.length != 0 ? true : false : false)
 	let selectedTab = $state('chart');
 	let selectedReadinessTab = $state('technology');
 	const rubrics = $derived(
@@ -68,6 +69,39 @@
 					investment: []
 				}
 	);
+	
+	const scores = $derived(
+		$readinessLevelQueries[1].isSuccess
+			? {
+					technology: $readinessLevelQueries[2].data.results.filter(
+						(r: any) => r.readiness_type === 'Technology'
+					),
+					market: $readinessLevelQueries[2].data.results.filter(
+						(r: any) => r.readiness_type === 'Market'
+					),
+					acceptance: $readinessLevelQueries[2].data.results.filter(
+						(r: any) => r.readiness_type === 'Acceptance'
+					),
+					organizational: $readinessLevelQueries[2].data.results.filter(
+						(r: any) => r.readiness_type === 'Organizational'
+					),
+					regulatory: $readinessLevelQueries[2].data.results.filter(
+						(r: any) => r.readiness_type === 'Regulatory'
+					),
+					investment: $readinessLevelQueries[2].data.results.filter(
+						(r: any) => r.readiness_type === 'Investment'
+					)
+				}
+			: {
+					technology: [],
+					market: [],
+					acceptance: [],
+					organizational: [],
+					regulatory: [],
+					investment: []
+				}
+	);
+	
 	const readiness = $derived(
 		$readinessLevelQueries[3].isSuccess
 			? {
@@ -99,7 +133,7 @@
 					investment: 0
 				}
 	);
-
+	
 	let current = $state(0);
 
 	const next = () => {
@@ -121,6 +155,8 @@
 	const updateReadinessTab = (tab: string) => {
 		selectedReadinessTab = tab;
 	};
+
+	let form: HTMLFormElement;
 </script>
 
 <div class="flex h-full flex-col">
@@ -146,18 +182,22 @@
 {#snippet rated()}
 	<div class="flex h-full flex-col gap-3">
 		<div class="flex justify-between">
-			<div class="flex h-fit justify-between rounded-lg bg-background">
+			<div class="bg-background flex h-fit justify-between rounded-lg">
 				<Tabs.Root value={selectedTab}>
-					<Tabs.List class="border bg-flutter-gray/20">
-						<Tabs.Trigger value="chart" class="capitalize" onclick={() => updateTab('chart')}>Chart</Tabs.Trigger>
-						<Tabs.Trigger value="detailed" class="capitalize" onclick={() => updateTab('detailed')}>Detailed</Tabs.Trigger>
+					<Tabs.List class="bg-flutter-gray/20 border">
+						<Tabs.Trigger value="chart" class="capitalize" onclick={() => updateTab('chart')}
+							>Chart</Tabs.Trigger
+						>
+						<Tabs.Trigger value="detailed" class="capitalize" onclick={() => updateTab('detailed')}
+							>Detailed</Tabs.Trigger
+						>
 					</Tabs.List>
 				</Tabs.Root>
 			</div>
 			{#if selectedTab === 'detailed'}
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<Tabs.Root value={selectedReadinessTab}>
-						<Tabs.List class="border bg-flutter-gray/20">
+						<Tabs.List class="bg-flutter-gray/20 border">
 							<Tabs.Trigger
 								value="technology"
 								class="capitalize"
@@ -194,7 +234,24 @@
 			{/if}
 		</div>
 		{#if selectedTab === 'chart'}
-			<!-- content here -->
+			<Card.Root class="h-full">
+				<Card.Header class="items-center">
+					<Card.Title>Radar Chart - Grid Circle</Card.Title>
+					<Card.Description>Showing total visitors for the last 6 months</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<Chart.Container class="mx-auto aspect-square max-h-[250px]"></Chart.Container>
+				</Card.Content>
+				<Card.Footer class="flex-col gap-2 text-sm">
+					<div class="flex items-center gap-2 font-medium leading-none">
+						Trending up by 5.2% this month
+						<!-- <TrendingUp class="size-4" /> -->
+					</div>
+					<div class="text-muted-foreground flex items-center gap-2 leading-none">
+						January - June 2024
+					</div>
+				</Card.Footer>
+			</Card.Root>
 		{:else}
 			<div class="flex h-full flex-col gap-3">
 				<div class="flex h-full flex-col overflow-scroll">
@@ -203,31 +260,42 @@
 							questionnaires={rubrics.technology}
 							type={'technology'}
 							current={selectedReadinessTab}
+							scores={scores.technology}
 						/>
 						<RatedRubric
 							questionnaires={rubrics.acceptance}
 							type={'acceptance'}
 							current={selectedReadinessTab}
+							scores={scores.acceptance}
+
 						/>
 						<RatedRubric
 							questionnaires={rubrics.market}
 							type={'market'}
 							current={selectedReadinessTab}
+							scores={scores.market}
+
 						/>
 						<RatedRubric
 							questionnaires={rubrics.regulatory}
 							type={'regulatory'}
 							current={selectedReadinessTab}
+							scores={scores.regulatory}
+
 						/>
 						<RatedRubric
 							questionnaires={rubrics.organizational}
 							type={'organizational'}
 							current={selectedReadinessTab}
+							scores={scores.organizational}
+
 						/>
 						<RatedRubric
 							questionnaires={rubrics.investment}
 							type={'investment'}
 							current={selectedReadinessTab}
+							scores={scores.investment}
+
 						/>
 					</div>
 				</div>
@@ -240,18 +308,27 @@
 	<div class="flex h-full flex-col gap-3">
 		<Stepper {current} />
 		<div class="flex h-full flex-col overflow-scroll">
-			<form class="flex h-0 flex-col">
-				<Rubric questionnaires={rubrics.technology} step={1} {current} />
-				<Rubric questionnaires={rubrics.acceptance} step={2} {current} />
-				<Rubric questionnaires={rubrics.market} step={3} {current} />
-				<Rubric questionnaires={rubrics.regulatory} step={4} {current} />
-				<Rubric questionnaires={rubrics.organizational} step={5} {current} />
-				<Rubric questionnaires={rubrics.investment} step={6} {current} />
+			<form method="post" bind:this={form} class="flex h-0 flex-col">
+				<Rubric questionnaires={rubrics.technology} step={1} {current} type={'technology'} />
+				<Rubric questionnaires={rubrics.acceptance} step={2} {current} type={'acceptance'} />
+				<Rubric questionnaires={rubrics.market} step={3} {current} type={'market'} />
+				<Rubric questionnaires={rubrics.regulatory} step={4} {current} type={'regulatory'} />
+				<Rubric
+					questionnaires={rubrics.organizational}
+					step={5}
+					{current}
+					type={'organizational'}
+				/>
+				<Rubric questionnaires={rubrics.investment} step={6} {current} type={'investment'} />
 			</form>
 		</div>
 		<div class="ml-auto flex gap-2">
 			<Button variant="secondary" onclick={previous} disabled={current === 0}>Previous</Button>
-			<Button onclick={next} disabled={current === 6}>Next</Button>
+			{#if current === 6}
+				<Button onclick={() => form.submit()}>Submit</Button>
+			{:else}
+				<Button onclick={next}>Next</Button>
+			{/if}
 		</div>
 	</div>
 {/snippet}

@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { RadioButton } from '$lib/components/ui/radio';
-import { CriteriaTable } from '.';
+import { RatedCriteriaTable } from '.';
 
-	const { questionnaires, type, current } = $props();
+	const { questionnaires, type, current, scores } = $props();
 </script>
 
 <div class="flex flex-col gap-3" class:hidden={type !== current}>
-	{#each questionnaires as questionnaire}
+	{#each questionnaires as questionnaire, index}
 		{@const criterias = questionnaire.level_criteria}
 		<div class="flex flex-col gap-1">
-			<div class="flex gap-3"><div><RadioButton readonly={true} name={'wew'}/></div><p>{questionnaire.level} {questionnaire.name}</p></div>
-			<CriteriaTable {criterias} />
+			<div class="flex gap-3"><div><RadioButton readonly={true} value={questionnaire.id} checked={index === 0} name={`${type}ReadinessLevel`}/></div><p>{questionnaire.level} {questionnaire.name}</p></div>
+			<RatedCriteriaTable {criterias} {questionnaire} {type} {scores} {index}/>
 		</div>
 	{/each}
 </div>

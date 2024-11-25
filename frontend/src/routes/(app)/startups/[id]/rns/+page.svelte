@@ -30,8 +30,8 @@
 		}
 	]);
 
-	const { isLoading, isError, isAccessible } = $derived(useQueriesState($rnsQueries));
-
+	const { isLoading, isError } = $derived(useQueriesState($rnsQueries));
+	const isAccessible = $derived($rnsQueries[0].data)
 	let selectedTab = $state(getSelectedTab('rns'));
 
 	const updateRnsTab = (tab: string) => {

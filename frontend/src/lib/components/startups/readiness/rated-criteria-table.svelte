@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { RadioButton } from '$lib/components/ui/radio';
 	import * as Table from '$lib/components/ui/table/index.js';
-	const { criterias, type, questionnaire } = $props();
+	const { criterias, type, questionnaire, scores, index} = $props();
 </script>
 
 <div class="rounded-md border">
@@ -26,19 +26,19 @@
 					/>
 					<Table.Cell class="w-1/4 pl-5">{criteria.criteria}</Table.Cell>
 					<Table.Cell class="w-[200px]">
-						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="5"/>
+						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="5" checked={scores[(index)*6+i].score === 5}/>
 					</Table.Cell>
 					<Table.Cell class="w-[200px]">
-						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="4"/>
+						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="4" checked={scores[(index)*6+i].score === 4}/>
 					</Table.Cell>
 					<Table.Cell class="w-[200px]">
-						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="3"/>
+						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="3" checked={scores[(index)*6+i].score === 3}/>
 					</Table.Cell>
 					<Table.Cell class="w-[200px]">
-						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="2"/>
+						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="2" checked={scores[(index)*6+i].score === 2}/>
 					</Table.Cell>
 					<Table.Cell class="w-[200px]">
-						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="1" checked/>
+						<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="1" checked={scores[(index)*6+i].score === 1}/>
 					</Table.Cell>
 				</Table.Row>
 			{/each}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
+	import { AIColumn, AITabs, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
 	import { getData, getSavedTab, getSelectedTab, updateTab } from '$lib/utils';
 	import { useQueries } from '@sveltestack/svelte-query';
 	import { page } from '$app/stores';
@@ -23,7 +24,7 @@
 	]);
 
 	const { isLoading, isError } = $derived(useQueriesState($rnaQueries));
-	const isAccessible = $rnaQueries[0].data;
+	const isAccessible = $derived($rnaQueries[0].data);
 
 	let selectedTab = $state(getSelectedTab('rna'));
 
@@ -52,7 +53,34 @@
 {#snippet error()}{/snippet}
 
 {#snippet accessible()}
-	<div>test</div>
+<div class="flex items-center justify-between">
+	<div class="flex gap-3">
+		<div class="flex h-fit justify-between rounded-lg bg-background">
+			<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
+		</div>
+		{#if selectedTab === 'rns'}
+			<MembersFilter {members} updateTab={updateRnsTab} />
+		{/if}
+	</div>
+	<ShowHideColumns {views} />
+</div>
+<div class="flex h-full gap-5 overflow-scroll">
+	{#if selectedTab === 'rns'}
+		{#each columns as column}
+			{#if column.show}
+				<Column name={column.name}>
+					<div>Test</div>
+				</Column>
+			{/if}
+		{/each}
+	{:else}
+		{#each readiness as readiness}
+			<AIColumn name={readiness}>
+				<div></div>
+			</AIColumn>
+		{/each}
+	{/if}
+</div>
 {/snippet}
 
 {#snippet fallback()}
