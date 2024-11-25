@@ -1,86 +1,41 @@
 <script lang="ts">
 	import { AIColumn, AITabs, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
 	import {
+		getData,
 		getColumns,
 		getReadiness,
 		getSavedTab,
 		getSelectedTab,
 		updateTab
 	} from '$lib/utils';
-	import { page } from '$app/stores';
-	import { useQueries, useQuery } from '@sveltestack/svelte-query';
-	import axiosInstance from '$lib/axios';
-	import axios from 'axios';
 	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
+	import { useQueries } from '@sveltestack/svelte-query';
+	import { page } from '$app/stores';
 
-	let { data } = $props();
-
+	const { data } = $props();
+	const { access, startupId } = data;
 	const initiativesQueries = useQueries([
 		{
 			queryKey: ['allowRNS', data.startupId],
-			queryFn: async () =>
-				(
-					await axiosInstance.get(`/startups/${data.startupId}/allow-initatives/`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				).data,
-			cacheTime: 0,
-			staleTime: 0
+			queryFn: () => getData(`/startups/${startupId}/allow-initatives/`, access!)
 		},
 		{
 			queryKey: ['rnsData'],
-			queryFn: async () =>
-				(
-					await axiosInstance.get(`/tasks/tasks/?startup_id=${data.startupId}`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				).data,
-			cacheTime: 0,
-			staleTime: 0
-		}
-	]);
-	const initiativeQuery = useQuery(
-		'initiativesData',
-		async () => {
-			const ids = $initiativesQueries[1].data.results.map((d: any) => d.id);
-
-			if (ids.length > 0) {
-				const requests = ids.map((id: any) =>
-					axiosInstance.get(`/tasks/initiatives?task_id=${id}`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				);
-
-				const responses = await axios.all(requests);
-				const allData = responses.reduce(
-					(acc: any, response: any) => acc.concat(response.data.results),
-					[]
-				);
-				return allData;
-			} else {
-				return [];
-			}
+			queryFn: () => getData(`/tasks/tasks/?startup_id=${data.startupId}`, access!)
 		},
 		{
-			cacheTime: 0,
-			staleTime: 0,
-			enabled: !!$initiativesQueries[1]
+			queryKey: ['rnsData'],
+			queryFn: () => getData(`/tasks/initiatives/?startup_id=${data.startupId}`, access!)
 		}
-	);
+	]);
 
+	const { isLoading, isError } = $derived(useQueriesState($initiativesQueries));
+	const isAccessible = $derived($initiativesQueries[0].data)
 	let selectedTab = $state(getSelectedTab('initiatives'));
 
 	const updateInitiativeTab = (tab: string) => {
 		selectedTab = updateTab('initiatives', tab);
 	};
-
-	const { isLoading, isError, isAccessible } = $derived(useQueriesState($initiativesQueries))
 
 	const columns = $state(getColumns());
 	const readiness = $state(getReadiness());

@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { browser } from '$app/environment';
 import type { Role } from './types';
+import axiosInstance from './axios';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -153,4 +154,14 @@ export const getSavedTab = (name: string, searchParam: any) => {
 	}
 
 	return selectedTab;
+};
+
+
+export const getData = async (url: string, access: string) => {
+  const response = await axiosInstance.get(url, {
+    headers: {
+      Authorization: `Bearer ${access}`
+    },
+  });
+  return response.data;
 };

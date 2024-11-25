@@ -10,14 +10,10 @@
 	import { cubicInOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 
-	let { user, startup } = $props()
-	// let modules = access.roles[`${user?.role as 'Startup' | 'Mentor' | 'Manager'}`].modules;
-	let modules = access.roles['Startup'].modules;
+	const { user, startup } = $props()
+	const modules = access.roles[`${user?.role as 'Startup' | 'Mentor' | 'Manager'}`].modules;
 
-	$effect(() => {
-		console.log(user)
-	})
-
+4
 	const currentModule = $derived($page.url.pathname.slice(1).split('/')[
 		$page.url.pathname.slice(1).split('/').length - 1
 	])

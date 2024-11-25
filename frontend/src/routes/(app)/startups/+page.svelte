@@ -5,25 +5,14 @@
 	import { StartupCard } from '$lib/components/startups';
 	import { Can } from '$lib/components/shared';
 	import { useQuery } from '@sveltestack/svelte-query';
-	import axiosInstance from '$lib/axios';
 	import type { Role } from '$lib/types.js';
+	import { getData } from '$lib/utils.js';
 
 	let { data } = $props()
 
 	const queryResult = useQuery(
 		'startupData',
-		async () =>
-			(
-				await axiosInstance.get(`/startups`, {
-					headers: {
-						Authorization: `Bearer ${data.access}`
-					}
-				})
-			).data,
-		{
-			cacheTime: 0,
-			staleTime: 0
-		}
+		() => getData(`/startups`, data.access!)
 	);
 	
 	const role: Role = data.role as Role

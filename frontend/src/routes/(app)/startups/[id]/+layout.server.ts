@@ -1,3 +1,12 @@
+import type { LayoutServerLoad } from "./$types";
+
+export const load: LayoutServerLoad = ({cookies, params}) => {
+  return {
+    access: cookies.get('Access'),
+		startupId: params.id
+  }
+}
+
 // import { fetchWithAuth } from '$lib/utils';
 // import type { LayoutServerLoad } from './$types';
 

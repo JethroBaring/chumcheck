@@ -1,12 +1,36 @@
 <script lang="ts">
 	import { AIColumn, AITabs, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
-	import { getColumns, getSavedTab, getSelectedTab, readiness, updateTab } from '$lib/utils';
-	import { page } from '$app/stores';
-	import { useQueries } from '@sveltestack/svelte-query';
-	import axiosInstance from '$lib/axios';
+	import {
+		getData,
+		getColumns,
+		getSavedTab,
+		getSelectedTab,
+		updateTab,
+		getReadiness
+	} from '$lib/utils';
 	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
+	import { useQueries } from '@sveltestack/svelte-query';
+	import { page } from '$app/stores';
 
-	let { data } = $props();
+	const { data } = $props();
+	const { access, startupId } = data;
+	
+	const roadblocksQueries = useQueries([
+		{
+			queryKey: ['allowRoadblocks', startupId],
+			queryFn: () => getData(`/startups/${startupId}/allow-roadblocks/`, access!)
+		},
+		{
+			queryKey: ['roadblocksData'],
+			queryFn: () => getData(`/tasks/roadblocks/?startup_id=${startupId}`, access!)
+		},
+		{
+			queryKey: ['startupData'],
+			queryFn: () => getData(`/startups/${startupId}`, access!)
+		}
+	]);
+
+	const { isLoading, isError, isAccessible } = $derived(useQueriesState($roadblocksQueries));
 
 	let selectedTab = $state(getSelectedTab('roadblocks'));
 
@@ -14,60 +38,13 @@
 		selectedTab = updateTab('roadblocks', tab);
 	};
 
-	const roadblocksQueries = useQueries([
-		{
-			queryKey: ['allowRoadblocks', data.startupId],
-			queryFn: async () =>
-				(
-					await axiosInstance.get(`/startups/${data.startupId}/allow-roadblocks/`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				).data,
-			cacheTime: 0,
-			staleTime: 0,
-			refetchOnWindowFocus: false
-		},
-		{
-			queryKey: ['roadblocksData'],
-			queryFn: async () =>
-				(
-					await axiosInstance.get(`/tasks/roadblocks/?startup_id=${data.startupId}`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				).data,
-			cacheTime: 0,
-			staleTime: 0,
-			refetchOnWindowFocus: false
-		},
-		{
-			queryKey: ['startupData'],
-			queryFn: async () =>
-				(
-					await axiosInstance.get(`/startups/${data.startupId}`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				).data,
-			cacheTime: 0,
-			staleTime: 0,
-			refetchOnWindowFocus: false
-		}
-	]);
-	
-	const { isLoading, isError, isAccessible } = $derived(useQueriesState($roadblocksQueries))
-
 	const columns = $state(getColumns());
+	const readiness = $state(getReadiness());
 
 	let members = $state([
 		{ name: 'Jethro Baring', role: 'Lead', selected: false },
 		{ name: 'Hannah Gimena', role: 'Mentor', selected: false }
 	]);
-
 
 	$effect(() => {
 		const searchParam = $page.url.searchParams.get('tab');
@@ -112,7 +89,7 @@
 			{/each}
 		{:else}
 			{#each readiness as readiness}
-				<AIColumn name={readiness}>
+				<AIColumn name={readiness.name}>
 					<div></div>
 				</AIColumn>
 			{/each}

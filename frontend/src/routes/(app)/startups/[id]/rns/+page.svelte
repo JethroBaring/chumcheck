@@ -1,12 +1,36 @@
 <script lang="ts">
 	import { AIColumn, AITabs, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
-	import { getColumns, getSavedTab, getSelectedTab, readiness, updateTab } from '$lib/utils';
-	import { page } from '$app/stores';
-	import { useQueries } from '@sveltestack/svelte-query';
-	import axiosInstance from '$lib/axios';
+	import {
+		getData,
+		getColumns,
+		getSavedTab,
+		getSelectedTab,
+		readiness,
+		updateTab
+	} from '$lib/utils';
 	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
+	import { useQueries } from '@sveltestack/svelte-query';
+	import { page } from '$app/stores';
 
-	let { data } = $props();
+	const { data } = $props();
+	const { access, startupId } = data;
+
+	const rnsQueries = useQueries([
+		{
+			queryKey: ['allowRNS', startupId],
+			queryFn: () => getData(`/startups/${startupId}/allow-tasks/`, access!)
+		},
+		{
+			queryKey: ['rnsData'],
+			queryFn: () => getData(`/tasks/tasks/?startup_id=${startupId}`, access!)
+		},
+		{
+			queryKey: ['readinessData'],
+			queryFn: () => getData(`/readinesslevel/readiness-levels/`, access!)
+		}
+	]);
+
+	const { isLoading, isError, isAccessible } = $derived(useQueriesState($rnsQueries));
 
 	let selectedTab = $state(getSelectedTab('rns'));
 
@@ -14,61 +38,12 @@
 		selectedTab = updateTab('rns', tab);
 	};
 
-
-
 	const columns = $state(getColumns());
 
 	let members = $state([
 		{ name: 'Jethro Baring', role: 'Lead', selected: false },
 		{ name: 'Hannah Gimena', role: 'Mentor', selected: false }
 	]);
-
-	const rnsQueries = useQueries([
-		{
-			queryKey: ['allowRNS', data.startupId],
-			queryFn: async () =>
-				(
-					await axiosInstance.get(`/startups/${data.startupId}/allow-tasks/`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				).data,
-			cacheTime: 0,
-			staleTime: 0,
-			refetchOnWindowFocus: false
-		},
-		{
-			queryKey: ['rnsData'],
-			queryFn: async () =>
-				(
-					await axiosInstance.get(`/tasks/tasks/?startup_id=${data.startupId}`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				).data,
-			cacheTime: 0,
-			staleTime: 0,
-			refetchOnWindowFocus: false
-		},
-		{
-			queryKey: ['readinessData'],
-			queryFn: async () =>
-				(
-					await axiosInstance.get(`/readinesslevel/readiness-levels/`, {
-						headers: {
-							Authorization: `Bearer ${data.access}`
-						}
-					})
-				).data,
-			cacheTime: 0,
-			staleTime: 0,
-			refetchOnWindowFocus: false
-		}
-	]);
-
-	const { isLoading, isError, isAccessible } = $derived(useQueriesState($rnsQueries))
 
 	const views = $derived(selectedTab === 'rns' ? columns : readiness);
 
@@ -88,6 +63,10 @@
 	{@render fallback()}
 {/if}
 
+<svelte:head>
+	<title>Techwave Solution - RNS</title>
+</svelte:head>
+
 {#snippet loading()}{/snippet}
 
 {#snippet error()}{/snippet}
@@ -102,7 +81,7 @@
 				<MembersFilter {members} updateTab={updateRnsTab} />
 			{/if}
 		</div>
-			<ShowHideColumns {views} />
+		<ShowHideColumns {views} />
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'rns'}
