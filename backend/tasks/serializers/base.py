@@ -102,4 +102,5 @@ class RoadblockBaseSerializer(serializers.ModelSerializer):
             "assignee_id",
             "startup_id",
             "is_ai_generated",
+            "status",
         ]

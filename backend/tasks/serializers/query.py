@@ -10,10 +10,10 @@ class TaskQuerySerializer(serializers.Serializer):
     is_ai_generated = serializers.BooleanField(required=False)
 
 
-class InititativeQuerySerializer(serializers.Serializer):
+class InitiativeQuerySerializer(serializers.Serializer):
     task_id = serializers.IntegerField(required=False)
     is_ai_generated = serializers.BooleanField(required=False)
-
+    startup_id = serializers.IntegerField(required=False)
 
 class RoadblockQuerySerializer(serializers.Serializer):
     startup_id = serializers.IntegerField(required=False)

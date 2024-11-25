@@ -271,7 +271,7 @@ class InitiativeViewSet(
         queryset = self.queryset
         request = self.request
 
-        serializer = tasks_serializers.query.InititativeQuerySerializer(
+        serializer = tasks_serializers.query.InitiativeQuerySerializer(
             data=request.query_params
         )
 
@@ -285,10 +285,14 @@ class InitiativeViewSet(
         if is_ai_generated:
             queryset = queryset.filter(is_ai_generated=is_ai_generated)
 
+        startup_id = serializer.validated_data.get("startup_id")
+        if startup_id:
+            queryset = queryset.filter(task__startup_id=startup_id)
+
         return queryset.all()
 
     @swagger_auto_schema(
-        query_serializer=tasks_serializers.query.InititativeQuerySerializer,
+        query_serializer=tasks_serializers.query.InitiativeQuerySerializer,
         responses={200: tasks_serializers.base.InitiativeBaseSerializer(many=True)},
     )
     def list(self, request, *args, **kwargs):
