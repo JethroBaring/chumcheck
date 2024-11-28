@@ -6,3 +6,5 @@ export type Application = {
   leaderName: string,
   mentorName?: string
 }
+
+export type Actions = 'Create' | 'View' | 'Edit' | 'Delete'

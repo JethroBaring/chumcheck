@@ -48,10 +48,10 @@
             index !== members.length - 1 ? '-mr-1' : ''
           } ${zIndex[index]}`}
         >
-          {member.name.charAt(0)}
+          {member.first_name.charAt(0)}
         </Tooltip.Trigger>
         <Tooltip.Content side="bottom">
-          <p>{member.name}</p>
+          <p>{member.first_name}</p>
         </Tooltip.Content>
       </Tooltip.Root>
     </Tooltip.Provider>

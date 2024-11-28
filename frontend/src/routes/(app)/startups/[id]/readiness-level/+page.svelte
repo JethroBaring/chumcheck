@@ -159,6 +159,10 @@
 	let form: HTMLFormElement;
 </script>
 
+<svelte:head>
+	<title>{$readinessLevelQueries[0].isSuccess ? `${$readinessLevelQueries[0].data.name} - Readiness Levels` : 'Loading'}</title>
+</svelte:head>
+
 <div class="flex h-full flex-col">
 	{#if isLoading}
 		{@render loading()}
