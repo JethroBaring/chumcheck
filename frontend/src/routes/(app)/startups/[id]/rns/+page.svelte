@@ -225,25 +225,7 @@
 {/if}
 
 {#snippet card(rns: any)}
-	<Card.Root
-		class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer"
-	>
-		<Card.Content>
-			<div class="flex flex-col gap-1">
-				<div class="flex items-center justify-between">
-					<h2 class="text-[15px] font-semibold leading-none tracking-tight">Technology</h2>
-				</div>
-				<div class="text-sm text-muted-foreground">
-					<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
-				</div>
-				<div class="text-sm text-muted-foreground">Target Level: 5</div>
-			</div>
-			<div class="flex flex-wrap items-center gap-2">
-				<Badge variant="secondary">Long Term</Badge>
-			</div>
-			<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
-		</Card.Content>
-	</Card.Root>
+	<RnsCard {rns}/>
 {/snippet}
 
 <svelte:head>
@@ -273,59 +255,7 @@
 			{#each readiness as readiness}
 				<AIColumn name={readiness.name} generate={generateRNS}>
 					{#each $rnsQueries[1].data.results.filter((data) => data.readiness_type_rl_type === readiness.name && data.is_ai_generated === true) as item}
-						<Card.Root class="min-h-[150px]">
-							<Card.Content class="flex h-full flex-col justify-between">
-								<div class="flex flex-col gap-1">
-									<div class="flex items-center justify-between">
-										<h2 class="text-[15px] font-semibold leading-none tracking-tight">
-											{`${item.readiness_type_rl_type} Target Level: ${item.target_level_level}`}
-										</h2>
-										<DropdownMenu.Root>
-											<DropdownMenu.Trigger>
-												<Ellipsis class="h-4 w-4" />
-											</DropdownMenu.Trigger>
-											<DropdownMenu.Content align="end">
-												<DropdownMenu.Group>
-													<DropdownMenu.Item
-														onclick={() => {
-															addToRNS(item.id);
-														}}>Add to RNS</DropdownMenu.Item
-													>
-													<DropdownMenu.Item
-														onclick={() => {
-															// currentTask = item;
-															// open = true;
-															// action = 'view';
-														}}>View</DropdownMenu.Item
-													>
-													<DropdownMenu.Item
-														onclick={() => {
-															// currentTask = item;
-															// open = true;
-															// action = 'edit';
-														}}>Edit</DropdownMenu.Item
-													>
-													<DropdownMenu.Item
-														onclick={() => {
-															// currentTask = item;
-															// open = true;
-															// action = 'delete';
-														}}>Delete</DropdownMenu.Item
-													>
-												</DropdownMenu.Group>
-											</DropdownMenu.Content>
-										</DropdownMenu.Root>
-									</div>
-									<div class="text-sm text-muted-foreground">
-										{item.description.slice(0, 100)}
-									</div>
-								</div>
-								<div class="flex flex-wrap items-center gap-2">
-									<Badge variant="secondary">{item.task_type === 1 ? 'Short ' : 'Long '} Term</Badge
-									>
-								</div>
-							</Card.Content>
-						</Card.Root>
+						{@render card(item)}
 					{/each}
 				</AIColumn>
 			{/each}
