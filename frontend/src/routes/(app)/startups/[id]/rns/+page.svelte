@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { AIColumn, AITabs, Column, KanbanBoard, MembersFilter, ShowHideColumns } from '$lib/components/shared';
+	import {
+		AIColumn,
+		AITabs,
+		Column,
+		KanbanBoard,
+		MembersFilter,
+		ShowHideColumns
+	} from '$lib/components/shared';
 	import {
 		getData,
 		getColumns,
@@ -20,6 +27,8 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { RnsCard } from '$lib/components/startups/rns/index.js';
+	import { Ellipsis } from 'lucide-svelte';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -194,7 +203,15 @@
 		}
 	}
 
-	const flipDurationMs = 300;
+	$effect(() => {
+		if (!isLoading) {
+			columns.forEach((column) => {
+				column.items = $rnsQueries[1].data.results.filter(
+					(data) => data.is_ai_generated === false && data.status === column.value
+				);
+			});
+		}
+	});
 </script>
 
 {#if isLoading}
@@ -206,6 +223,28 @@
 {:else}
 	{@render fallback()}
 {/if}
+
+{#snippet card(rns: any)}
+	<Card.Root
+		class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer"
+	>
+		<Card.Content>
+			<div class="flex flex-col gap-1">
+				<div class="flex items-center justify-between">
+					<h2 class="text-[15px] font-semibold leading-none tracking-tight">Technology</h2>
+				</div>
+				<div class="text-sm text-muted-foreground">
+					<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
+				</div>
+				<div class="text-sm text-muted-foreground">Target Level: 5</div>
+			</div>
+			<div class="flex flex-wrap items-center gap-2">
+				<Badge variant="secondary">Long Term</Badge>
+			</div>
+			<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
+		</Card.Content>
+	</Card.Root>
+{/snippet}
 
 <svelte:head>
 	<title>Techwave Solution - RNS</title>
@@ -229,11 +268,65 @@
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'rns'}
-			<KanbanBoard showDialog={() => {}} {columns} {handleDndFinalize} {handleDndConsider}/>
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} />
 		{:else}
 			{#each readiness as readiness}
 				<AIColumn name={readiness.name} generate={generateRNS}>
-					<div></div>
+					{#each $rnsQueries[1].data.results.filter((data) => data.readiness_type_rl_type === readiness.name && data.is_ai_generated === true) as item}
+						<Card.Root class="min-h-[150px]">
+							<Card.Content class="flex h-full flex-col justify-between">
+								<div class="flex flex-col gap-1">
+									<div class="flex items-center justify-between">
+										<h2 class="text-[15px] font-semibold leading-none tracking-tight">
+											{`${item.readiness_type_rl_type} Target Level: ${item.target_level_level}`}
+										</h2>
+										<DropdownMenu.Root>
+											<DropdownMenu.Trigger>
+												<Ellipsis class="h-4 w-4" />
+											</DropdownMenu.Trigger>
+											<DropdownMenu.Content align="end">
+												<DropdownMenu.Group>
+													<DropdownMenu.Item
+														onclick={() => {
+															addToRNS(item.id);
+														}}>Add to RNS</DropdownMenu.Item
+													>
+													<DropdownMenu.Item
+														onclick={() => {
+															// currentTask = item;
+															// open = true;
+															// action = 'view';
+														}}>View</DropdownMenu.Item
+													>
+													<DropdownMenu.Item
+														onclick={() => {
+															// currentTask = item;
+															// open = true;
+															// action = 'edit';
+														}}>Edit</DropdownMenu.Item
+													>
+													<DropdownMenu.Item
+														onclick={() => {
+															// currentTask = item;
+															// open = true;
+															// action = 'delete';
+														}}>Delete</DropdownMenu.Item
+													>
+												</DropdownMenu.Group>
+											</DropdownMenu.Content>
+										</DropdownMenu.Root>
+									</div>
+									<div class="text-sm text-muted-foreground">
+										{item.description.slice(0, 100)}
+									</div>
+								</div>
+								<div class="flex flex-wrap items-center gap-2">
+									<Badge variant="secondary">{item.task_type === 1 ? 'Short ' : 'Long '} Term</Badge
+									>
+								</div>
+							</Card.Content>
+						</Card.Root>
+					{/each}
 				</AIColumn>
 			{/each}
 		{/if}

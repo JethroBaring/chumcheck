@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Ellipsis } from 'lucide-svelte';
-	let { rns,  } = $props();
+	let { rns } = $props();
 	let hover = $state(false);
 </script>
 
@@ -21,7 +21,7 @@
 
 			</div>
 			<div class="text-sm text-muted-foreground">
-				{rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`}
+				<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
 			</div>
 			<div class="text-sm text-muted-foreground">
 				Target Level: 5

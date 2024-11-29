@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { AIColumn, AITabs, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
+	import {
+		AIColumn,
+		AITabs,
+		Column,
+		KanbanBoard,
+		MembersFilter,
+		ShowHideColumns
+	} from '$lib/components/shared';
 	import {
 		getData,
 		getColumns,
@@ -11,26 +18,37 @@
 	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
 	import { useQueries } from '@sveltestack/svelte-query';
 	import { page } from '$app/stores';
+	import * as Card from '$lib/components/ui/card';
+	import { Badge } from '$lib/components/ui/badge/index.js';
+	import axiosInstance from '$lib/axios';
+	import axios from 'axios';
+	import { toast } from 'svelte-sonner';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Ellipsis } from 'lucide-svelte';
 
 	const { data } = $props();
 	const { access, startupId } = data;
 	const initiativesQueries = useQueries([
 		{
-			queryKey: ['allowRNS', data.startupId],
-			queryFn: () => getData(`/startups/${startupId}/allow-initatives/`, access!)
+			queryKey: ['allowRNS', startupId],
+			queryFn: () => getData(`/startups/${startupId}/allow-initiatives/`, access!)
 		},
 		{
 			queryKey: ['rnsData'],
-			queryFn: () => getData(`/tasks/tasks/?startup_id=${data.startupId}`, access!)
+			queryFn: () => getData(`/tasks/tasks/?startup_id=${startupId}`, access!)
 		},
 		{
-			queryKey: ['rnsData'],
-			queryFn: () => getData(`/tasks/initiatives/?startup_id=${data.startupId}`, access!)
+			queryKey: ['initiativesData'],
+			queryFn: () => getData(`/tasks/initiatives/?startup_id=${startupId}`, access!)
+		},
+		{
+			queryKey: ['startupData'],
+			queryFn: () => getData(`/startups/${startupId}`, access!)
 		}
 	]);
 
 	const { isLoading, isError } = $derived(useQueriesState($initiativesQueries));
-	const isAccessible = $derived($initiativesQueries[0].data)
+	const isAccessible = $derived($initiativesQueries[0].data);
 	let selectedTab = $state(getSelectedTab('initiatives'));
 
 	const updateInitiativeTab = (tab: string) => {
@@ -40,14 +58,157 @@
 	const columns = $state(getColumns());
 	const readiness = $state(getReadiness());
 	const views = $derived(selectedTab === 'initiatives' ? columns : readiness);
-	const members = [
-		{ name: 'Jethro Baring', role: 'Lead', selected: false },
-		{ name: 'Hannah Gimena', role: 'Mentor', selected: false }
-	];
+	const members = $derived(
+		$initiativesQueries[3].isSuccess
+			? [
+					...$initiativesQueries[3].data.members.map(({ id, ...rest }) => ({
+						...rest
+					})),
+					{
+						user_id: $initiativesQueries[3].data.user_id,
+						startup_id: $initiativesQueries[3].data.id,
+						first_name: $initiativesQueries[3].data.leader_first_name,
+						last_name: $initiativesQueries[3].data.leader_last_name,
+						email: $initiativesQueries[3].data.leader_email
+					}
+				]
+			: []
+	);
 
 	$effect(() => {
 		const searchParam = $page.url.searchParams.get('tab');
 		selectedTab = getSavedTab('initiatives', searchParam);
+	});
+
+	let generatingInitiatives = false;
+	let generatingType = 'Technology';
+	let open = false;
+	const generateInitiatives = async (type: string) => {
+		generatingInitiatives = true;
+		let ids = $initiativesQueries[1].data.results
+			.filter(
+				(data) => data.readiness_type_rl_type.slice(0, 1) === type && data.is_ai_generated === false
+			)
+			.map((d) => d.id);
+
+		console.log(ids);
+		ids = [1];
+		if (ids.length > 0) {
+			const requests = ids.map(async (id: any) => {
+				return await axiosInstance.post(
+					`/tasks/initiatives/generate-initiatives/`,
+					{
+						task_id: id,
+						no_of_initiatives_to_create: 3
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				);
+			});
+
+			await axios.all(requests);
+			$initiativesQueries[2].refetch();
+			$initiativesQueries[1].refetch();
+			toast.success(`Successfully generated initiatives`);
+		} else {
+			toast.error('No initiatives to generate');
+		}
+
+		generatingInitiatives = false;
+	};
+
+	const addToInitiatives = async (id: number) => {
+		await axiosInstance.patch(
+			`/tasks/initiatives/${id}/`,
+			{
+				status: 4,
+				is_ai_generated: false
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${data.access}`
+				}
+			}
+		);
+		toast.success('Successfuly added to Initiatives');
+		$initiativesQueries[1].refetch();
+		$initiativesQueries[2].refetch();
+	};
+
+	const editInitiative = async (
+		id: number,
+		description: string,
+		measures: string,
+		targets: string,
+		remarks: string,
+		initiative_number: number
+	) => {
+		await axiosInstance.patch(
+			`/tasks/initiatives/${id}/`,
+			{
+				description,
+				measures,
+				targets,
+				remarks,
+				initiative_number
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${data.access}`
+				}
+			}
+		);
+		toast.success('Successfuly updated Initiatives');
+		$initiativesQueries[1].refetch();
+		open = false;
+		$initiativesQueries[2].refetch();
+	};
+
+	const deleteInitiative = async (id: number) => {
+		console.log(id);
+		await axiosInstance.delete(`/tasks/initiatives/${id}/`, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
+			}
+		});
+		toast.success('Successfuly deleted a task');
+		$initiativesQueries[1].refetch();
+		$initiativesQueries[2].refetch();
+	};
+
+	function handleDndConsider(e: any, x: number) {
+		columns[x].items = e.detail.items;
+	}
+
+	async function handleDndFinalize(e: any, x: number, status: number) {
+		columns[x].items = e.detail.items;
+		if (e.detail.info.trigger == 'droppedIntoZone') {
+			const task = e.detail.items.find((t) => t.id == e.detail.info.id);
+			await axiosInstance.patch(
+				`/tasks/initiatives/${task.id}/`,
+				{
+					status
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${data.access}`
+					}
+				}
+			);
+		}
+	}
+
+	$effect(() => {
+		if ($initiativesQueries[2].isSuccess) {
+			console.log($initiativesQueries[2].data);
+		}
+
+		if ($initiativesQueries[1].isSuccess) {
+			console.log($initiativesQueries[1].data);
+		}
 	});
 </script>
 
@@ -60,6 +221,26 @@
 {:else}
 	{@render fallback()}
 {/if}
+
+{#snippet card(rns: any)}
+	<Card.Root class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer">
+		<Card.Content>
+			<div class="flex flex-col gap-1">
+				<div class="flex items-center justify-between">
+					<h2 class="text-[15px] font-semibold leading-none tracking-tight">Technology</h2>
+				</div>
+				<div class="text-sm text-muted-foreground">
+					<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
+				</div>
+				<div class="text-sm text-muted-foreground">Target Level: 5</div>
+			</div>
+			<div class="flex flex-wrap items-center gap-2">
+				<Badge variant="secondary">Long Term</Badge>
+			</div>
+			<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
+		</Card.Content>
+	</Card.Root>
+{/snippet}
 
 {#snippet loading()}{/snippet}
 
@@ -79,18 +260,82 @@
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'initiatives'}
-			{#each columns as column}
-				{#if column.show}
-					<Column name={column.name}>
-						<div>Test</div>
-					</Column>
-				{/if}
-			{/each}
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} />
 		{:else}
 			{#each readiness as readiness}
 				{#if readiness.show}
-					<AIColumn name={readiness.name}>
-						<div></div>
+					<AIColumn name={readiness.name} generate={generateInitiatives}>
+						{#each $initiativesQueries[2].data.results.filter((data) => data.is_ai_generated === true) as item}
+							{@const ids = $initiativesQueries[1].data.results
+								.filter(
+									(data) =>
+										data.readiness_type_rl_type === readiness.name && data.is_ai_generated === false
+								)
+								.map((d) => d.id)}
+							{@const cur = $initiativesQueries[1].data.results.filter(
+								(data) =>
+									data.readiness_type_rl_type === readiness.name &&
+									data.is_ai_generated === false &&
+									data.id === item.task_id
+							)[0]}
+							{#if ids.includes(item.task_id)}
+								<Card.Root class="min-h-[150px]">
+									<Card.Content class="flex h-full flex-col justify-between">
+										<div class="flex flex-col gap-1">
+											<div class="flex items-center justify-between">
+												<h2 class="text-[15px] font-semibold leading-none tracking-tight">
+													Priority No. {cur.priority_number ? cur.priority_number : ''} : Initiative
+													No. {item.initiative_number ? item.initiative_number : ''}
+												</h2>
+												<DropdownMenu.Root>
+													<DropdownMenu.Trigger>
+														<Ellipsis class="h-4 w-4" />
+													</DropdownMenu.Trigger>
+													<DropdownMenu.Content align="end">
+														<DropdownMenu.Group>
+															<DropdownMenu.Item
+																onclick={() => {
+																	addToInitiatives(item.id);
+																}}>Add to Initiative</DropdownMenu.Item
+															>
+															<DropdownMenu.Item
+																onclick={() => {
+																	// currentTask = item;
+																	// open = true;
+																	// action = 'view';
+																}}>View</DropdownMenu.Item
+															>
+															<DropdownMenu.Item
+																onclick={() => {
+																	// currentTask = item;
+																	// open = true;
+																	// action = 'edit';
+																}}>Edit</DropdownMenu.Item
+															>
+															<DropdownMenu.Item
+																onclick={() => {
+																	// currentTask = item;
+																	// open = true;
+																	// action = 'delete';
+																}}>Delete</DropdownMenu.Item
+															>
+														</DropdownMenu.Group>
+													</DropdownMenu.Content>
+												</DropdownMenu.Root>
+											</div>
+											<div class="text-sm text-muted-foreground">
+												{item.description.slice(0, 100)}
+											</div>
+										</div>
+										<div class="flex flex-wrap items-center gap-2">
+											<Badge variant="secondary"
+												>{cur.task_type === 1 ? 'Short ' : 'Long '} Term</Badge
+											>
+										</div>
+									</Card.Content>
+								</Card.Root>
+							{/if}
+						{/each}
 					</AIColumn>
 				{/if}
 			{/each}

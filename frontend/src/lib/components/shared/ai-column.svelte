@@ -19,6 +19,7 @@ onmouseleave={() => (hover = false)}
       </button>
       {/if}
     </div>
+    {name.slice(0, 1)}
   </Card.Header>
   <Card.Content class="flex flex-col gap-3">
     {@render children()}

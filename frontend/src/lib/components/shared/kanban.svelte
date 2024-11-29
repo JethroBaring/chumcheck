@@ -37,7 +37,7 @@
 				{:else}
 					{#each column.items as item (item.id)}
 						<div animate:flip={{ duration: flipDurationMs }}>
-							{@render card()}
+							{@render card(item)}
 							<!-- <Card.Root>
 								<Card.Content class="flex h-[150px] flex-col justify-between">
 									<div class="flex flex-col gap-1">

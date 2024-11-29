@@ -2,25 +2,27 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
-	import { UsersRound, Settings } from 'lucide-svelte';
 	import { cubicInOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';
-	import type { LayoutData } from './$types';
 	import { access } from '$lib/access';
 	import { page } from '$app/stores';
+
+	const { data } = $props();
+	const { role } = data
+
 	const [send, receive] = crossfade({
 		duration: 250,
 		easing: cubicInOut
 	});
-	$: currentModule = $page.url.pathname.slice(1).split('/')[
-		$page.url.pathname.slice(1).split('/').length - 1
-	];
-	export let data: LayoutData;
-	const role = data.user.role;
-	let modules =
-		access.roles[`${data.user?.role as 'Startup' | 'Mentor' | 'Manager'}`].modules[0].subModule[5]
+	const currentModule = $derived(
+		$page.url.pathname.slice(1).split('/')[$page.url.pathname.slice(1).split('/').length - 1]
+	);
+
+	const modules =
+		access.roles[`${data.user?.role as 'Startup' | 'Mentor' | 'Manager'}`].modules[0].subModule[6]
 			.subModule;
-	console.log(modules);
+
+	console.log(role)
 </script>
 
 <Card.Root class="h-full">
@@ -48,7 +50,7 @@
 										class="absolute inset-0 rounded-md bg-muted"
 										in:send={{ key: 'active-sidebar-tab' }}
 										out:receive={{ key: 'active-sidebar-tab' }}
-									/>
+									></div>
 								{/if}
 								<div class="relative flex items-center justify-center gap-3">
 									<!-- {#if item.link === 'profile'}
