@@ -11,6 +11,7 @@
 	import { Filter } from 'lucide-svelte';
 	import axios from 'axios';
 	import { toast } from 'svelte-sonner';
+	import * as Table from '$lib/components/ui/table';
 	export let data: PageData;
 
 	const queryResult = useQuery(
@@ -68,7 +69,7 @@
 		console.log($readinessData.data.results);
 	}
 
-	let readiness
+	let readiness;
 	readiness = [
 		{
 			name: 'Technology',
@@ -125,20 +126,24 @@
 			new: 0
 		}
 	];
-	
+
 	async function elevate() {
-		const readinessToUpdate = readiness.filter(r => r.new !== 0);
+		const readinessToUpdate = readiness.filter((r) => r.new !== 0);
 
 		if (readinessToUpdate.length > 0) {
-			const requests = readinessToUpdate.map(r =>
-				axiosInstance.post(`/startup-readiness-levels/`, {
-					startup_id: data.startupId,
-					readiness_level_id: r.new,
-				}, {
-					headers: {
-						Authorization: `Bearer ${data.access}`
+			const requests = readinessToUpdate.map((r) =>
+				axiosInstance.post(
+					`/startup-readiness-levels/`,
+					{
+						startup_id: data.startupId,
+						readiness_level_id: r.new
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
 					}
-				})
+				)
 			);
 
 			try {
@@ -153,19 +158,40 @@
 		}
 	}
 
-	$: console.log(readiness);
 </script>
 
 <div class="flex flex-col gap-5">
 	<h1 class="text-xl font-semibold">Elevate</h1>
-	<div class="flex w-[200px] flex-col gap-3">
-		{#each readiness as r}
-			<div class="flex items-center justify-between">
-				<h2>{r.name}</h2>
-				{#if $readinessData.isLoading}
-					<Skeleton class="h-10" />
-				{:else}
-					<Select.Root
+		<div class="flex items-center justify-between">
+			{#if $readinessData.isLoading}
+				<Skeleton class="h-10" />
+			{:else}
+				<div class="w-2/3 rounded-md border">
+					<Table.Root class="rounded-lg bg-background">
+						<Table.Header>
+							<Table.Row class="text-centery h-12">
+								<Table.Head class="pl-5">Type</Table.Head>
+								<Table.Head class="">Current Level</Table.Head>
+								<Table.Head class="">Elevated Level</Table.Head>
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{#if $queryResult.isLoading}
+								<Skeleton class="h-40" />
+							{:else}
+								{#each readiness as r}
+										<Table.Row class="h-14 cursor-pointer">
+											<Table.Cell class="pl-5">{r.name}</Table.Cell>
+											<Table.Cell class="">1</Table.Cell>
+											<Table.Cell class="">2</Table.Cell>
+										</Table.Row>
+								{/each}
+							{/if}
+						</Table.Body>
+					</Table.Root>
+				</div>
+
+				<!-- <Select.Root
 						onSelectedChange={(e) => {
 							r.new = e?.value;
 						}}
@@ -183,11 +209,8 @@
 								<Select.Item value={item.id}>{item.level}</Select.Item>
 							{/each}
 						</Select.Content>
-					</Select.Root>
-				{/if}
-			</div>
-		{/each}
+					</Select.Root> -->
+			{/if}
 	</div>
-
-	<div><Button on:click={elevate}>Elevate</Button></div>
+	<div><Button onclick={elevate}>Elevate</Button></div>
 </div>

@@ -5,68 +5,46 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Ellipsis } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
-	import { RnsViewEditDialog } from '.';
-	let { rns, members, update, ai, addToRns  } = $props();
+	let { initiative, ai, members, update } = $props();
+	let hover = $state(false);
 
-	let assignee = $state(rns.assignee_id);
+	let assignee = $state(initiative.assignee_id);
+	let lastAssignee = `${initiative.assignee_id}`; // Store the last known value of assignee
 
 	const assignedMember = $derived(members.filter((member) => member.user_id === assignee)[0]);
-
-	let open = $state(false);
-	const onOpenChange = () => {
-		open = !open
-	}
 </script>
 
 <Card.Root
 	class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer"
-	onclick={() => open = true}
+	onmouseenter={() => (hover = true)}
+	onmouseleave={() => (hover = false)}
 >
 	<Card.Content class="flex flex-col gap-2">
-		<div class="flex items-center justify-between">
-			<h2 class="text-[15px] font-semibold leading-none tracking-tight">{rns.readiness_type_rl_type}</h2>
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					<Ellipsis class="h-5 w-5" />
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content align="end">
+		{#if !ai}
+			<div class="flex items-center justify-between">
+				<h2 class="text-[15px] font-semibold leading-none tracking-tight">Technology</h2>
+			</div>
+		{/if}
+		<div class="text-sm text-muted-foreground">
+			{initiative.description.substring(0, 150) +
+				`${initiative.description.length > 150 ? '...' : ''}`}
+		</div>
+		<div class="text-sm text-muted-foreground">
+			Priority No.: <DropdownMenu.Root>
+				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
+				<DropdownMenu.Content align="start" class="min-w-4">
 					<DropdownMenu.Group>
-						{#if ai}
-							<DropdownMenu.Item onclick={() => addToRns(rns.id)}>
-								Add to RNA
-							</DropdownMenu.Item>
-						{/if}
-						<DropdownMenu.Item
-							onclick={() => {
-								// currentRNA = filteredRNA;
-								// readinessType = r.readiness_type;
-								// readinessLevel = r.readiness_level;
-								// open = true;
-								// action = 'edit';
-							}}
-						>
-							Edit
-						</DropdownMenu.Item>
-						<DropdownMenu.Item
-							onclick={() => {
-								// currentRNA = filteredRNA;
-								// readinessType = r.readiness_type;
-								// readinessLevel = r.readiness_level;
-								// open = true;
-								// action = 'delete';
-							}}
-						>
-							Delete
-						</DropdownMenu.Item>
+						<DropdownMenu.RadioGroup>
+							{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as item}
+								<DropdownMenu.RadioItem value={`${item}`}>{item}</DropdownMenu.RadioItem>
+							{/each}
+						</DropdownMenu.RadioGroup>
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		</div>
 		<div class="text-sm text-muted-foreground">
-			{rns.description.substring(0, 150) + `${rns.description.length > 150 ? '...' : ''}`}
-		</div>
-		<div class="text-sm text-muted-foreground">
-			Target Level: <DropdownMenu.Root>
+			Initiative No.: <DropdownMenu.Root>
 				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
 				<DropdownMenu.Content align="start" class="min-w-4">
 					<DropdownMenu.Group>
@@ -96,9 +74,7 @@
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					{#if assignedMember}
-						<div
-							class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}
-						>
+						<div class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}>
 							{assignedMember.first_name.charAt(0)}
 						</div>
 					{:else}
@@ -112,7 +88,7 @@
 						{#each members as member, index}
 							<DropdownMenu.RadioGroup
 								bind:value={assignee}
-								onValueChange={(v) => update(rns.id, undefined, undefined, undefined, v)}
+								onValueChange={(v) => update(initiative.id, undefined, undefined, undefined, undefined, undefined, v)}
 							>
 								<DropdownMenu.RadioItem value={member.user_id} class="flex items-center gap-3">
 									<div
@@ -127,9 +103,7 @@
 						{/each}
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+			</DropdownMenu.Root>	
 		</div>
 	</Card.Content>
 </Card.Root>
-
-<RnsViewEditDialog {open} {onOpenChange} {rns} {update}/>

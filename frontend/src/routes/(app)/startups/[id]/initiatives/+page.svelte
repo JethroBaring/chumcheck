@@ -25,6 +25,7 @@
 	import { toast } from 'svelte-sonner';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Ellipsis } from 'lucide-svelte';
+	import { InitiativeCard } from '$lib/components/startups/initiatives';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -69,7 +70,8 @@
 						startup_id: $initiativesQueries[3].data.id,
 						first_name: $initiativesQueries[3].data.leader_first_name,
 						last_name: $initiativesQueries[3].data.leader_last_name,
-						email: $initiativesQueries[3].data.leader_email
+						email: $initiativesQueries[3].data.leader_email,
+						selected: false
 					}
 				]
 			: []
@@ -144,17 +146,21 @@
 		measures: string,
 		targets: string,
 		remarks: string,
-		initiative_number: number
+		initiative_number: number,
+		assignee_id?: number
 	) => {
+
+		const payload: Record<string, any> = {};
+    if (description !== undefined) payload.description = description;
+    if (measures !== undefined) payload.measures = measures;
+    if (targets !== undefined) payload.targets = targets;
+    if (remarks !== undefined) payload.remarks = remarks;
+    if (initiative_number !== undefined) payload.initiative_number = initiative_number;
+    if (assignee_id !== undefined) payload.assignee_id = assignee_id;
+
 		await axiosInstance.patch(
 			`/tasks/initiatives/${id}/`,
-			{
-				description,
-				measures,
-				targets,
-				remarks,
-				initiative_number
-			},
+			payload,
 			{
 				headers: {
 					Authorization: `Bearer ${data.access}`
@@ -202,12 +208,12 @@
 	}
 
 	$effect(() => {
-		if ($initiativesQueries[2].isSuccess) {
-			console.log($initiativesQueries[2].data);
-		}
-
-		if ($initiativesQueries[1].isSuccess) {
-			console.log($initiativesQueries[1].data);
+		if (!isLoading) {
+			columns.forEach((column) => {
+				column.items = $initiativesQueries[2].data.results.filter(
+					(data) => data.is_ai_generated === false && data.status === column.value
+				);
+			});
 		}
 	});
 </script>
@@ -222,24 +228,8 @@
 	{@render fallback()}
 {/if}
 
-{#snippet card(rns: any)}
-	<Card.Root class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer">
-		<Card.Content>
-			<div class="flex flex-col gap-1">
-				<div class="flex items-center justify-between">
-					<h2 class="text-[15px] font-semibold leading-none tracking-tight">Technology</h2>
-				</div>
-				<div class="text-sm text-muted-foreground">
-					<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
-				</div>
-				<div class="text-sm text-muted-foreground">Target Level: 5</div>
-			</div>
-			<div class="flex flex-wrap items-center gap-2">
-				<Badge variant="secondary">Long Term</Badge>
-			</div>
-			<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
-		</Card.Content>
-	</Card.Root>
+{#snippet card(initiative: any, ai: any = false)}
+	<InitiativeCard {initiative} {ai} {members} update={editInitiative}/>
 {/snippet}
 
 {#snippet loading()}{/snippet}
@@ -279,7 +269,8 @@
 									data.id === item.task_id
 							)[0]}
 							{#if ids.includes(item.task_id)}
-								<Card.Root class="min-h-[150px]">
+							{@render card(item, true)}
+								<!-- <Card.Root class="min-h-[150px]">
 									<Card.Content class="flex h-full flex-col justify-between">
 										<div class="flex flex-col gap-1">
 											<div class="flex items-center justify-between">
@@ -333,7 +324,7 @@
 											>
 										</div>
 									</Card.Content>
-								</Card.Root>
+								</Card.Root> -->
 							{/if}
 						{/each}
 					</AIColumn>

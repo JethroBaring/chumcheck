@@ -13,11 +13,9 @@
 	<Card.Header>
 		<div class="flex h-4 items-center justify-between">
 			<h2 class="text-[15px] font-semibold leading-none tracking-tight">{name}</h2>
-			{#if hover}
-				<button onclick={showDialog}>
-					<Plus class="h-4 w-4" />
-				</button>
-			{/if}
+			<button onclick={showDialog}>
+				<Plus class="h-4 w-4" />
+			</button>
 		</div>
 	</Card.Header>
 	<Card.Content class="flex h-[730px] flex-col gap-3 overflow-scroll">

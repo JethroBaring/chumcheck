@@ -165,3 +165,51 @@ export const getData = async (url: string, access: string) => {
   });
   return response.data;
 };
+
+export const zIndex = [
+	'z-50',
+	'z-40',
+	'z-30',
+	'z-20',
+	'z-10',
+	'z-0'
+];
+
+export const profileColor = [
+	'bg-red-500',
+	'bg-blue-500',
+	'bg-green-500',
+	'bg-yellow-500',
+	'bg-purple-500',
+	'bg-pink-500',
+	'bg-orange-500',
+	'bg-teal-500',
+	'bg-indigo-500',
+	'bg-cyan-500',
+	'bg-lime-500',
+	'bg-amber-500',
+	'bg-rose-500',
+	'bg-sky-500',
+	'bg-emerald-500',
+	'bg-violet-500',
+	'bg-fuchsia-500',
+	'bg-gray-500',
+	'bg-slate-500',
+	'bg-zinc-500',
+	'bg-stone-500'
+]
+
+export function getProfileColor(firstName: string) {
+	if (!firstName || typeof firstName !== 'string') {
+		return 'bg-gray-500'; // Default color if no valid name is provided
+	}
+
+	// Get the ASCII value of the first letter, convert it to uppercase for consistency
+	const firstChar = firstName[0].toUpperCase();
+	const asciiValue = firstChar.charCodeAt(0);
+
+	// Map the ASCII value to an index in the profileColor array
+	const colorIndex = asciiValue % profileColor.length;
+
+	return profileColor[colorIndex];
+}

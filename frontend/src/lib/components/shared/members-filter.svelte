@@ -1,18 +1,16 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
   import * as Tooltip from '$lib/components/ui/tooltip/index.js';
+	import { getProfileColor, zIndex } from '$lib/utils';
 	import { Kanban, Table, SlidersHorizontal } from 'lucide-svelte';
 
-  let { members, updateTab } = $props()
-
-  const zIndex = [
-		'z-50 bg-red-500',
-		'z-40 bg-blue-500',
-		'z-30 bg-pink-500',
-		'z-20 bg-orange-500',
-		'z-10 bg-yellow-500',
-		'z-0 bg-green-500'
-	];
+  let { members, updateTab, updateMembers } = $props()
+  
+  function toggleMemberSelection(member) {
+		members = members.map((m) =>
+			m === member ? { ...m, selected: !m.selected } : m
+		);
+	}
 </script>
 
 <div class="flex h-fit justify-between rounded-lg bg-background">
@@ -46,7 +44,7 @@
             member.selected ? 'ring-2 ring-flutter-blue' : ''
           } flex h-9 w-9 items-center justify-center rounded-full border-background ${
             index !== members.length - 1 ? '-mr-1' : ''
-          } ${zIndex[index]}`}
+          } ${zIndex[index]} ${getProfileColor(member.first_name)}`}
         >
           {member.first_name.charAt(0)}
         </Tooltip.Trigger>

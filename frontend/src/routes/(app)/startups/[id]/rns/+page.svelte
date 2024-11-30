@@ -74,7 +74,8 @@
 						startup_id: $rnsQueries[3].data.id,
 						first_name: $rnsQueries[3].data.leader_first_name,
 						last_name: $rnsQueries[3].data.leader_last_name,
-						email: $rnsQueries[3].data.leader_email
+						email: $rnsQueries[3].data.leader_email,
+						selected: false
 					}
 				]
 			: []
@@ -145,29 +146,33 @@
 	};
 
 	const editRNS = async (
-		id: number,
-		level: number,
-		description: string,
-		priority_number: number
-	) => {
-		console.log({ id, level, description });
-		await axiosInstance.patch(
-			`/tasks/tasks/${id}/`,
-			{
-				target_level_id: level,
-				description: description,
-				priority_number: priority_number
-			},
-			{
-				headers: {
-					Authorization: `Bearer ${data.access}`
-				}
-			}
-		);
-		toast.success('Successfuly updated the RNS');
-		open = false;
-		$rnsQueries[1].refetch();
-	};
+    id: number,
+    level?: number, // Optional parameter
+    description?: string, // Optional parameter
+    priority_number?: number, // Optional parameter,
+		assignee_id?: number
+) => {
+
+    const payload: Record<string, any> = {};
+    if (level !== undefined) payload.target_level_id = level;
+    if (description !== undefined) payload.description = description;
+    if (priority_number !== undefined) payload.priority_number = priority_number;
+    if (assignee_id !== undefined) payload.assignee_id = assignee_id;
+
+    await axiosInstance.patch(
+        `/tasks/tasks/${id}/`,
+        payload,
+        {
+            headers: {
+                Authorization: `Bearer ${data.access}`
+            }
+        }
+    );
+
+    toast.success('Successfully updated the RNS');
+    open = false;
+    $rnsQueries[1].refetch();
+};
 
 	const deleteRNS = async (id: number) => {
 		console.log(id);
@@ -224,8 +229,8 @@
 	{@render fallback()}
 {/if}
 
-{#snippet card(rns: any)}
-	<RnsCard {rns}/>
+{#snippet card(rns: any, ai = false)}
+	<RnsCard {rns} {members} update={editRNS} {ai} addToRns={addToRNS}/>
 {/snippet}
 
 <svelte:head>
@@ -243,7 +248,7 @@
 				<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
 			</div>
 			{#if selectedTab === 'rns'}
-				<MembersFilter {members} updateTab={updateRnsTab} />
+				<MembersFilter {members} updateTab={updateRnsTab} updateMembers={() => {}}/>
 			{/if}
 		</div>
 		<ShowHideColumns {views} />
@@ -255,7 +260,7 @@
 			{#each readiness as readiness}
 				<AIColumn name={readiness.name} generate={generateRNS}>
 					{#each $rnsQueries[1].data.results.filter((data) => data.readiness_type_rl_type === readiness.name && data.is_ai_generated === true) as item}
-						{@render card(item)}
+						{@render card(item, true)}
 					{/each}
 				</AIColumn>
 			{/each}

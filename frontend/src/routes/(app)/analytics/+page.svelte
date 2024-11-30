@@ -4,7 +4,6 @@
 	import { useQueries, useQuery } from '@sveltestack/svelte-query';
 	import axiosInstance from '$lib/axios';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-  import { RadarChart, BarChart } from '$lib/components/charts';
 
   let { data } = $props()
 
