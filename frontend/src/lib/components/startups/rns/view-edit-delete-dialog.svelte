@@ -4,12 +4,28 @@
 	import { Textarea } from '$lib/components/ui/textareav2';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 	import { Badge } from '$lib/components/ui/badge';
-	import { getProfileColor, zIndex } from '$lib/utils';
+	import { getProfileColor, getReadinessLevels, getReadinessTypes, zIndex } from '$lib/utils';
+	import * as Select from '$lib/components/ui/select/index.js';
 
 	let { open, onOpenChange, rns, deleteRns, update, action, members, assignedMember } = $props();
 
 	let rnsCopy = $state(rns);
+
+	const levels = $derived(
+		getReadinessLevels(
+			rns.readiness_type_id
+				? (getReadinessTypes().filter((d) => d.id === Number(rns.readiness_type_id))[0].name as
+						| 'Technology'
+						| 'Market'
+						| 'Acceptance'
+						| 'Organizational'
+						| 'Regulatory'
+						| 'Investment')
+				: 'Technology'
+		)
+	);
 </script>
 
 {#if action === 'Delete'}
@@ -33,6 +49,79 @@
 	</AlertDialog.Root>
 {:else}
 	<Dialog.Root bind:open {onOpenChange}>
+		<Dialog.Content class="max-w-[600px]">
+			<div class="grid gap-4 py-4">
+				<div class="flex flex-col gap-4">
+					<Label for="name">Type</Label>
+					<Select.Root type="single" bind:value={rns.readiness_type_id}>
+						<Select.Trigger class="w-[180px]" disabled={action==='View'}
+							>{rns.readiness_type_id
+								? getReadinessTypes().filter((d) => d.id === Number(rns.readiness_type_id))[0].name
+								: ''}</Select.Trigger
+						>
+						<Select.Content>
+							{#each getReadinessTypes() as type}
+								<Select.Item value={`${type.id}`}>{type.name}</Select.Item>
+							{/each}
+						</Select.Content>
+					</Select.Root>
+				</div>
+				<div class="flex flex-col gap-4">
+					<Label for="username">Description</Label>
+					<Textarea rows={10} bind:value={rns.description} readonly={action==='View'}/>
+				</div>
+			</div>
+			<div class="flex flex-col gap-4">
+				<Label for="name">Assignee</Label>
+				<Select.Root type="single" bind:value={rns.assignee_id}>
+					<Select.Trigger class="w-[180px]" disabled={action==='View'}
+						>{rns.assignee_id
+							? `${members.filter((member: any) => member.user_id === rns.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rns.assignee_id)[0].last_name}`
+							: ''}</Select.Trigger
+					>
+					<Select.Content>
+						{#each members as member}
+							<Select.Item value={member.user_id}
+								>{member.first_name} {member.last_name}</Select.Item
+							>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</div>
+			<div class="flex flex-col gap-4">
+				<Label for="name">Target Level</Label>
+				<Select.Root type="single" bind:value={rns.target_level_id}>
+					<Select.Trigger class="w-[50px]" disabled={action==='View'}>{rns.target_level_id}</Select.Trigger>
+					<Select.Content>
+						{#each levels as item}
+							<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</div>
+			<div class="flex flex-col gap-4">
+				<Label for="name">Term</Label>
+				<Select.Root type="single" bind:value={rns.task_type}>
+					<Select.Trigger class="w-[120px]" disabled={action==='View'}
+						>{rns.task_type === '1' ? 'Short Term' : 'Long Term'}</Select.Trigger
+					>
+					<Select.Content>
+						<Select.Item value="1">Short Term</Select.Item>
+						<Select.Item value="2">Long Term</Select.Item>
+					</Select.Content>
+				</Select.Root>
+			</div>
+			{#if action === 'Edit'}
+				<Dialog.Footer>
+					<Button onclick={() => {
+						update(rnsCopy.id, rnsCopy.description, rnsCopy.priority_number, rnsCopy.assignee_id)
+					}}>Update</Button>
+				</Dialog.Footer>
+			{/if}
+		</Dialog.Content>
+	</Dialog.Root>
+
+	<!-- <Dialog.Root bind:open {onOpenChange}>
 		<Dialog.Content class="max-w-[600px]">
 			<Dialog.Header>
 				<Dialog.Title>{rnsCopy.readiness_type_rl_type}</Dialog.Title>
@@ -118,58 +207,5 @@
 				</Dialog.Footer>
 			{/if}
 		</Dialog.Content>
-	</Dialog.Root>
+	</Dialog.Root> -->
 {/if}
-
-<!-- 
-<script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
-
-  export let open, onOpenChange, rns, update
-
-	let rnsCopy = { ...rns }; // Create a shallow copy for comparison
-
-	// Reactive statement to check if the current state matches the copy
-	$: disabled = JSON.stringify(rns) === JSON.stringify(rnsCopy);
-
-	function updateField(field: string, value: any) {
-		rns = { ...rns, [field]: value }; // Update `rns` reactively
-	}
-</script>
-
-<Dialog.Root>
-  <Dialog.Content>
-    <Dialog.Header>
-      <Dialog.Title>Are you sure absolutely sure?</Dialog.Title>
-      <Dialog.Description>
-        This action cannot be undone. This will permanently delete your account
-        and remove your data from our servers.
-      </Dialog.Description>
-    </Dialog.Header>
-  </Dialog.Content>
-</Dialog.Root>
-
-<Dialog.Root bind:open {onOpenChange}>
-  <Dialog.Content class="max-w-[600px]">
-    <Dialog.Header>
-      <Dialog.Title>{rns.readiness_type_rl_type}</Dialog.Title>
-      <Dialog.Description>
-        Make changes to your profile here. Click save when you're done.
-      </Dialog.Description>
-    </Dialog.Header>
-    <div class="grid gap-4 py-4">
-      <div class="grid grid-cols-4 items-center gap-4">
-        Input fields can be added here 
-      </div>
-    </div>
-    <button onclick={() => updateField('readiness_type_rl_type', 'Acceptance')}>
-      Click me
-    </button>
-    <Dialog.Footer>
-      <Button type="submit" disabled={disabled} on:click={() => update(rns)}>
-        Update
-      </Button>
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root> -->

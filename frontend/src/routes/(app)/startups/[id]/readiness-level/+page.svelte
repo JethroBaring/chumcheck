@@ -8,7 +8,7 @@
 	import Rubric from '$lib/components/startups/readiness/rubric.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Chart from '$lib/components/ui/chart/index.js';
-	import { RadarChart } from '$lib/components/shared/index.js';
+	import { Can, RadarChart } from '$lib/components/shared/index.js';
 
 	const { data } = $props();
 	const { access, startupId, role } = data;
@@ -200,58 +200,60 @@
 
 {#snippet rated()}
 	<div class="flex h-full flex-col gap-3">
-		<div class="flex justify-between">
-			<div class="flex h-fit justify-between rounded-lg bg-background">
-				<Tabs.Root value={selectedTab}>
-					<Tabs.List class="border bg-flutter-gray/20">
-						<Tabs.Trigger value="chart" class="capitalize" onclick={() => updateTab('chart')}
-							>Chart</Tabs.Trigger
-						>
-						<Tabs.Trigger value="detailed" class="capitalize" onclick={() => updateTab('detailed')}
-							>Detailed</Tabs.Trigger
-						>
-					</Tabs.List>
-				</Tabs.Root>
-			</div>
-			{#if selectedTab === 'detailed'}
+		<Can role={['Mentor', 'Manager as Mentor']} userRole={role}>
+			<div class="flex justify-between">
 				<div class="flex h-fit justify-between rounded-lg bg-background">
-					<Tabs.Root value={selectedReadinessTab}>
+					<Tabs.Root value={selectedTab}>
 						<Tabs.List class="border bg-flutter-gray/20">
-							<Tabs.Trigger
-								value="technology"
-								class="capitalize"
-								onclick={() => updateReadinessTab('technology')}>Technology</Tabs.Trigger
+							<Tabs.Trigger value="chart" class="capitalize" onclick={() => updateTab('chart')}
+								>Chart</Tabs.Trigger
 							>
-							<Tabs.Trigger
-								value="acceptance"
-								class="capitalize"
-								onclick={() => updateReadinessTab('acceptance')}>Acceptance</Tabs.Trigger
-							>
-							<Tabs.Trigger
-								value="market"
-								class="capitalize"
-								onclick={() => updateReadinessTab('market')}>Market</Tabs.Trigger
-							>
-							<Tabs.Trigger
-								value="organizational"
-								class="capitalize"
-								onclick={() => updateReadinessTab('organizational')}>Organizational</Tabs.Trigger
-							>
-							<Tabs.Trigger
-								value="regulatory"
-								class="capitalize"
-								onclick={() => updateReadinessTab('regulatory')}>Regulatory</Tabs.Trigger
-							>
-							<Tabs.Trigger
-								value="investment"
-								class="capitalize"
-								onclick={() => updateReadinessTab('investment')}>Investment</Tabs.Trigger
+							<Tabs.Trigger value="detailed" class="capitalize" onclick={() => updateTab('detailed')}
+								>Detailed</Tabs.Trigger
 							>
 						</Tabs.List>
 					</Tabs.Root>
 				</div>
-			{/if}
-		</div>
+				{#if selectedTab === 'detailed'}
+					<div class="flex h-fit justify-between rounded-lg bg-background">
+						<Tabs.Root value={selectedReadinessTab}>
+							<Tabs.List class="border bg-flutter-gray/20">
+								<Tabs.Trigger
+									value="technology"
+									class="capitalize"
+									onclick={() => updateReadinessTab('technology')}>Technology</Tabs.Trigger
+								>
+								<Tabs.Trigger
+									value="acceptance"
+									class="capitalize"
+									onclick={() => updateReadinessTab('acceptance')}>Acceptance</Tabs.Trigger
+								>
+								<Tabs.Trigger
+									value="market"
+									class="capitalize"
+									onclick={() => updateReadinessTab('market')}>Market</Tabs.Trigger
+								>
+								<Tabs.Trigger
+									value="organizational"
+									class="capitalize"
+									onclick={() => updateReadinessTab('organizational')}>Organizational</Tabs.Trigger
+								>
+								<Tabs.Trigger
+									value="regulatory"
+									class="capitalize"
+									onclick={() => updateReadinessTab('regulatory')}>Regulatory</Tabs.Trigger
+								>
+								<Tabs.Trigger
+									value="investment"
+									class="capitalize"
+									onclick={() => updateReadinessTab('investment')}>Investment</Tabs.Trigger
+								>
+							</Tabs.List>
+						</Tabs.Root>
+					</div>
+				{/if}
+			</div>
+		</Can>
 		{#if selectedTab === 'chart'}
 			<Card.Root class="h-full">
 				<Card.Header class="items-center">

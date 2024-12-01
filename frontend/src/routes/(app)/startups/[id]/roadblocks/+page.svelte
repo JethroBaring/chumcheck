@@ -2,6 +2,7 @@
 	import {
 		AIColumn,
 		AITabs,
+		Can,
 		Column,
 		KanbanBoard,
 		MembersFilter,
@@ -228,6 +229,7 @@
 		update={editRoadblock}
 		{addToRoadblocks}
 		deleteRoadblocks={deleteRoadblock}
+		role={data.role}
 	/>
 {/snippet}
 
@@ -242,9 +244,11 @@
 {#snippet accessible()}
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
-			<div class="flex h-fit justify-between rounded-lg bg-background">
-				<AITabs {selectedTab} name="roadblocks" updateTab={updateRoadblocksTab} />
-			</div>
+			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
+				<div class="flex h-fit justify-between rounded-lg bg-background">
+					<AITabs {selectedTab} name="roadblocks" updateTab={updateRoadblocksTab} />
+				</div>
+			</Can>
 			{#if selectedTab === 'roadblocks'}
 				<MembersFilter {members} updateTab={updateRoadblocksTab} updateMembers={() => {}} />
 			{/if}
@@ -266,7 +270,7 @@
 	</div>
 	{#if selectedTab === 'roadblocks'}
 		<div class="flex h-full gap-5 overflow-scroll">
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} />
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role}/>
 		</div>
 	{:else}
 		<div class="grid w-full grid-cols-4 gap-5 overflow-scroll">

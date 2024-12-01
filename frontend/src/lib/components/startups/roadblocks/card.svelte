@@ -7,7 +7,7 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { RoadblocksCreateDialog, RoadblocksViewEditDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { roadblocks, members, update, ai, addToRoadblocks, deleteRoadblocks } = $props();
+	let { roadblocks, members, update, ai, addToRoadblocks, deleteRoadblocks, role } = $props();
 
 	let assignee = $state(roadblocks.assignee_id);
 
@@ -34,6 +34,7 @@
 			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
 				{''}
 			</h2>
+			{#if role !== 'Startup'}
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger
 					onclick={(e) => {
@@ -72,6 +73,7 @@
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
+			{/if}
 		</div>
 		<div class="text-sm text-muted-foreground">
 			{roadblocks.description.substring(0, 150) +

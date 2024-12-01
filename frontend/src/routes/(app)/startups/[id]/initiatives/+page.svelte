@@ -2,6 +2,7 @@
 	import {
 		AIColumn,
 		AITabs,
+		Can,
 		Column,
 		KanbanBoard,
 		MembersFilter,
@@ -254,7 +255,7 @@
 <InitiativeCreateDialog {open} {onOpenChange} {members} {startupId} create={createInitiative} {tasks}/>
 
 {#snippet card(initiative: any, ai: any = false)}
-	<InitiativeCard {initiative} {ai} {members} update={editInitiative} {deleteInitiative} addToInitiative={addToInitiatives}/>
+	<InitiativeCard {initiative} {ai} {members} update={editInitiative} {deleteInitiative} addToInitiative={addToInitiatives} role={data.role}/>
 {/snippet}
 
 {#snippet loading()}{/snippet}
@@ -264,9 +265,12 @@
 {#snippet accessible()}
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
-			<div class="flex h-fit justify-between rounded-lg bg-background">
-				<AITabs {selectedTab} name="initiatives" updateTab={updateInitiativeTab} />
-			</div>
+
+			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
+				<div class="flex h-fit justify-between rounded-lg bg-background">
+					<AITabs {selectedTab} name="initiatives" updateTab={updateInitiativeTab} />
+				</div>
+			</Can>
 			{#if selectedTab === 'initiatives'}
 				<MembersFilter {members} updateTab={updateInitiativeTab} updateMembers={() => {}}/>
 			{/if}
@@ -275,7 +279,7 @@
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'initiatives'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog}/>
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role}/>
 		{:else}
 			{#each readiness as readiness}
 				{#if readiness.show}

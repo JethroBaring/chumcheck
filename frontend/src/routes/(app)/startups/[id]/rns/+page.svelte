@@ -2,6 +2,7 @@
 	import {
 		AIColumn,
 		AITabs,
+		Can,
 		Column,
 		KanbanBoard,
 		MembersFilter,
@@ -246,7 +247,7 @@
 
 <RnsCreateDialog {open} {onOpenChange} create={createRns} {startupId} {members} />
 {#snippet card(rns: any, ai = false)}
-	<RnsCard {rns} {members} update={editRNS} {ai} addToRns={addToRNS} deleteRns={deleteRNS} />
+	<RnsCard {rns} {members} update={editRNS} {ai} addToRns={addToRNS} deleteRns={deleteRNS} role={data.role}/>
 {/snippet}
 
 <svelte:head>
@@ -260,9 +261,11 @@
 {#snippet accessible()}
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
-			<div class="flex h-fit justify-between rounded-lg bg-background">
-				<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
-			</div>
+			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
+				<div class="flex h-fit justify-between rounded-lg bg-background">
+					<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
+				</div>
+			</Can>
 			{#if selectedTab === 'rns'}
 				<MembersFilter {members} updateTab={updateRnsTab} updateMembers={() => {}} />
 			{/if}
@@ -271,7 +274,7 @@
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'rns'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} />
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role}/>
 		{:else}
 			{#each readiness as readiness}
 				<AIColumn name={readiness.name} generate={generateRNS}>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
-	import { AIColumn, AITabs, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
+	import { AIColumn, AITabs, Can, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
 	import { getData, getReadiness, getSavedTab, getSelectedTab, updateTab } from '$lib/utils';
 	import { useQueries } from '@sveltestack/svelte-query';
 	import { page } from '$app/stores';
@@ -169,12 +169,14 @@
 
 {#snippet accessible()}
 	<div class="flex items-center justify-between">
-		<div class="flex gap-3">
-			<div class="flex h-fit justify-between rounded-lg bg-background">
-				<AITabs {selectedTab} name="rna" updateTab={updateRnaTab} />
+		<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
+			<div class="flex gap-3">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
+					<AITabs {selectedTab} name="rna" updateTab={updateRnaTab} />
+				</div>
 			</div>
-		</div>
-		<div class="flex items-center gap-3">
+		</Can>
+		<div class="ml-auto flex items-center gap-3">
 			{#if selectedTab === 'ai-rna'}
 				<Button onclick={generateRNA} disabled={generatingRNA}
 					><Sparkles class="h-4 w-4" />Generate</Button

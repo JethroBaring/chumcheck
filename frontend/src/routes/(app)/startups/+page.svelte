@@ -17,7 +17,7 @@
 		() => getData(`/startups`, data.access!)
 	);
 	
-	const role: Role = data.role as Role
+	let role: any = data.role
 	const message = role === 'Mentor' || role === 'Manager as Mentor' ? 'Manage assigned startups' : role === 'Startup' ? 'Manage startups' : '' ;
 
 	const isLoading = $derived($queryResult.isLoading);

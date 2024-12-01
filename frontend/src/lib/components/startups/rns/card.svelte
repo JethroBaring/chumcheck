@@ -7,7 +7,7 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { RnsCreateDialog, RnsViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { rns, members, update, ai, addToRns, deleteRns } = $props();
+	let { rns, members, update, ai, addToRns, deleteRns, role } = $props();
 
 	let assignee = $state(rns.assignee_id);
 
@@ -34,51 +34,53 @@
 			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
 				{rns.readiness_type_rl_type}
 			</h2>
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger
-					onclick={(e) => {
-						e.stopPropagation();
-					}}
-				>
-					<Ellipsis class="h-5 w-5" />
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content align="end">
-					<DropdownMenu.Group>
-						{#if ai}
-							<DropdownMenu.Item onclick={() => addToRns(rns.id)}
-								><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+			{#if role !== 'Startup'}
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger
+						onclick={(e) => {
+							e.stopPropagation();
+						}}
+					>
+						<Ellipsis class="h-5 w-5" />
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						<DropdownMenu.Group>
+							{#if ai}
+								<DropdownMenu.Item onclick={() => addToRns(rns.id)}
+									><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+								>
+							{/if}
+							<DropdownMenu.Item
+								onclick={(e) => {
+									e.stopPropagation();
+									open = true;
+									action = 'Edit';
+								}}
 							>
-						{/if}
-						<DropdownMenu.Item
-							onclick={(e) => {
-								e.stopPropagation();
-								open = true;
-								action = 'Edit';
-							}}
-						>
-							<Edit class="h-4 w-4" />
-							Edit
-						</DropdownMenu.Item>
-						<DropdownMenu.Item
-							onclick={(e) => {
-								e.stopPropagation();
-								open = true;
-								action = 'Delete';
-							}}
-						>
-							<Trash class="h-4 w-4" />
-							Delete
-						</DropdownMenu.Item>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+								<Edit class="h-4 w-4" />
+								Edit
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onclick={(e) => {
+									e.stopPropagation();
+									open = true;
+									action = 'Delete';
+								}}
+							>
+								<Trash class="h-4 w-4" />
+								Delete
+							</DropdownMenu.Item>
+						</DropdownMenu.Group>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			{/if}
 		</div>
 		<div class="text-sm text-muted-foreground">
 			{rns.description.substring(0, 150) + `${rns.description.length > 150 ? '...' : ''}`}
 		</div>
 		<div class="text-sm text-muted-foreground">
 			Target Level: <Badge variant="secondary">5</Badge>
-			
+
 			<!-- <DropdownMenu.Root>
 				<DropdownMenu.Trigger
 					onclick={(e) => {
@@ -118,7 +120,9 @@
 					{assignedMember.first_name.charAt(0)}
 				</div>
 			{:else}
-				<div class={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${zIndex[1]}`}>?</div>
+				<div class={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${zIndex[1]}`}>
+					?
+				</div>
 			{/if}
 			<!-- <DropdownMenu.Root>
 				<DropdownMenu.Trigger onclick={(e) => {e.stopPropagation()}}>

@@ -95,20 +95,6 @@
 				</Select.Content>
 			</Select.Root>
 		</div>
-		<!-- <div class="text-sm text-muted-foreground">
-			Target Level: <DropdownMenu.Root>
-				<DropdownMenu.Trigger><Badge variant="secondary">{data.target_level_id ? levels.filter((level) => level.id === Number(data.target_level_id))[0].level : '1' }</Badge></DropdownMenu.Trigger>
-				<DropdownMenu.Content align="start" class="min-w-4">
-					<DropdownMenu.Group>
-						<DropdownMenu.RadioGroup bind:value={data.target_level_id}>
-							{#each levels as item}
-								<DropdownMenu.RadioItem value={`${item.id}`}>{item.level}</DropdownMenu.RadioItem>
-							{/each}
-						</DropdownMenu.RadioGroup>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
-		</div> -->
 		<div class="flex flex-col gap-4">
 			<Label for="name">Term</Label>
 			<Select.Root type="single" bind:value={data.task_type}>
@@ -121,24 +107,6 @@
 				</Select.Content>
 			</Select.Root>
 		</div>
-		<!-- <div class="flex items-center justify-between">
-			<div class="text-sm text-muted-foreground">
-				Term: <DropdownMenu.Root>
-					<DropdownMenu.Trigger
-						><Badge variant="secondary">{data.task_type === '1' ? 'Short Term' : 'Long Term'}</Badge
-						></DropdownMenu.Trigger
-					>
-					<DropdownMenu.Content align="start">
-						<DropdownMenu.Group>
-							<DropdownMenu.RadioGroup bind:value={data.task_type}>
-								<DropdownMenu.RadioItem value="1">Short Term</DropdownMenu.RadioItem>
-								<DropdownMenu.RadioItem value="2">Long Term</DropdownMenu.RadioItem>
-							</DropdownMenu.RadioGroup>
-						</DropdownMenu.Group>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-			</div>
-		</div> -->
 		<Dialog.Footer>
 			<Button onclick={() => create(data)}>Create</Button>
 		</Dialog.Footer>

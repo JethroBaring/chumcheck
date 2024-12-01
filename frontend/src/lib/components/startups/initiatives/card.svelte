@@ -7,7 +7,7 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { InitiativeViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { initiative, ai, members, update, addToInitiative, deleteInitiative } = $props();
+	let { initiative, ai, members, update, addToInitiative, deleteInitiative, role } = $props();
 
 	let assignee = $state(initiative.assignee_id);
 
@@ -20,7 +20,7 @@
 
 	let action: Actions = $state('View');
 
-	console.log(initiative)
+	console.log(initiative);
 </script>
 
 <Card.Root
@@ -35,44 +35,46 @@
 			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
 				{initiative.readiness_type_rl_type}
 			</h2>
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger
-					onclick={(e) => {
-						e.stopPropagation();
-					}}
-				>
-					<Ellipsis class="h-5 w-5" />
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content align="end">
-					<DropdownMenu.Group>
-						{#if ai}
-							<DropdownMenu.Item onclick={() => addToInitiative(initiative.id)}
-								><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+			{#if role !== 'Startup'}
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger
+						onclick={(e) => {
+							e.stopPropagation();
+						}}
+					>
+						<Ellipsis class="h-5 w-5" />
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						<DropdownMenu.Group>
+							{#if ai}
+								<DropdownMenu.Item onclick={() => addToInitiative(initiative.id)}
+									><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+								>
+							{/if}
+							<DropdownMenu.Item
+								onclick={(e) => {
+									e.stopPropagation();
+									open = true;
+									action = 'Edit';
+								}}
 							>
-						{/if}
-						<DropdownMenu.Item
-							onclick={(e) => {
-								e.stopPropagation();
-								open = true;
-								action = 'Edit';
-							}}
-						>
-							<Edit class="h-4 w-4" />
-							Edit
-						</DropdownMenu.Item>
-						<DropdownMenu.Item
-							onclick={(e) => {
-								e.stopPropagation();
-								open = true;
-								action = 'Delete';
-							}}
-						>
-							<Trash class="h-4 w-4" />
-							Delete
-						</DropdownMenu.Item>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+								<Edit class="h-4 w-4" />
+								Edit
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onclick={(e) => {
+									e.stopPropagation();
+									open = true;
+									action = 'Delete';
+								}}
+							>
+								<Trash class="h-4 w-4" />
+								Delete
+							</DropdownMenu.Item>
+						</DropdownMenu.Group>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			{/if}
 		</div>
 		<div class="text-sm text-muted-foreground">
 			{initiative.description.substring(0, 150) +
