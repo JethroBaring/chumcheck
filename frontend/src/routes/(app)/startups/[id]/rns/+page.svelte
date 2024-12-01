@@ -27,7 +27,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge/index.js';
-	import { RnsCard } from '$lib/components/startups/rns/index.js';
+	import { RnsCard, RnsCreateDialog } from '$lib/components/startups/rns/index.js';
 	import { Ellipsis } from 'lucide-svelte';
 
 	const { data } = $props();
@@ -90,7 +90,7 @@
 
 	let generatingRNS = false;
 	let generatingType = 'Technology';
-	let open = false;
+	let open = $state(false);
 	const generateRNS = async (type: string) => {
 		generatingRNS = true;
 		await axios.all([
@@ -145,34 +145,41 @@
 		$rnsQueries[1].refetch();
 	};
 
+	const createRns = async (payload: any) => {
+		console.log(payload);
+		await axiosInstance.post('/tasks/tasks/', payload, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
+			}
+		});
+		toast.success('Successfully created the RNS');
+		open = false;
+		$rnsQueries[1].refetch();
+	};
+
 	const editRNS = async (
-    id: number,
-    level?: number, // Optional parameter
-    description?: string, // Optional parameter
-    priority_number?: number, // Optional parameter,
+		id: number,
+		level?: number, // Optional parameter
+		description?: string, // Optional parameter
+		priority_number?: number, // Optional parameter,
 		assignee_id?: number
-) => {
+	) => {
+		const payload: Record<string, any> = {};
+		if (level !== undefined) payload.target_level_id = level;
+		if (description !== undefined) payload.description = description;
+		if (priority_number !== undefined) payload.priority_number = priority_number;
+		if (assignee_id !== undefined) payload.assignee_id = assignee_id;
 
-    const payload: Record<string, any> = {};
-    if (level !== undefined) payload.target_level_id = level;
-    if (description !== undefined) payload.description = description;
-    if (priority_number !== undefined) payload.priority_number = priority_number;
-    if (assignee_id !== undefined) payload.assignee_id = assignee_id;
+		await axiosInstance.patch(`/tasks/tasks/${id}/`, payload, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
+			}
+		});
 
-    await axiosInstance.patch(
-        `/tasks/tasks/${id}/`,
-        payload,
-        {
-            headers: {
-                Authorization: `Bearer ${data.access}`
-            }
-        }
-    );
-
-    toast.success('Successfully updated the RNS');
-    open = false;
-    $rnsQueries[1].refetch();
-};
+		toast.success('Successfully updated the RNS');
+		open = false;
+		$rnsQueries[1].refetch();
+	};
 
 	const deleteRNS = async (id: number) => {
 		console.log(id);
@@ -217,6 +224,14 @@
 			});
 		}
 	});
+
+	const onOpenChange = () => {
+		open = !open;
+	};
+
+	const showDialog = () => {
+		open = true;
+	};
 </script>
 
 {#if isLoading}
@@ -229,8 +244,9 @@
 	{@render fallback()}
 {/if}
 
+<RnsCreateDialog {open} {onOpenChange} create={createRns} {startupId} {members} />
 {#snippet card(rns: any, ai = false)}
-	<RnsCard {rns} {members} update={editRNS} {ai} addToRns={addToRNS}/>
+	<RnsCard {rns} {members} update={editRNS} {ai} addToRns={addToRNS} deleteRns={deleteRNS} />
 {/snippet}
 
 <svelte:head>
@@ -248,14 +264,14 @@
 				<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
 			</div>
 			{#if selectedTab === 'rns'}
-				<MembersFilter {members} updateTab={updateRnsTab} updateMembers={() => {}}/>
+				<MembersFilter {members} updateTab={updateRnsTab} updateMembers={() => {}} />
 			{/if}
 		</div>
 		<ShowHideColumns {views} />
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'rns'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} />
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} />
 		{:else}
 			{#each readiness as readiness}
 				<AIColumn name={readiness.name} generate={generateRNS}>

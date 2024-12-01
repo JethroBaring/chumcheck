@@ -7,6 +7,8 @@
 	import { useQuery } from '@sveltestack/svelte-query';
 	import type { Role } from '$lib/types.js';
 	import { getData } from '$lib/utils.js';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import Application from '$lib/components/startup/Application.svelte';
 
 	let { data } = $props()
 
@@ -22,6 +24,10 @@
 	const isError = $derived($queryResult.isError);
 	const hasStartups = $derived($queryResult.data ? $queryResult.data.results.length > 0 : false);
 	const listOfStartups = $derived($queryResult.isSuccess ? $queryResult.data.results : []);
+	let showApplicationForm = $state(false);
+	const toggleApplicationForm = () => {
+		showApplicationForm = !showApplicationForm;
+	};
 </script>
 
 <div class="flex items-center justify-between">
@@ -31,7 +37,7 @@
 	</div>
 	<Can role={['Startup']} userRole={role}>
 		<div class="flex gap-5">
-			<Button class="flex items-center justify-center gap-2 rounded-lg" onclick={() => {}}>
+			<Button class="flex items-center justify-center gap-2 rounded-lg" onclick={toggleApplicationForm}>
 				<RocketIcon class="h-4 w-4" /> Apply</Button
 			>
 		</div>
@@ -67,3 +73,9 @@
 		{/each}
 	</div>
 {/snippet}
+
+<Dialog.Root open={showApplicationForm} onOpenChange={toggleApplicationForm}>
+	<Dialog.Content class="h-4/5 max-w-[700px]">
+		<Application access={data.access!} />
+	</Dialog.Content>
+</Dialog.Root>

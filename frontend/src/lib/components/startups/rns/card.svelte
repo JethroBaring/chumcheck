@@ -3,59 +3,70 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Ellipsis } from 'lucide-svelte';
+	import { Delete, Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
-	import { RnsViewEditDialog } from '.';
-	let { rns, members, update, ai, addToRns  } = $props();
+	import { RnsCreateDialog, RnsViewEditDeleteDialog } from '.';
+	import type { Actions } from '$lib/types';
+	let { rns, members, update, ai, addToRns, deleteRns } = $props();
 
 	let assignee = $state(rns.assignee_id);
 
-	const assignedMember = $derived(members.filter((member) => member.user_id === assignee)[0]);
+	const assignedMember = $derived(members.filter((member: any) => member.user_id === assignee)[0]);
 
 	let open = $state(false);
 	const onOpenChange = () => {
-		open = !open
-	}
+		open = !open;
+	};
+
+	let action: Actions = $state('View');
+	console.log(rns);
 </script>
 
 <Card.Root
 	class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer"
-	onclick={() => open = true}
+	onclick={() => {
+		open = true;
+		action = 'View';
+	}}
 >
 	<Card.Content class="flex flex-col gap-2">
 		<div class="flex items-center justify-between">
-			<h2 class="text-[15px] font-semibold leading-none tracking-tight">{rns.readiness_type_rl_type}</h2>
+			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
+				{rns.readiness_type_rl_type}
+			</h2>
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
+				<DropdownMenu.Trigger
+					onclick={(e) => {
+						e.stopPropagation();
+					}}
+				>
 					<Ellipsis class="h-5 w-5" />
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
 					<DropdownMenu.Group>
 						{#if ai}
-							<DropdownMenu.Item onclick={() => addToRns(rns.id)}>
-								Add to RNA
-							</DropdownMenu.Item>
+							<DropdownMenu.Item onclick={() => addToRns(rns.id)}
+								><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+							>
 						{/if}
 						<DropdownMenu.Item
-							onclick={() => {
-								// currentRNA = filteredRNA;
-								// readinessType = r.readiness_type;
-								// readinessLevel = r.readiness_level;
-								// open = true;
-								// action = 'edit';
+							onclick={(e) => {
+								e.stopPropagation();
+								open = true;
+								action = 'Edit';
 							}}
 						>
+							<Edit class="h-4 w-4" />
 							Edit
 						</DropdownMenu.Item>
 						<DropdownMenu.Item
-							onclick={() => {
-								// currentRNA = filteredRNA;
-								// readinessType = r.readiness_type;
-								// readinessLevel = r.readiness_level;
-								// open = true;
-								// action = 'delete';
+							onclick={(e) => {
+								e.stopPropagation();
+								open = true;
+								action = 'Delete';
 							}}
 						>
+							<Trash class="h-4 w-4" />
 							Delete
 						</DropdownMenu.Item>
 					</DropdownMenu.Group>
@@ -67,7 +78,7 @@
 		</div>
 		<div class="text-sm text-muted-foreground">
 			Target Level: <DropdownMenu.Root>
-				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
+				<DropdownMenu.Trigger onclick={(e) => {e.stopPropagation()}}><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
 				<DropdownMenu.Content align="start" class="min-w-4">
 					<DropdownMenu.Group>
 						<DropdownMenu.RadioGroup>
@@ -82,7 +93,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex flex-wrap items-center gap-2">
 				<DropdownMenu.Root>
-					<DropdownMenu.Trigger><Badge variant="secondary">Long Term</Badge></DropdownMenu.Trigger>
+					<DropdownMenu.Trigger onclick={(e) => {e.stopPropagation()}}><Badge variant="secondary">Long Term</Badge></DropdownMenu.Trigger>
 					<DropdownMenu.Content align="start">
 						<DropdownMenu.Group>
 							<DropdownMenu.RadioGroup>
@@ -94,7 +105,7 @@
 				</DropdownMenu.Root>
 			</div>
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
+				<DropdownMenu.Trigger onclick={(e) => {e.stopPropagation()}}>
 					{#if assignedMember}
 						<div
 							class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}
@@ -118,7 +129,7 @@
 									<div
 										class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(member.first_name)}`}
 									>
-										{members[0].first_name.charAt(0)}
+										{member.first_name.charAt(0)}
 									</div>
 									{member.first_name}
 									{member.last_name}
@@ -132,4 +143,13 @@
 	</Card.Content>
 </Card.Root>
 
-<RnsViewEditDialog {open} {onOpenChange} {rns} {update}/>
+<RnsViewEditDeleteDialog
+	{open}
+	{onOpenChange}
+	{rns}
+	{update}
+	{action}
+	{deleteRns}
+	{members}
+	{assignedMember}
+/>

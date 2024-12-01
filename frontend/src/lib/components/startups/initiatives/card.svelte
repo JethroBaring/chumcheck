@@ -3,28 +3,77 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Ellipsis } from 'lucide-svelte';
+	import { Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
-	let { initiative, ai, members, update } = $props();
-	let hover = $state(false);
+	import { InitiativeViewEditDeleteDialog } from '.';
+	import type { Actions } from '$lib/types';
+	let { initiative, ai, members, update, addToInitiative, deleteInitiative } = $props();
 
 	let assignee = $state(initiative.assignee_id);
-	let lastAssignee = `${initiative.assignee_id}`; // Store the last known value of assignee
 
-	const assignedMember = $derived(members.filter((member) => member.user_id === assignee)[0]);
+	const assignedMember = $derived(members.filter((member: any) => member.user_id === assignee)[0]);
+
+	let open = $state(false);
+	const onOpenChange = () => {
+		open = !open;
+	};
+
+	let action: Actions = $state('View');
+
+	console.log(initiative)
 </script>
 
 <Card.Root
 	class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer"
-	onmouseenter={() => (hover = true)}
-	onmouseleave={() => (hover = false)}
+	onclick={() => {
+		open = true;
+		action = 'View';
+	}}
 >
 	<Card.Content class="flex flex-col gap-2">
-		{#if !ai}
-			<div class="flex items-center justify-between">
-				<h2 class="text-[15px] font-semibold leading-none tracking-tight">Technology</h2>
-			</div>
-		{/if}
+		<div class="flex items-center justify-between">
+			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
+				{initiative.readiness_type_rl_type}
+			</h2>
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger
+					onclick={(e) => {
+						e.stopPropagation();
+					}}
+				>
+					<Ellipsis class="h-5 w-5" />
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end">
+					<DropdownMenu.Group>
+						{#if ai}
+							<DropdownMenu.Item onclick={() => addToInitiative(initiative.id)}
+								><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+							>
+						{/if}
+						<DropdownMenu.Item
+							onclick={(e) => {
+								e.stopPropagation();
+								open = true;
+								action = 'Edit';
+							}}
+						>
+							<Edit class="h-4 w-4" />
+							Edit
+						</DropdownMenu.Item>
+						<DropdownMenu.Item
+							onclick={(e) => {
+								e.stopPropagation();
+								open = true;
+								action = 'Delete';
+							}}
+						>
+							<Trash class="h-4 w-4" />
+							Delete
+						</DropdownMenu.Item>
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
 		<div class="text-sm text-muted-foreground">
 			{initiative.description.substring(0, 150) +
 				`${initiative.description.length > 150 ? '...' : ''}`}
@@ -74,7 +123,9 @@
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					{#if assignedMember}
-						<div class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}>
+						<div
+							class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}
+						>
 							{assignedMember.first_name.charAt(0)}
 						</div>
 					{:else}
@@ -88,7 +139,8 @@
 						{#each members as member, index}
 							<DropdownMenu.RadioGroup
 								bind:value={assignee}
-								onValueChange={(v) => update(initiative.id, undefined, undefined, undefined, undefined, undefined, v)}
+								onValueChange={(v) =>
+									update(initiative.id, undefined, undefined, undefined, undefined, undefined, v)}
 							>
 								<DropdownMenu.RadioItem value={member.user_id} class="flex items-center gap-3">
 									<div
@@ -103,7 +155,18 @@
 						{/each}
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
-			</DropdownMenu.Root>	
+			</DropdownMenu.Root>
 		</div>
 	</Card.Content>
 </Card.Root>
+
+<InitiativeViewEditDeleteDialog
+	{open}
+	{onOpenChange}
+	rns={initiative}
+	{update}
+	{action}
+	deleteRns={deleteInitiative}
+	{members}
+	{assignedMember}
+/>

@@ -25,6 +25,7 @@
 	import { toast } from 'svelte-sonner';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { RoadblocksCreateDialog } from '$lib/components/startups/roadblocks';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -118,6 +119,18 @@
 		$roadblocksQueries[1].refetch();
 	};
 
+	const createRoadblocks = async (payload: any) => {
+		console.log(payload);
+		await axiosInstance.post('/tasks/roadblocks/', payload, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
+			}
+		});
+		toast.success('Successfully created the Roadblocks');
+		open = false;
+		$roadblocksQueries[1].refetch();
+	};
+
 	const editRoadblock = async (
 		id: number,
 		riskNumber: number,
@@ -183,6 +196,16 @@
 			});
 		}
 	});
+
+	let open = $state(false);
+
+	const showDialog = () => {
+		open = true;
+	};
+
+	const onOpenChange = () => {
+		open = !open;
+	};
 </script>
 
 {#if isLoading}
@@ -194,6 +217,8 @@
 {:else}
 	{@render fallback()}
 {/if}
+
+<RoadblocksCreateDialog {open} {onOpenChange} {members} {startupId} create={createRoadblocks} />
 
 {#snippet card(rns: any)}
 	<Card.Root class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer">
@@ -230,7 +255,7 @@
 				<AITabs {selectedTab} name="roadblocks" updateTab={updateRoadblocksTab} />
 			</div>
 			{#if selectedTab === 'roadblocks'}
-				<MembersFilter {members} updateTab={updateRoadblocksTab} />
+				<MembersFilter {members} updateTab={updateRoadblocksTab} updateMembers={() => {}} />
 			{/if}
 		</div>
 		<div class="flex items-center gap-3">
@@ -247,7 +272,7 @@
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'roadblocks'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} />
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} />
 		{:else}
 			{#each $roadblocksQueries[1].data.results.filter((data) => data.is_ai_generated === true) as r, index}
 				<Card.Root class="cursor-pointer hover:bg-secondary">

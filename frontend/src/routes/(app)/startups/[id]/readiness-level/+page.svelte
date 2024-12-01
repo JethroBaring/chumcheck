@@ -7,7 +7,8 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import Rubric from '$lib/components/startups/readiness/rubric.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import * as Chart from "$lib/components/ui/chart/index.js";
+	import * as Chart from '$lib/components/ui/chart/index.js';
+	import { RadarChart } from '$lib/components/shared/index.js';
 
 	const { data } = $props();
 	const { access, startupId, role } = data;
@@ -35,7 +36,13 @@
 		}
 	]);
 	const { isLoading, isError } = $derived(useQueriesState($readinessLevelQueries));
-	const isRated: boolean = $derived($readinessLevelQueries[2].isSuccess ? $readinessLevelQueries[2].data.results.length != 0 ? true : false : false)
+	const isRated: boolean = $derived(
+		$readinessLevelQueries[2].isSuccess
+			? $readinessLevelQueries[2].data.results.length != 0
+				? true
+				: false
+			: false
+	);
 	let selectedTab = $state('chart');
 	let selectedReadinessTab = $state('technology');
 	const rubrics = $derived(
@@ -69,7 +76,7 @@
 					investment: []
 				}
 	);
-	
+
 	const scores = $derived(
 		$readinessLevelQueries[1].isSuccess
 			? {
@@ -101,7 +108,7 @@
 					investment: []
 				}
 	);
-	
+
 	const readiness = $derived(
 		$readinessLevelQueries[3].isSuccess
 			? {
@@ -133,7 +140,7 @@
 					investment: 0
 				}
 	);
-	
+
 	let current = $state(0);
 
 	const next = () => {
@@ -160,7 +167,11 @@
 </script>
 
 <svelte:head>
-	<title>{$readinessLevelQueries[0].isSuccess ? `${$readinessLevelQueries[0].data.name} - Readiness Levels` : 'Loading'}</title>
+	<title
+		>{$readinessLevelQueries[0].isSuccess
+			? `${$readinessLevelQueries[0].data.name} - Readiness Levels`
+			: 'Loading'}</title
+	>
 </svelte:head>
 
 <div class="flex h-full flex-col">
@@ -179,16 +190,20 @@
 	{/if}
 </div>
 
-{#snippet loading()}{/snippet}
+{#snippet loading()}
+	hellow
+{/snippet}
 
-{#snippet error()}{/snippet}
+{#snippet error()}
+	hello
+{/snippet}
 
 {#snippet rated()}
 	<div class="flex h-full flex-col gap-3">
 		<div class="flex justify-between">
-			<div class="bg-background flex h-fit justify-between rounded-lg">
+			<div class="flex h-fit justify-between rounded-lg bg-background">
 				<Tabs.Root value={selectedTab}>
-					<Tabs.List class="bg-flutter-gray/20 border">
+					<Tabs.List class="border bg-flutter-gray/20">
 						<Tabs.Trigger value="chart" class="capitalize" onclick={() => updateTab('chart')}
 							>Chart</Tabs.Trigger
 						>
@@ -199,9 +214,9 @@
 				</Tabs.Root>
 			</div>
 			{#if selectedTab === 'detailed'}
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<Tabs.Root value={selectedReadinessTab}>
-						<Tabs.List class="bg-flutter-gray/20 border">
+						<Tabs.List class="border bg-flutter-gray/20">
 							<Tabs.Trigger
 								value="technology"
 								class="capitalize"
@@ -243,18 +258,41 @@
 					<Card.Title>Radar Chart - Grid Circle</Card.Title>
 					<Card.Description>Showing total visitors for the last 6 months</Card.Description>
 				</Card.Header>
-				<Card.Content>
-					<Chart.Container class="mx-auto aspect-square max-h-[250px]"></Chart.Container>
+				<Card.Content class="flex items-center justify-center h-full">
+						<div>
+							<RadarChart
+							id={Number(startupId)}
+							min={1}
+							max={9}
+							data={[
+								readiness.technology,
+								readiness.market,
+								readiness.acceptance,
+								readiness.regulatory,
+								readiness.organizational,
+								readiness.investment
+							]}
+							labels={[
+								'Technology',
+								'Market',
+								'Acceptance',
+								'Regulatory',
+								'Organizational',
+								'Investment'
+							]}
+						/>
+						</div>
+						<!-- <RadarChart trl={readiness.technology} mrl={readiness.market} irl={readiness.investment} arl={readiness.acceptance} orl={readiness.organizational} rrl={readiness.regulatory}/> -->
 				</Card.Content>
-				<Card.Footer class="flex-col gap-2 text-sm">
+				<!-- <Card.Footer class="flex-col gap-2 text-sm">
 					<div class="flex items-center gap-2 font-medium leading-none">
 						Trending up by 5.2% this month
-						<!-- <TrendingUp class="size-4" /> -->
+						<TrendingUp class="size-4" />
 					</div>
 					<div class="text-muted-foreground flex items-center gap-2 leading-none">
 						January - June 2024
 					</div>
-				</Card.Footer>
+				</Card.Footer> -->
 			</Card.Root>
 		{:else}
 			<div class="flex h-full flex-col gap-3">
@@ -271,35 +309,30 @@
 							type={'acceptance'}
 							current={selectedReadinessTab}
 							scores={scores.acceptance}
-
 						/>
 						<RatedRubric
 							questionnaires={rubrics.market}
 							type={'market'}
 							current={selectedReadinessTab}
 							scores={scores.market}
-
 						/>
 						<RatedRubric
 							questionnaires={rubrics.regulatory}
 							type={'regulatory'}
 							current={selectedReadinessTab}
 							scores={scores.regulatory}
-
 						/>
 						<RatedRubric
 							questionnaires={rubrics.organizational}
 							type={'organizational'}
 							current={selectedReadinessTab}
 							scores={scores.organizational}
-
 						/>
 						<RatedRubric
 							questionnaires={rubrics.investment}
 							type={'investment'}
 							current={selectedReadinessTab}
 							scores={scores.investment}
-
 						/>
 					</div>
 				</div>

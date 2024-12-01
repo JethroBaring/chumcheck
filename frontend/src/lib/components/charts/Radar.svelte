@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Radar } from 'svelte-chartjs';
 	import { theme } from 'mode-watcher';
 	
 	export let trl = 0, mrl = 0, rrl= 0, arl = 0, orl = 0, irl = 0

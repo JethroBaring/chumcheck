@@ -6,12 +6,14 @@
 		handleDndConsider,
 		handleDndFinalize,
 		columns,
-		card
+		card,
+		showDialog,
 	}: {
 		handleDndConsider: any;
 		handleDndFinalize: any;
 		columns: any;
 		card: any;
+		showDialog: any
 	} = $props();
 
 	const flipDurationMs = 300;
@@ -19,7 +21,7 @@
 
 {#each columns as column, index}
 	{#if column.show}
-		<Column name={column.name} showDialog={() => {}}>
+		<Column name={column.name} {showDialog}>
 			<div
 				use:dndzone={{
 					items: column.items,

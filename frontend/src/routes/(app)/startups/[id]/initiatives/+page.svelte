@@ -25,7 +25,7 @@
 	import { toast } from 'svelte-sonner';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Ellipsis } from 'lucide-svelte';
-	import { InitiativeCard } from '$lib/components/startups/initiatives';
+	import { InitiativeCard, InitiativeCreateDialog } from '$lib/components/startups/initiatives';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -35,7 +35,7 @@
 			queryFn: () => getData(`/startups/${startupId}/allow-initiatives/`, access!)
 		},
 		{
-			queryKey: ['rnsData'],
+			queryKey: ['rnsDataInitiative'],
 			queryFn: () => getData(`/tasks/tasks/?startup_id=${startupId}`, access!)
 		},
 		{
@@ -84,7 +84,7 @@
 
 	let generatingInitiatives = false;
 	let generatingType = 'Technology';
-	let open = false;
+	let open = $state(false);
 	const generateInitiatives = async (type: string) => {
 		generatingInitiatives = true;
 		let ids = $initiativesQueries[1].data.results
@@ -137,6 +137,18 @@
 		);
 		toast.success('Successfuly added to Initiatives');
 		$initiativesQueries[1].refetch();
+		$initiativesQueries[2].refetch();
+	};
+
+	const createInitiative = async (payload: any) => {
+		console.log(payload)
+		await axiosInstance.post('/tasks/initiatives/', payload, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
+			}
+		});
+		toast.success('Successfully created the Initiative');
+		open = false;
 		$initiativesQueries[2].refetch();
 	};
 
@@ -216,6 +228,17 @@
 			});
 		}
 	});
+
+	const showDialog = () => {
+		open = true;
+		console.log("test")
+	};
+	
+	const onOpenChange = () => {
+		open = !open;
+	};
+
+	const tasks = $derived($initiativesQueries[1].isSuccess ? $initiativesQueries[1].data.results : [])
 </script>
 
 {#if isLoading}
@@ -228,8 +251,10 @@
 	{@render fallback()}
 {/if}
 
+<InitiativeCreateDialog {open} {onOpenChange} {members} {startupId} create={createInitiative} {tasks}/>
+
 {#snippet card(initiative: any, ai: any = false)}
-	<InitiativeCard {initiative} {ai} {members} update={editInitiative}/>
+	<InitiativeCard {initiative} {ai} {members} update={editInitiative} {deleteInitiative} addToInitiative={addToInitiatives}/>
 {/snippet}
 
 {#snippet loading()}{/snippet}
@@ -243,14 +268,14 @@
 				<AITabs {selectedTab} name="initiatives" updateTab={updateInitiativeTab} />
 			</div>
 			{#if selectedTab === 'initiatives'}
-				<MembersFilter {members} updateTab={updateInitiativeTab} />
+				<MembersFilter {members} updateTab={updateInitiativeTab} updateMembers={() => {}}/>
 			{/if}
 		</div>
 		<ShowHideColumns {views} />
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'initiatives'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} />
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog}/>
 		{:else}
 			{#each readiness as readiness}
 				{#if readiness.show}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import type { Actions } from "$lib/types";
-	import { RnsCreateDialog, RnsViewEditDialog } from ".";
+	import { RnsCreateDialog, RnsViewEditDeleteDialog } from ".";
   const { action } : { action : Actions } = $props()
 </script>
 
@@ -18,7 +18,7 @@
     {#if action === 'Create'}
       <RnsCreateDialog />
     {:else if  action === 'View' || action === 'Edit'}
-      <RnsViewEditDialog /> 
+      <!-- <RnsViewEditDeleteDialog />  -->
     {:else}
        <!-- else content here -->
     {/if}

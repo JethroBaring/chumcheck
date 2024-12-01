@@ -55,5 +55,5 @@
 	});
 </script>
 <div class="flex flex-col">
-    <canvas id={`chart${id}`}/>
+    <canvas id={`chart${id}`}></canvas>
 </div>

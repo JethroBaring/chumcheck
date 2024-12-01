@@ -9,18 +9,19 @@
 	import { crossfade } from 'svelte/transition';
 	import { cubicInOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
+	import { getProfileColor } from '$lib/utils';
 
-	const { user, startup } = $props()
+	const { user, startup } = $props();
 	const modules = access.roles[`${user?.role as 'Startup' | 'Mentor' | 'Manager'}`].modules;
 
-4
-	const currentModule = $derived($page.url.pathname.slice(1).split('/')[
-		$page.url.pathname.slice(1).split('/').length - 1
-	])
-	const module = $derived($page.url.pathname.slice(1).split('/')[0])
-	const subModule = $derived($page.url.pathname.slice(1).split('/')[
-		$page.url.pathname.slice(1).split('/').length - 1
-	])
+	4;
+	const currentModule = $derived(
+		$page.url.pathname.slice(1).split('/')[$page.url.pathname.slice(1).split('/').length - 1]
+	);
+	const module = $derived($page.url.pathname.slice(1).split('/')[0]);
+	const subModule = $derived(
+		$page.url.pathname.slice(1).split('/')[$page.url.pathname.slice(1).split('/').length - 1]
+	);
 
 	const [send, receive] = crossfade({
 		duration: 250,
@@ -108,10 +109,15 @@
 			>
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
-					<Avatar.Root>
+					<!-- <Avatar.Root>
 						<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
 						<Avatar.Fallback>Avatar</Avatar.Fallback>
-					</Avatar.Root>
+					</Avatar.Root> -->
+					<div
+						class={`flex h-9 w-9 items-center justify-center rounded-full ${getProfileColor(user.firstName)}`}
+					>
+						{user.firstName.charAt(0)}
+					</div>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end">
 					<DropdownMenu.Group>
