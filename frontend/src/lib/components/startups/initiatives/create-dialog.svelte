@@ -11,7 +11,7 @@
 	let { open, onOpenChange, create, members, startupId, tasks } = $props();
 
 	const data = $state({
-		initiative_number: 1,
+		initiative_number: '',
 		description: '',
 		measures: '',
 		targets: '',
@@ -29,18 +29,18 @@
 <Dialog.Root bind:open {onOpenChange}>
 	<Dialog.Content class="max-w-[600px]">
 		<Dialog.Header>
-			<Dialog.Title>Create</Dialog.Title>
+			<Dialog.Title>Create Scheduled Roadblock</Dialog.Title>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">
 			<div class="flex flex-col gap-4">
 				<Label for="name">Task</Label>
 				<Select.Root type="single" bind:value={data.task_id}>
-					<Select.Trigger class="w-[180px]"
+					<Select.Trigger class=""
 						>hello</Select.Trigger
 					>
 					<Select.Content>
 						{#each tasks as task}
-							<Select.Item value={`${task.id}`}>{task.description}</Select.Item>
+							<Select.Item value={`${task.id}`}>{task.description.substring(0,90)}</Select.Item>
 						{/each}
 					</Select.Content>
 				</Select.Root>
@@ -55,7 +55,7 @@
 			</div>
       <div class="flex flex-col gap-4">
 				<Label for="username">Target</Label>
-				<Textarea rows={2} bind:value={data.target} />
+				<Textarea rows={2} bind:value={data.targets} />
 			</div>
       <div class="flex flex-col gap-4">
 				<Label for="username">Remarks</Label>
@@ -76,7 +76,18 @@
 				</Select.Content>
 			</Select.Root>
 		</div>
-		<div class="text-sm text-muted-foreground">
+		<div class="flex flex-col gap-4">
+			<Label for="name">Initiative No.</Label>
+			<Select.Root type="single" bind:value={data.initiative_number}>
+				<Select.Trigger class="w-[180px]">{data.initiative_number}</Select.Trigger>
+				<Select.Content>
+					{#each [1,2,3,4,5] as item}
+					<Select.Item value={`${item}`}>{item}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</div>
+		<!-- <div class="text-sm text-muted-foreground">
 			Target Level: <DropdownMenu.Root>
 				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
 				<DropdownMenu.Content align="start" class="min-w-4">
@@ -89,7 +100,7 @@
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
-		</div>
+		</div> -->
 		<Dialog.Footer>
 			<Button onclick={() => create(data)}>Create</Button>
 		</Dialog.Footer>

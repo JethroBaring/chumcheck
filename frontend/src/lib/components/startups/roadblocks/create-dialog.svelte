@@ -50,20 +50,18 @@
 				</Select.Content>
 			</Select.Root>
 		</div>
-		<div class="text-sm text-muted-foreground">
-			Risk Number: <DropdownMenu.Root>
-				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
-				<DropdownMenu.Content align="start" class="min-w-4">
-					<DropdownMenu.Group>
-						<DropdownMenu.RadioGroup bind:value={data.risk_number}>
-							{#each [1, 2, 3, 4, 5] as item}
-								<DropdownMenu.RadioItem value={`${item}`}>{item}</DropdownMenu.RadioItem>
-							{/each}
-						</DropdownMenu.RadioGroup>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+		<div class="flex flex-col gap-4">
+			<Label for="name">Risk No.</Label>
+			<Select.Root type="single" bind:value={data.risk_number}>
+				<Select.Trigger class="w-[50px]">{data.risk_number}</Select.Trigger>
+				<Select.Content>
+					{#each [1, 2, 3, 4, 5] as item}
+						<Select.Item value={`${item}`}>{item}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
 		</div>
+
 		<Dialog.Footer>
 			<Button onclick={() => create(data)}>Create</Button>
 		</Dialog.Footer>

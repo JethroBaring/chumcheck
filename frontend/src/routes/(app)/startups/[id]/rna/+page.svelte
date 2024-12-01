@@ -7,9 +7,11 @@
 	import { RnaCard, RnaDialog } from '$lib/components/startups/rna';
 	import type { Actions } from '$lib/types';
 	import { Button } from '$lib/components/ui/button';
-	import { Sparkles } from 'lucide-svelte';
+	import { Ellipsis, Plus, Sparkles } from 'lucide-svelte';
 	import axiosInstance from '$lib/axios';
 	import { toast } from 'svelte-sonner';
+	import * as Card from '$lib/components/ui/card';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -78,7 +80,7 @@
 		open = true;
 	};
 
-	let generatingRNA = $state(false)
+	let generatingRNA = $state(false);
 
 	const generateRNA = async () => {
 		generatingRNA = true;
@@ -137,9 +139,10 @@
 	};
 
 	$effect(() => {
-		console.log($rnaQueries[2].data)
-	})
+		console.log($rnaQueries[1].data);
+	});
 
+	const currentCondition = $derived(selectedTab === 'rna' ? false : true);
 </script>
 
 <svelte:head>
@@ -172,35 +175,27 @@
 			</div>
 		</div>
 		<div class="flex items-center gap-3">
-			<ShowHideColumns {views} />
 			{#if selectedTab === 'ai-rna'}
-				<Button onclick={generateRNA} disabled={generatingRNA}><Sparkles class="h-4 w-4" />Generate</Button>
+				<Button onclick={generateRNA} disabled={generatingRNA}
+					><Sparkles class="h-4 w-4" />Generate</Button
+				>
+			{:else}
+				<Button 
+					><Plus class="h-4 w-4" />Add</Button
+				>
 			{/if}
 		</div>
 	</div>
-	<div class="flex h-full gap-5 overflow-scroll">
-		{#if selectedTab === 'rna'}
-			{#each readiness as readiness}
-				{#if readiness.show}
-					<Column name={readiness.name} showDialog={openDialog}>
-						<button
-							onclick={() => {
-								openDialog();
-								action = 'View';
-							}}>Test</button
-						>
-					</Column>
-				{/if}
-			{/each}
-		{:else}
-			{#each aiReadiness as readiness}
-				<AIColumn name={readiness.name} generate={generateRNA}>
-					{#each $rnaQueries[1].data.results.filter((d: any) => d.readiness_type_rl_type === readiness.name && d.is_ai_generated === true) as item}
-						<RnaCard rna={item} {selectedTab} {addToRNA}/>
-					{/each}
-				</AIColumn>
-			{/each}
-		{/if}
+	<div class="grid w-full grid-cols-4 gap-5 overflow-scroll">
+		{#each $rnaQueries[1].data.results.filter((d: any) => d.is_ai_generated === currentCondition) as rna, index}
+			<RnaCard
+				{rna}
+				ai={selectedTab === 'rna' ? false : true}
+				update={editRNA}
+				deleteRna={deleteRNA}
+				addToRna={addToRNA}
+			/>
+		{/each}
 	</div>
 {/snippet}
 
@@ -208,4 +203,4 @@
 	<div>test</div>
 {/snippet}
 
-<RnaDialog {action} {open} {onOpenChange} />
+<!-- <RnaDialog {action} {open} {onOpenChange} /> -->

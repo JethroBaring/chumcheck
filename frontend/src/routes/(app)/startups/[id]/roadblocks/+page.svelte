@@ -25,7 +25,7 @@
 	import { toast } from 'svelte-sonner';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { RoadblocksCreateDialog } from '$lib/components/startups/roadblocks';
+	import { RoadblocksCard, RoadblocksCreateDialog } from '$lib/components/startups/roadblocks';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -220,24 +220,15 @@
 
 <RoadblocksCreateDialog {open} {onOpenChange} {members} {startupId} create={createRoadblocks} />
 
-{#snippet card(rns: any)}
-	<Card.Root class="h-full min-w-[calc(25%-1.25rem*3/4)] cursor-pointer">
-		<Card.Content>
-			<div class="flex flex-col gap-1">
-				<div class="flex items-center justify-between">
-					<h2 class="text-[15px] font-semibold leading-none tracking-tight">Technology</h2>
-				</div>
-				<div class="text-sm text-muted-foreground">
-					<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
-				</div>
-				<div class="text-sm text-muted-foreground">Target Level: 5</div>
-			</div>
-			<div class="flex flex-wrap items-center gap-2">
-				<Badge variant="secondary">Long Term</Badge>
-			</div>
-			<!-- {rns.rns.substring(0, 150) + `${rns.rns.length > 150 ? '...' : ''}`} -->
-		</Card.Content>
-	</Card.Root>
+{#snippet card(roadblocks: any)}
+	<RoadblocksCard
+		{roadblocks}
+		{members}
+		ai={false}
+		update={editRoadblock}
+		{addToRoadblocks}
+		deleteRoadblocks={deleteRoadblock}
+	/>
 {/snippet}
 
 {#snippet loading()}
@@ -259,100 +250,38 @@
 			{/if}
 		</div>
 		<div class="flex items-center gap-3">
-			<ShowHideColumns views={columns} />
-			<Button
-				class="ml-auto hidden rounded-lg lg:flex"
-				onclick={generateRoadblocks}
-				disabled={generatingRoadblocks}
-			>
-				<Sparkles class="mr-2 h-4 w-4" />
-				Generate
-			</Button>
+			{#if selectedTab === 'ai-roadblocks'}
+				<Button
+					class="ml-auto hidden rounded-lg lg:flex"
+					onclick={generateRoadblocks}
+					disabled={generatingRoadblocks}
+				>
+					<Sparkles class="mr-2 h-4 w-4" />
+					Generate
+				</Button>
+			{:else}
+				<ShowHideColumns views={columns} />
+			{/if}
 		</div>
 	</div>
-	<div class="flex h-full gap-5 overflow-scroll">
-		{#if selectedTab === 'roadblocks'}
+	{#if selectedTab === 'roadblocks'}
+		<div class="flex h-full gap-5 overflow-scroll">
 			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} />
-		{:else}
+		</div>
+	{:else}
+		<div class="grid w-full grid-cols-4 gap-5 overflow-scroll">
 			{#each $roadblocksQueries[1].data.results.filter((data) => data.is_ai_generated === true) as r, index}
-				<Card.Root class="cursor-pointer hover:bg-secondary">
-					<Card.Header>
-						<div class="flex justify-between">
-							<div class="space-x-3">
-								<span class="text-base font-semibold">Risk No.</span>
-								{#if r.risk_number}
-									<span class="rounded-lg bg-muted px-2 py-1">{r.risk_number}</span>
-								{/if}
-							</div>
-							<DropdownMenu.Root>
-								<DropdownMenu.Trigger>
-									<Ellipsis class="h-5 w-5" />
-								</DropdownMenu.Trigger>
-								<DropdownMenu.Content align="end">
-									<DropdownMenu.Group>
-										<DropdownMenu.Item onclick={() => addToRoadblocks(r.id)}>
-											Add to RNA</DropdownMenu.Item
-										>
-										<DropdownMenu.Item
-											onclick={() => {
-												// currentRoadblock = r;
-												// currentRoadblock = rnaData.filter(
-												// 	(d) =>
-												// 		d.readiness_level_id === readinessData[index].readiness_level_id
-												// )[0];
-												// readinessType = r.readiness_type;
-												// readinessLevel = r.readiness_level;
-												// open = true;
-												// action = 'view';
-											}}>View</DropdownMenu.Item
-										>
-										<DropdownMenu.Item
-											onclick={() => {
-												// currentRoadblock = r;
-												// currentRoadblock = rnaData.filter(
-												// 	(d) =>
-												// 		d.readiness_level_id === readinessData[index].readiness_level_id
-												// )[0];
-												// readinessType = r.readiness_type;
-												// readinessLevel = r.readiness_level;
-												// open = true;
-												// action = 'edit';
-											}}>Edit</DropdownMenu.Item
-										>
-										<DropdownMenu.Item
-											onclick={() => {
-												// currentRoadblock = r;
-												// currentRoadblock = rnaData.filter(
-												// 	(d) =>
-												// 		d.readiness_level_id === readinessData[index].readiness_level_id
-												// )[0];
-												// readinessType = r.readiness_type;
-												// readinessLevel = r.readiness_level;
-												// open = true;
-												// action = 'delete';
-											}}>Delete</DropdownMenu.Item
-										>
-									</DropdownMenu.Group>
-								</DropdownMenu.Content>
-							</DropdownMenu.Root>
-						</div>
-					</Card.Header>
-					<Card.Content class="flex max-h-[500px] flex-col gap-3 text-muted-foreground">
-						{r.description.substring(0, 150) + '...'}
-						<!-- {#if r.assignee_id && selectedTab === 'startupRoadblocks'}
-					<div class="flex items-center gap-3">
-						<Avatar.Root class="h-8 w-8">
-							<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-							<Avatar.Fallback>Avatar</Avatar.Fallback>
-						</Avatar.Root>
-						<p>{members.filter((d) => d.user_id === r.assignee_id)[0].first_name}</p>
-					</div>
-				{/if} -->
-					</Card.Content>
-				</Card.Root>
+				<RoadblocksCard
+					roadblocks={r}
+					update={editRoadblock}
+					{addToRoadblocks}
+					deleteRoadblocks={deleteRoadblock}
+					ai={true}
+					{members}
+				/>
 			{/each}
-		{/if}
-	</div>
+		</div>
+	{/if}
 {/snippet}
 
 {#snippet fallback()}

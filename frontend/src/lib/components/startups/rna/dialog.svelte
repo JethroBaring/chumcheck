@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import type { Actions } from "$lib/types";
 	import { RnaCreateDialog, RnaViewEditDialog } from ".";
@@ -19,7 +19,7 @@
     {:else if  action === 'View' || action === 'Edit'}
       <RnaViewEditDialog /> 
     {:else}
-       <!-- else content here -->
+       else content here
     {/if}
   </Dialog.Content>
-</Dialog.Root>
+</Dialog.Root> -->

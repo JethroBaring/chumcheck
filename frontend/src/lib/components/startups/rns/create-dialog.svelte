@@ -39,8 +39,8 @@
 	);
 
 	$effect(() => {
-		console.log(levels)
-	})
+		console.log(levels);
+	});
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>
@@ -74,7 +74,7 @@
 			<Select.Root type="single" bind:value={data.assignee_id}>
 				<Select.Trigger class="w-[180px]"
 					>{data.assignee_id
-						? `${members.filter((member) => member.user_id === data.assignee_id)[0].first_name} ${members.filter((member) => member.user_id === data.assignee_id)[0].last_name}`
+						? `${members.filter((member: any) => member.user_id === data.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === data.assignee_id)[0].last_name}`
 						: ''}</Select.Trigger
 				>
 				<Select.Content>
@@ -84,7 +84,18 @@
 				</Select.Content>
 			</Select.Root>
 		</div>
-		<div class="text-sm text-muted-foreground">
+		<div class="flex flex-col gap-4">
+			<Label for="name">Target Level</Label>
+			<Select.Root type="single" bind:value={data.target_level_id}>
+				<Select.Trigger class="w-[50px]">{data.target_level_id}</Select.Trigger>
+				<Select.Content>
+					{#each levels as item}
+						<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</div>
+		<!-- <div class="text-sm text-muted-foreground">
 			Target Level: <DropdownMenu.Root>
 				<DropdownMenu.Trigger><Badge variant="secondary">{data.target_level_id ? levels.filter((level) => level.id === Number(data.target_level_id))[0].level : '1' }</Badge></DropdownMenu.Trigger>
 				<DropdownMenu.Content align="start" class="min-w-4">
@@ -97,8 +108,20 @@
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
+		</div> -->
+		<div class="flex flex-col gap-4">
+			<Label for="name">Term</Label>
+			<Select.Root type="single" bind:value={data.task_type}>
+				<Select.Trigger class="w-[120px]"
+					>{data.task_type === '1' ? 'Short Term' : 'Long Term'}</Select.Trigger
+				>
+				<Select.Content>
+					<Select.Item value="1">Short Term</Select.Item>
+					<Select.Item value="2">Long Term</Select.Item>
+				</Select.Content>
+			</Select.Root>
 		</div>
-		<div class="flex items-center justify-between">
+		<!-- <div class="flex items-center justify-between">
 			<div class="text-sm text-muted-foreground">
 				Term: <DropdownMenu.Root>
 					<DropdownMenu.Trigger
@@ -115,7 +138,7 @@
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 			</div>
-		</div>
+		</div> -->
 		<Dialog.Footer>
 			<Button onclick={() => create(data)}>Create</Button>
 		</Dialog.Footer>

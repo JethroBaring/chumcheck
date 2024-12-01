@@ -58,20 +58,6 @@
 				</DropdownMenu.Root>
 			</div>
 			<div class="flex items-center justify-between">
-				<div class="flex flex-wrap items-center gap-2">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger><Badge variant="secondary">Long Term</Badge></DropdownMenu.Trigger
-						>
-						<DropdownMenu.Content align="start">
-							<DropdownMenu.Group>
-								<DropdownMenu.RadioGroup>
-									<DropdownMenu.RadioItem value="short">Short Term</DropdownMenu.RadioItem>
-									<DropdownMenu.RadioItem value="long">Long Term</DropdownMenu.RadioItem>
-								</DropdownMenu.RadioGroup>
-							</DropdownMenu.Group>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-				</div>
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger>
 						{#if assignedMember}

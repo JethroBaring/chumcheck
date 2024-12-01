@@ -5,11 +5,11 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Delete, Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
-	import { RnsCreateDialog, RnsViewEditDeleteDialog } from '.';
+	import { RoadblocksCreateDialog, RoadblocksViewEditDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { rns, members, update, ai, addToRns, deleteRns } = $props();
+	let { roadblocks, members, update, ai, addToRoadblocks, deleteRoadblocks } = $props();
 
-	let assignee = $state(rns.assignee_id);
+	let assignee = $state(roadblocks.assignee_id);
 
 	const assignedMember = $derived(members.filter((member: any) => member.user_id === assignee)[0]);
 
@@ -19,7 +19,7 @@
 	};
 
 	let action: Actions = $state('View');
-	console.log(rns);
+	console.log(roadblocks);
 </script>
 
 <Card.Root
@@ -32,7 +32,7 @@
 	<Card.Content class="flex flex-col gap-2">
 		<div class="flex items-center justify-between">
 			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
-				{rns.readiness_type_rl_type}
+				{''}
 			</h2>
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger
@@ -45,8 +45,8 @@
 				<DropdownMenu.Content align="end">
 					<DropdownMenu.Group>
 						{#if ai}
-							<DropdownMenu.Item onclick={() => addToRns(rns.id)}
-								><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+							<DropdownMenu.Item onclick={() => addToRoadblocks(roadblocks.id)}
+								><Plus class="h-4 w-4" /> Add to Roadblocks</DropdownMenu.Item
 							>
 						{/if}
 						<DropdownMenu.Item
@@ -74,11 +74,19 @@
 			</DropdownMenu.Root>
 		</div>
 		<div class="text-sm text-muted-foreground">
-			{rns.description.substring(0, 150) + `${rns.description.length > 150 ? '...' : ''}`}
+			{roadblocks.description.substring(0, 150) +
+				`${roadblocks.description.length > 150 ? '...' : ''}`}
 		</div>
 		<div class="text-sm text-muted-foreground">
-			Target Level: <Badge variant="secondary">5</Badge>
-			
+			Risk Number:
+			{#if roadblocks.risk_number}
+				<Badge variant="secondary">
+					{roadblocks.risk_number}
+				</Badge>
+			{:else}
+				<Badge variant="secondary" class="text-muted">1</Badge>
+			{/if}
+
 			<!-- <DropdownMenu.Root>
 				<DropdownMenu.Trigger
 					onclick={(e) => {
@@ -97,20 +105,7 @@
 			</DropdownMenu.Root> -->
 		</div>
 		<div class="flex items-center justify-between">
-			<div class="flex flex-wrap items-center gap-2">
-				<Badge variant="secondary">{rns.type === 1 ? 'Short' : 'Long'} Term</Badge>
-				<!-- <DropdownMenu.Root>
-					<DropdownMenu.Trigger onclick={(e) => {e.stopPropagation()}}><Badge variant="secondary">Long Term</Badge></DropdownMenu.Trigger>
-					<DropdownMenu.Content align="start">
-						<DropdownMenu.Group>
-							<DropdownMenu.RadioGroup>
-								<DropdownMenu.RadioItem value="short">Short Term</DropdownMenu.RadioItem>
-								<DropdownMenu.RadioItem value="long">Long Term</DropdownMenu.RadioItem>
-							</DropdownMenu.RadioGroup>
-						</DropdownMenu.Group>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root> -->
-			</div>
+			<div class="flex flex-wrap items-center gap-2"></div>
 			{#if assignedMember}
 				<div
 					class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}
@@ -118,10 +113,16 @@
 					{assignedMember.first_name.charAt(0)}
 				</div>
 			{:else}
-				<div class={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${zIndex[1]}`}>?</div>
+				<div class={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${zIndex[1]}`}>
+					?
+				</div>
 			{/if}
 			<!-- <DropdownMenu.Root>
-				<DropdownMenu.Trigger onclick={(e) => {e.stopPropagation()}}>
+				<DropdownMenu.Trigger
+					onclick={(e) => {
+						e.stopPropagation();
+					}}
+				>
 					{#if assignedMember}
 						<div
 							class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}
@@ -129,7 +130,7 @@
 							{assignedMember.first_name.charAt(0)}
 						</div>
 					{:else}
-						<div class={`flex h-8 w-8 items-center justify-center rounded-full ${zIndex[1]}`}>
+						<div class={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${zIndex[1]}`}>
 							?
 						</div>
 					{/if}
@@ -139,7 +140,7 @@
 						{#each members as member, index}
 							<DropdownMenu.RadioGroup
 								bind:value={assignee}
-								onValueChange={(v) => update(rns.id, undefined, undefined, undefined, v)}
+								onValueChange={(v) => update(roadblocks.id, undefined, undefined, undefined, v)}
 							>
 								<DropdownMenu.RadioItem value={member.user_id} class="flex items-center gap-3">
 									<div
@@ -159,13 +160,13 @@
 	</Card.Content>
 </Card.Root>
 
-<RnsViewEditDeleteDialog
+<RoadblocksViewEditDialog
 	{open}
 	{onOpenChange}
-	{rns}
+	rns={roadblocks}
 	{update}
 	{action}
-	{deleteRns}
+	deleteRns={deleteRoadblocks}
 	{members}
 	{assignedMember}
 />

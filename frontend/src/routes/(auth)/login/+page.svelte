@@ -11,7 +11,7 @@
 	let { data }: { data: PageData } = $props();
 
 	const { form, errors, enhance, message, submitting } = superForm(data.form);
-	
+
 	$effect(() => {
 		if ($message && !$submitting) {
 			toast.dismiss();
@@ -24,7 +24,6 @@
 			toast.error('Login failed');
 		}
 	});
-
 </script>
 
 <svelte:head>
@@ -69,9 +68,6 @@
 				<div class="grid gap-2">
 					<div class="flex items-center">
 						<Label for="password">Password</Label>
-						<!-- <a href="/forgotpassword" class="ml-auto inline-block text-sm underline">
-							Forgot your password?
-						</a> -->
 					</div>
 					<Input
 						name="password"

@@ -12,6 +12,7 @@
 	import axios from 'axios';
 	import { toast } from 'svelte-sonner';
 	import * as Table from '$lib/components/ui/table';
+	import { getReadinessLevels } from '$lib/utils';
 	export let data: PageData;
 
 	const queryResult = useQuery(
@@ -127,8 +128,11 @@
 		}
 	];
 
+	let elevatedReadiness: any = [0,0,0,0,0,0]
+
 	async function elevate() {
-		const readinessToUpdate = readiness.filter((r) => r.new !== 0);
+		console.log(elevatedReadiness)
+		const readinessToUpdate = elevatedReadiness.filter((r) => r !== 0);
 
 		if (readinessToUpdate.length > 0) {
 			const requests = readinessToUpdate.map((r) =>
@@ -136,7 +140,7 @@
 					`/startup-readiness-levels/`,
 					{
 						startup_id: data.startupId,
-						readiness_level_id: r.new
+						readiness_level_id: r
 					},
 					{
 						headers: {
@@ -158,40 +162,58 @@
 		}
 	}
 
+	$: console.log(getReadinessLevels('Technology'));
+
+	const getLevel = (levels: any, id) => {
+		if(id === 0) return ''
+		return levels.filter((level: any) => Number(level.id) === Number(id))[0].level
+	}
 </script>
 
 <div class="flex flex-col gap-5">
 	<h1 class="text-xl font-semibold">Elevate</h1>
-		<div class="flex items-center justify-between">
-			{#if $readinessData.isLoading}
-				<Skeleton class="h-10" />
-			{:else}
-				<div class="w-2/3 rounded-md border">
-					<Table.Root class="rounded-lg bg-background">
-						<Table.Header>
-							<Table.Row class="text-centery h-12">
-								<Table.Head class="pl-5">Type</Table.Head>
-								<Table.Head class="">Current Level</Table.Head>
-								<Table.Head class="">Elevated Level</Table.Head>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{#if $queryResult.isLoading}
-								<Skeleton class="h-40" />
-							{:else}
-								{#each readiness as r}
-										<Table.Row class="h-14 cursor-pointer">
-											<Table.Cell class="pl-5">{r.name}</Table.Cell>
-											<Table.Cell class="">1</Table.Cell>
-											<Table.Cell class="">2</Table.Cell>
-										</Table.Row>
-								{/each}
-							{/if}
-						</Table.Body>
-					</Table.Root>
-				</div>
+	<div class="flex items-center justify-between">
+		{#if $readinessData.isLoading}
+			<Skeleton class="h-10" />
+		{:else}
+			<div class="w-2/3 rounded-md border">
+				<Table.Root class="rounded-lg bg-background">
+					<Table.Header>
+						<Table.Row class="text-centery h-12">
+							<Table.Head class="pl-5">Type</Table.Head>
+							<Table.Head class="">Current Level</Table.Head>
+							<Table.Head class="">Elevated Level</Table.Head>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#if $queryResult.isLoading}
+							<Skeleton class="h-40" />
+						{:else}
+							{#each $readinessData.data.results.slice(-6).sort((a, b) => a.readiness_type.localeCompare(b.readiness_type)) as r, index}
+								<Table.Row class="h-14 cursor-pointer">
+									<Table.Cell class="pl-5">{r.readiness_type}</Table.Cell>
+									<Table.Cell class="">{r.readiness_level}</Table.Cell>
+									<Table.Cell class="">
+										<Select.Root type="single" bind:value={elevatedReadiness[index]}>
+											<Select.Trigger class="w-[100px]">{getLevel(getReadinessLevels(r.readiness_type), elevatedReadiness[index])}</Select.Trigger>
+											<Select.Content>
+												{#each getReadinessLevels(r.readiness_type) as item}
+													<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
+												{/each}
+												<!-- <Select.Item value="light">Light</Select.Item>
+												<Select.Item value="dark">Dark</Select.Item>
+												<Select.Item value="system">System</Select.Item> -->
+											</Select.Content>
+										</Select.Root>
+									</Table.Cell>
+								</Table.Row>
+							{/each}
+						{/if}
+					</Table.Body>
+				</Table.Root>
+			</div>
 
-				<!-- <Select.Root
+			<!-- <Select.Root
 						onSelectedChange={(e) => {
 							r.new = e?.value;
 						}}
@@ -210,7 +232,7 @@
 							{/each}
 						</Select.Content>
 					</Select.Root> -->
-			{/if}
+		{/if}
 	</div>
 	<div><Button onclick={elevate}>Elevate</Button></div>
 </div>
