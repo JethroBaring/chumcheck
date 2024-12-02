@@ -5,7 +5,7 @@
 	import { Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
 	import { RnaCreateDialog, RnaViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { rna, update, ai, addToRna, deleteRna } = $props();
+	let { rna, update, ai, addToRna, deleteRna, role } = $props();
 
 	let open = $state(false);
 
@@ -27,63 +27,59 @@
 		<div class="flex items-center justify-between">
 			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
 				{rna.readiness_type_rl_type}
+				{rna.id}
 			</h2>
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger
-					onclick={(e) => {
-						e.stopPropagation();
-					}}
-				>
-					<Ellipsis class="h-5 w-5" />
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content align="end">
-					<DropdownMenu.Group>
-						{#if ai}
-							<DropdownMenu.Item onclick={() => addToRna(rna.id)}
-								><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+			{#if role !== 'Startup'}
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger
+						onclick={(e) => {
+							e.stopPropagation();
+						}}
+					>
+						<Ellipsis class="h-5 w-5" />
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						<DropdownMenu.Group>
+							{#if ai}
+								<DropdownMenu.Item
+									onclick={(e) => {
+										e.stopPropagation();
+										addToRna(rna.id);
+									}}><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
+								>
+							{/if}
+							<DropdownMenu.Item
+								onclick={(e) => {
+									e.stopPropagation();
+									open = true;
+									action = 'Edit';
+								}}
 							>
-						{/if}
-						<DropdownMenu.Item
-							onclick={(e) => {
-								e.stopPropagation();
-								open = true;
-								action = 'Edit';
-							}}
-						>
-							<Edit class="h-4 w-4" />
-							Edit
-						</DropdownMenu.Item>
-						<DropdownMenu.Item
-							onclick={(e) => {
-								e.stopPropagation();
-								open = true;
-								action = 'Delete';
-							}}
-						>
-							<Trash class="h-4 w-4" />
-							Delete
-						</DropdownMenu.Item>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+								<Edit class="h-4 w-4" />
+								Edit
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onclick={(e) => {
+									e.stopPropagation();
+									open = true;
+									action = 'Delete';
+								}}
+							>
+								<Trash class="h-4 w-4" />
+								Delete
+							</DropdownMenu.Item>
+						</DropdownMenu.Group>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			{/if}
 		</div>
-		<div class="text-sm text-muted-foreground">
+		<div class="text-muted-foreground text-sm">
 			{rna.rna.substring(0, 150) + `${rna.rna.length > 150 ? '...' : ''}`}
 		</div>
-		<div class="text-sm text-muted-foreground">
+		<div class="text-muted-foreground text-sm">
 			Current Level: <Badge variant="secondary">5</Badge>
-			
 		</div>
 	</Card.Content>
 </Card.Root>
 
-<!-- <RnaViewEditDeleteDialog
-	{open}
-	{onOpenChange}
-	{rns}
-	{update}
-	{action}
-	{deleteRns}
-	{members}
-	{assignedMember}
-/> -->
+<RnaViewEditDeleteDialog {open} {onOpenChange} rns={rna} {update} deleteRns={deleteRna} {action} />

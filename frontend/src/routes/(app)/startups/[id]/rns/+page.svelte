@@ -148,11 +148,18 @@
 
 	const createRns = async (payload: any) => {
 		console.log(payload);
-		await axiosInstance.post('/tasks/tasks/', payload, {
-			headers: {
-				Authorization: `Bearer ${data.access}`
+		await axiosInstance.post(
+			'/tasks/tasks/',
+			{
+				...payload,
+				status
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${data.access}`
+				}
 			}
-		});
+		);
 		toast.success('Successfully created the RNS');
 		open = false;
 		$rnsQueries[1].refetch();
@@ -163,13 +170,16 @@
 		level?: number, // Optional parameter
 		description?: string, // Optional parameter
 		priority_number?: number, // Optional parameter,
-		assignee_id?: number
+		assignee_id?: number,
+		task_type?: number
 	) => {
+		console.log({id, level, description, priority_number, assignee_id})
 		const payload: Record<string, any> = {};
 		if (level !== undefined) payload.target_level_id = level;
 		if (description !== undefined) payload.description = description;
 		if (priority_number !== undefined) payload.priority_number = priority_number;
 		if (assignee_id !== undefined) payload.assignee_id = assignee_id;
+		if (task_type !== undefined) payload.task_type = task_type;
 
 		await axiosInstance.patch(`/tasks/tasks/${id}/`, payload, {
 			headers: {
@@ -233,6 +243,23 @@
 	const showDialog = () => {
 		open = true;
 	};
+
+	let status = $state(4);
+
+	const updateStatus = (newStatus: number) => {
+		status = newStatus;
+	};
+
+	let selectedMembers: any = $state([]);
+
+	const toggleMemberSelection = (member: number) => {
+		if (selectedMembers.includes(member)) {
+			selectedMembers = selectedMembers.filter((m: number) => m !== member);
+		} else {
+			selectedMembers.push(member);
+		}
+	};
+
 </script>
 
 {#if isLoading}
@@ -245,9 +272,17 @@
 	{@render fallback()}
 {/if}
 
-<RnsCreateDialog {open} {onOpenChange} create={createRns} {startupId} {members} />
+<RnsCreateDialog {open} {onOpenChange} create={createRns} {startupId} {members} {status} />
 {#snippet card(rns: any, ai = false)}
-	<RnsCard {rns} {members} update={editRNS} {ai} addToRns={addToRNS} deleteRns={deleteRNS} role={data.role}/>
+	<RnsCard
+		{rns}
+		{members}
+		update={editRNS}
+		{ai}
+		addToRns={addToRNS}
+		deleteRns={deleteRNS}
+		role={data.role}
+	/>
 {/snippet}
 
 <svelte:head>
@@ -262,19 +297,28 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
 				</div>
 			</Can>
 			{#if selectedTab === 'rns'}
-				<MembersFilter {members} updateTab={updateRnsTab} updateMembers={() => {}} />
+				<MembersFilter {members} updateTab={updateRnsTab} {toggleMemberSelection} />
 			{/if}
 		</div>
 		<ShowHideColumns {views} />
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'rns'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role}/>
+			<KanbanBoard
+				{columns}
+				{handleDndFinalize}
+				{handleDndConsider}
+				{card}
+				{showDialog}
+				role={data.role}
+				{updateStatus}
+				{selectedMembers}
+			/>
 		{:else}
 			{#each readiness as readiness}
 				<AIColumn name={readiness.name} generate={generateRNS}>

@@ -8,7 +8,9 @@
 		columns,
 		card,
 		showDialog,
-		role
+		role,
+		updateStatus,
+		selectedMembers
 	}: {
 		handleDndConsider: any;
 		handleDndFinalize: any;
@@ -16,6 +18,8 @@
 		card: any;
 		showDialog: any;
 		role: any;
+		updateStatus: any;
+		selectedMembers: any;
 	} = $props();
 
 	const flipDurationMs = 300;
@@ -23,7 +27,7 @@
 
 {#each columns as column, index}
 	{#if column.show}
-		<Column name={column.name} {showDialog}>
+		<Column name={column.name} {showDialog} {updateStatus} statusId={column.value}>
 			{#if role !== 'Startup'}
 				<div
 					use:dndzone={{
@@ -54,7 +58,9 @@
 					{:else}
 						{#each column.items as item (item.id)}
 							<div animate:flip={{ duration: flipDurationMs }}>
+								{#if selectedMembers.length !== 0}
 								{@render card(item)}
+								{/if}
 							</div>
 						{/each}
 					{/if}

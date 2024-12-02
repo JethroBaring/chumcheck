@@ -2,10 +2,9 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import * as Avatar from '$lib/components/ui/avatar';
-	import { Delete, Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
+	import { Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
-	import { RnsCreateDialog, RnsViewEditDeleteDialog } from '.';
+	import { RnsViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
 	let { rns, members, update, ai, addToRns, deleteRns, role } = $props();
 
@@ -19,7 +18,6 @@
 	};
 
 	let action: Actions = $state('View');
-	console.log(rns);
 </script>
 
 <Card.Root

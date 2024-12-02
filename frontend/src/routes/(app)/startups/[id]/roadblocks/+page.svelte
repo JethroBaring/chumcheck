@@ -122,7 +122,7 @@
 
 	const createRoadblocks = async (payload: any) => {
 		console.log(payload);
-		await axiosInstance.post('/tasks/roadblocks/', payload, {
+		await axiosInstance.post('/tasks/roadblocks/', {...payload, status}, {
 			headers: {
 				Authorization: `Bearer ${data.access}`
 			}
@@ -158,7 +158,15 @@
 		$roadblocksQueries[1].refetch();
 	};
 
-	const deleteRoadblock = async (id: number) => {};
+	const deleteRoadblock = async (id: number) => {
+		await axiosInstance.delete(`/tasks/roadblocks/${id}/`, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
+			}
+		});
+		toast.success('Successfuly deleted a task');
+		$roadblocksQueries[1].refetch();
+	};
 
 	function handleDndConsider(e: any, x: number) {
 		columns[x].items = e.detail.items;
@@ -207,6 +215,12 @@
 	const onOpenChange = () => {
 		open = !open;
 	};
+
+	let status = $state(4)
+
+	const updateStatus = (newStatus: number) => {
+		status = newStatus
+	}
 </script>
 
 {#if isLoading}
@@ -219,7 +233,7 @@
 	{@render fallback()}
 {/if}
 
-<RoadblocksCreateDialog {open} {onOpenChange} {members} {startupId} create={createRoadblocks} />
+<RoadblocksCreateDialog {open} {onOpenChange} {members} {startupId} create={createRoadblocks} {status}/>
 
 {#snippet card(roadblocks: any)}
 	<RoadblocksCard
@@ -270,7 +284,7 @@
 	</div>
 	{#if selectedTab === 'roadblocks'}
 		<div class="flex h-full gap-5 overflow-scroll">
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role}/>
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role} {updateStatus}/>
 		</div>
 	{:else}
 		<div class="grid w-full grid-cols-4 gap-5 overflow-scroll">
@@ -282,6 +296,7 @@
 					deleteRoadblocks={deleteRoadblock}
 					ai={true}
 					{members}
+					role={data.role}
 				/>
 			{/each}
 		</div>

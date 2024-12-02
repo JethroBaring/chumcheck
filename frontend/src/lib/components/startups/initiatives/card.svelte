@@ -76,12 +76,14 @@
 				</DropdownMenu.Root>
 			{/if}
 		</div>
-		<div class="text-sm text-muted-foreground">
+		<div class="text-muted-foreground text-sm">
 			{initiative.description.substring(0, 150) +
 				`${initiative.description.length > 150 ? '...' : ''}`}
 		</div>
-		<div class="text-sm text-muted-foreground">
-			Priority No.: <DropdownMenu.Root>
+		<div class="text-muted-foreground text-sm">
+			Priority No.: <Badge variant="secondary">5</Badge>
+
+			<!-- <DropdownMenu.Root>
 				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
 				<DropdownMenu.Content align="start" class="min-w-4">
 					<DropdownMenu.Group>
@@ -92,10 +94,12 @@
 						</DropdownMenu.RadioGroup>
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+			</DropdownMenu.Root> -->
 		</div>
-		<div class="text-sm text-muted-foreground">
-			Initiative No.: <DropdownMenu.Root>
+		<div class="text-muted-foreground text-sm">
+			Initiative No.: <Badge variant="secondary">5</Badge>
+
+			<!-- <DropdownMenu.Root>
 				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
 				<DropdownMenu.Content align="start" class="min-w-4">
 					<DropdownMenu.Group>
@@ -106,11 +110,12 @@
 						</DropdownMenu.RadioGroup>
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+			</DropdownMenu.Root> -->
 		</div>
 		<div class="flex items-center justify-between">
 			<div class="flex flex-wrap items-center gap-2">
-				<DropdownMenu.Root>
+				<Badge variant="secondary">{initiative.task_type === 1 ? 'Short' : 'Long'} Term</Badge>
+				<!-- <DropdownMenu.Root>
 					<DropdownMenu.Trigger><Badge variant="secondary">Long Term</Badge></DropdownMenu.Trigger>
 					<DropdownMenu.Content align="start">
 						<DropdownMenu.Group>
@@ -120,9 +125,18 @@
 							</DropdownMenu.RadioGroup>
 						</DropdownMenu.Group>
 					</DropdownMenu.Content>
-				</DropdownMenu.Root>
+				</DropdownMenu.Root> -->
 			</div>
-			<DropdownMenu.Root>
+			{#if assignedMember}
+				<div
+					class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}
+				>
+					{assignedMember.first_name.charAt(0)}
+				</div>
+			{:else}
+				<div class={`flex h-8 w-8 items-center justify-center rounded-full ${zIndex[1]}`}>?</div>
+			{/if}
+			<!-- <DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					{#if assignedMember}
 						<div
@@ -157,7 +171,7 @@
 						{/each}
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+			</DropdownMenu.Root> -->
 		</div>
 	</Card.Content>
 </Card.Root>

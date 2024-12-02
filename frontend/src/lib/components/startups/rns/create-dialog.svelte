@@ -4,11 +4,11 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Badge } from '$lib/components/ui/badge';
-	import { getProfileColor, getReadinessLevels, getReadinessTypes, zIndex } from '$lib/utils';
+	import { getProfileColor, getReadinessLevels, getReadinessTypes, getStatusName, zIndex } from '$lib/utils';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	let { open, onOpenChange, create, members, startupId } = $props();
+	let { open, onOpenChange, create, members, startupId, status } = $props();
 
 	const data = $state({
 		priority_number: null,
@@ -16,7 +16,6 @@
 		target_level_id: '',
 		target_level_score_id: 1,
 		description: '',
-		status: 4,
 		startup_id: startupId,
 		task_type: '1',
 		due_date: null,
@@ -41,12 +40,13 @@
 	$effect(() => {
 		console.log(levels);
 	});
+
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>
 	<Dialog.Content class="max-w-[600px]">
 		<Dialog.Header>
-			<Dialog.Title>Create</Dialog.Title>
+			<Dialog.Title>Create {getStatusName(status)} Rns {status}</Dialog.Title>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">
 			<div class="flex flex-col gap-4">

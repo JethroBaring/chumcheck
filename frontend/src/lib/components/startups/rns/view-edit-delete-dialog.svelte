@@ -3,15 +3,13 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Textarea } from '$lib/components/ui/textareav2';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import { Badge } from '$lib/components/ui/badge';
-	import { getProfileColor, getReadinessLevels, getReadinessTypes, zIndex } from '$lib/utils';
+	import { getReadinessLevels, getReadinessTypes } from '$lib/utils';
 	import * as Select from '$lib/components/ui/select/index.js';
 
 	let { open, onOpenChange, rns, deleteRns, update, action, members, assignedMember } = $props();
 
-	let rnsCopy = $state(rns);
+	let rnsCopy = $state({ ...rns });
 
 	const levels = $derived(
 		getReadinessLevels(
@@ -26,6 +24,12 @@
 				: 'Technology'
 		)
 	);
+
+	$effect(() => {
+		if (!open) {
+			rnsCopy = { ...rns };
+		}
+	});
 </script>
 
 {#if action === 'Delete'}
@@ -53,10 +57,11 @@
 			<div class="grid gap-4 py-4">
 				<div class="flex flex-col gap-4">
 					<Label for="name">Type</Label>
-					<Select.Root type="single" bind:value={rns.readiness_type_id}>
-						<Select.Trigger class="w-[180px]" disabled={action==='View'}
-							>{rns.readiness_type_id
-								? getReadinessTypes().filter((d) => d.id === Number(rns.readiness_type_id))[0].name
+					<Select.Root type="single" bind:value={rnsCopy.readiness_type_id}>
+						<Select.Trigger class="w-[180px]" disabled={action === 'View'}
+							>{rnsCopy.readiness_type_id
+								? getReadinessTypes().filter((d) => d.id === Number(rnsCopy.readiness_type_id))[0]
+										.name
 								: ''}</Select.Trigger
 						>
 						<Select.Content>
@@ -68,15 +73,15 @@
 				</div>
 				<div class="flex flex-col gap-4">
 					<Label for="username">Description</Label>
-					<Textarea rows={10} bind:value={rns.description} readonly={action==='View'}/>
+					<Textarea rows={10} bind:value={rnsCopy.description} readonly={action === 'View'} />
 				</div>
 			</div>
 			<div class="flex flex-col gap-4">
 				<Label for="name">Assignee</Label>
-				<Select.Root type="single" bind:value={rns.assignee_id}>
-					<Select.Trigger class="w-[180px]" disabled={action==='View'}
-						>{rns.assignee_id
-							? `${members.filter((member: any) => member.user_id === rns.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rns.assignee_id)[0].last_name}`
+				<Select.Root type="single" bind:value={rnsCopy.assignee_id}>
+					<Select.Trigger class="w-[180px]" disabled={action === 'View'}
+						>{rnsCopy.assignee_id
+							? `${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].last_name}`
 							: ''}</Select.Trigger
 					>
 					<Select.Content>
@@ -90,8 +95,10 @@
 			</div>
 			<div class="flex flex-col gap-4">
 				<Label for="name">Target Level</Label>
-				<Select.Root type="single" bind:value={rns.target_level_id}>
-					<Select.Trigger class="w-[50px]" disabled={action==='View'}>{rns.target_level_id}</Select.Trigger>
+				<Select.Root type="single" bind:value={rnsCopy.target_level_id}>
+					<Select.Trigger class="w-[50px]" disabled={action === 'View'}
+						>{rnsCopy.target_level_id}</Select.Trigger
+					>
 					<Select.Content>
 						{#each levels as item}
 							<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
@@ -101,9 +108,9 @@
 			</div>
 			<div class="flex flex-col gap-4">
 				<Label for="name">Term</Label>
-				<Select.Root type="single" bind:value={rns.task_type}>
-					<Select.Trigger class="w-[120px]" disabled={action==='View'}
-						>{rns.task_type === '1' ? 'Short Term' : 'Long Term'}</Select.Trigger
+				<Select.Root type="single" bind:value={rnsCopy.task_type}>
+					<Select.Trigger class="w-[120px]" disabled={action === 'View'}
+						>{rnsCopy.task_type === '1' ? 'Short Term' : 'Long Term'}</Select.Trigger
 					>
 					<Select.Content>
 						<Select.Item value="1">Short Term</Select.Item>
@@ -113,9 +120,17 @@
 			</div>
 			{#if action === 'Edit'}
 				<Dialog.Footer>
-					<Button onclick={() => {
-						update(rnsCopy.id, rnsCopy.description, rnsCopy.priority_number, rnsCopy.assignee_id)
-					}}>Update</Button>
+					<Button
+						onclick={() => {
+							update(
+								rnsCopy.id,
+								rnsCopy.target_level_id,
+								rnsCopy.description,
+								rnsCopy.priority_number,
+								rnsCopy.assignee_id
+							);
+						}}>Update</Button
+					>
 				</Dialog.Footer>
 			{/if}
 		</Dialog.Content>

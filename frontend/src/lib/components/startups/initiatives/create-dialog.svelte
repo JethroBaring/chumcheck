@@ -4,11 +4,11 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Badge } from '$lib/components/ui/badge';
-	import { getProfileColor, getReadinessLevels, getReadinessTypes, zIndex } from '$lib/utils';
+	import { getProfileColor, getReadinessLevels, getReadinessTypes, getStatusName, zIndex } from '$lib/utils';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	let { open, onOpenChange, create, members, startupId, tasks } = $props();
+	let { open, onOpenChange, create, members, startupId, tasks, status } = $props();
 
 	const data = $state({
 		initiative_number: '',
@@ -29,7 +29,7 @@
 <Dialog.Root bind:open {onOpenChange}>
 	<Dialog.Content class="max-w-[600px]">
 		<Dialog.Header>
-			<Dialog.Title>Create Scheduled Roadblock</Dialog.Title>
+			<Dialog.Title>Create {getStatusName(status)} Roadblock</Dialog.Title>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">
 			<div class="flex flex-col gap-4">
@@ -87,20 +87,6 @@
 				</Select.Content>
 			</Select.Root>
 		</div>
-		<!-- <div class="text-sm text-muted-foreground">
-			Target Level: <DropdownMenu.Root>
-				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
-				<DropdownMenu.Content align="start" class="min-w-4">
-					<DropdownMenu.Group>
-						<DropdownMenu.RadioGroup bind:value={data.initiative_number}>
-							{#each [1,2,3,4,5] as item}
-								<DropdownMenu.RadioItem value={`${item}`}>{item}</DropdownMenu.RadioItem>
-							{/each}
-						</DropdownMenu.RadioGroup>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
-		</div> -->
 		<Dialog.Footer>
 			<Button onclick={() => create(data)}>Create</Button>
 		</Dialog.Footer>

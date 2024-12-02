@@ -309,3 +309,15 @@ export const getReadinessLevels = (
 
 	return levels[readiness];
 };
+
+export const getStatusName = (s: 2 | 3 | 4 | 5 | 6) => {
+	const status = {
+		6: 'Completed',
+		5: 'Track',
+		4: 'Scheduled',
+		3: 'Delayed',
+		2: 'Discontinued'
+	};
+
+	return status[s];
+};

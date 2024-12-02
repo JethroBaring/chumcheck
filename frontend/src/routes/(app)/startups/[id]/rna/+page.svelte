@@ -1,10 +1,17 @@
 <script lang="ts">
 	import { useQueriesState } from '$lib/stores/useQueriesState.svelte.js';
-	import { AIColumn, AITabs, Can, Column, MembersFilter, ShowHideColumns } from '$lib/components/shared';
+	import {
+		AIColumn,
+		AITabs,
+		Can,
+		Column,
+		MembersFilter,
+		ShowHideColumns
+	} from '$lib/components/shared';
 	import { getData, getReadiness, getSavedTab, getSelectedTab, updateTab } from '$lib/utils';
 	import { useQueries } from '@sveltestack/svelte-query';
 	import { page } from '$app/stores';
-	import { RnaCard, RnaDialog } from '$lib/components/startups/rna';
+	import { RnaCard, RnaCreateDialog, RnaDialog } from '$lib/components/startups/rna';
 	import type { Actions } from '$lib/types';
 	import { Button } from '$lib/components/ui/button';
 	import { Ellipsis, Plus, Sparkles } from 'lucide-svelte';
@@ -45,23 +52,6 @@
 	const updateRnaTab = (tab: string) => {
 		selectedTab = updateTab('rna', tab);
 	};
-
-	const members = $derived(
-		$rnaQueries[3].isSuccess
-			? [
-					...$rnaQueries[3].data.members.map(({ id, ...rest }) => ({
-						...rest
-					})),
-					{
-						user_id: $rnaQueries[3].data.user_id,
-						startup_id: $rnaQueries[3].data.id,
-						first_name: $rnaQueries[3].data.leader_first_name,
-						last_name: $rnaQueries[3].data.leader_last_name,
-						email: $rnaQueries[3].data.leader_email
-					}
-				]
-			: []
-	);
 
 	const views = $derived(selectedTab === 'rna' ? readiness : aiReadiness);
 
@@ -110,6 +100,22 @@
 		$rnaQueries[1].refetch();
 	};
 
+	const createRna = async (payload: any) => {
+		console.log(payload);
+		await axiosInstance.post(
+			'/startup-rna/',
+			{ ...payload, status },
+			{
+				headers: {
+					Authorization: `Bearer ${data.access}`
+				}
+			}
+		);
+		toast.success('Successfully created the Roadblocks');
+		open = false;
+		$rnaQueries[1].refetch();
+	};
+
 	const editRNA = async (id: number, description: string) => {
 		await axiosInstance.patch(
 			`/startup-rna/${id}/`,
@@ -129,7 +135,7 @@
 	};
 
 	const deleteRNA = async (id: number) => {
-		await axiosInstance.delete(`/startup-rna/${id}/`, {
+		await axiosInstance.delete(`/startup-rna/${Number(id)}/`, {
 			headers: {
 				Authorization: `Bearer ${data.access}`
 			}
@@ -143,6 +149,14 @@
 	});
 
 	const currentCondition = $derived(selectedTab === 'rna' ? false : true);
+	// is_ai_generated, readiness_level_id, startup_id, rna, readiness_type_rl_type
+	$effect(() => {
+		if ($rnaQueries[1].isSuccess) {
+			console.log($rnaQueries[1].data);
+		}
+	});
+
+	const readinessData = $derived($rnaQueries[2].isSuccess ? $rnaQueries[2].data.results.slice(-6).sort((a, b) => a.readiness_type.localeCompare(b.readiness_type)) : [])
 </script>
 
 <svelte:head>
@@ -163,6 +177,8 @@
 	{@render fallback()}
 {/if}
 
+<RnaCreateDialog {open} {onOpenChange} create={createRna} {startupId} {readinessData}/>
+
 {#snippet loading()}{/snippet}
 
 {#snippet error()}{/snippet}
@@ -171,7 +187,7 @@
 	<div class="flex items-center justify-between">
 		<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
 			<div class="flex gap-3">
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<AITabs {selectedTab} name="rna" updateTab={updateRnaTab} />
 				</div>
 			</div>
@@ -182,9 +198,7 @@
 					><Sparkles class="h-4 w-4" />Generate</Button
 				>
 			{:else}
-				<Button 
-					><Plus class="h-4 w-4" />Add</Button
-				>
+				<Button onclick={() => (open = true)}><Plus class="h-4 w-4" />Add</Button>
 			{/if}
 		</div>
 	</div>
@@ -196,6 +210,7 @@
 				update={editRNA}
 				deleteRna={deleteRNA}
 				addToRna={addToRNA}
+				role={data.role}
 			/>
 		{/each}
 	</div>

@@ -143,7 +143,10 @@
 
 	const createInitiative = async (payload: any) => {
 		console.log(payload)
-		await axiosInstance.post('/tasks/initiatives/', payload, {
+		await axiosInstance.post('/tasks/initiatives/', {
+			...payload,
+			status
+		}, {
 			headers: {
 				Authorization: `Bearer ${data.access}`
 			}
@@ -170,7 +173,7 @@
     if (remarks !== undefined) payload.remarks = remarks;
     if (initiative_number !== undefined) payload.initiative_number = initiative_number;
     if (assignee_id !== undefined) payload.assignee_id = assignee_id;
-
+		console.log(payload)
 		await axiosInstance.patch(
 			`/tasks/initiatives/${id}/`,
 			payload,
@@ -240,6 +243,12 @@
 	};
 
 	const tasks = $derived($initiativesQueries[1].isSuccess ? $initiativesQueries[1].data.results : [])
+
+	let status = $state(4)
+
+	const updateStatus = (newStatus: number) => {
+		status = newStatus
+	}
 </script>
 
 {#if isLoading}
@@ -252,7 +261,7 @@
 	{@render fallback()}
 {/if}
 
-<InitiativeCreateDialog {open} {onOpenChange} {members} {startupId} create={createInitiative} {tasks}/>
+<InitiativeCreateDialog {open} {onOpenChange} {members} {startupId} create={createInitiative} {tasks} {status}/>
 
 {#snippet card(initiative: any, ai: any = false)}
 	<InitiativeCard {initiative} {ai} {members} update={editInitiative} {deleteInitiative} addToInitiative={addToInitiatives} role={data.role}/>
@@ -279,7 +288,7 @@
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'initiatives'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role}/>
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role} {updateStatus}/>
 		{:else}
 			{#each readiness as readiness}
 				{#if readiness.show}
