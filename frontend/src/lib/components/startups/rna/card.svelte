@@ -5,7 +5,7 @@
 	import { Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
 	import { RnaCreateDialog, RnaViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { rna, update, ai, addToRna, deleteRna, role } = $props();
+	let { rna, update, ai, addToRna, deleteRna, role, readinessData } = $props();
 
 	let open = $state(false);
 
@@ -27,7 +27,6 @@
 		<div class="flex items-center justify-between">
 			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
 				{rna.readiness_type_rl_type}
-				{rna.id}
 			</h2>
 			{#if role !== 'Startup'}
 				<DropdownMenu.Root>
@@ -82,4 +81,12 @@
 	</Card.Content>
 </Card.Root>
 
-<RnaViewEditDeleteDialog {open} {onOpenChange} rns={rna} {update} deleteRns={deleteRna} {action} />
+<RnaViewEditDeleteDialog
+	{open}
+	{onOpenChange}
+	rns={rna}
+	{update}
+	deleteRns={deleteRna}
+	{action}
+	{readinessData}
+/>

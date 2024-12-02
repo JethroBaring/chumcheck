@@ -211,6 +211,7 @@
 				deleteRna={deleteRNA}
 				addToRna={addToRNA}
 				role={data.role}
+				{readinessData}
 			/>
 		{/each}
 	</div>

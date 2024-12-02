@@ -8,7 +8,7 @@
 	import { getProfileColor, getReadinessTypes, zIndex } from '$lib/utils';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	let { open, onOpenChange, rns, deleteRns, update, action } = $props();
+	let { open, onOpenChange, rns, deleteRns, update, action, readinessData } = $props();
 
 	let rnsCopy = $state({ ...rns });
 
@@ -17,6 +17,7 @@
 			rnsCopy = { ...rns };
 		}
 	});
+
 </script>
 
 {#if action === 'Delete'}
@@ -44,24 +45,24 @@
 			<div class="grid gap-4 py-4">
 				<div class="flex flex-col gap-4">
 					<Label for="name">Type</Label>
-					<Select.Root type="single" bind:value={rnsCopy.readiness_type_id}>
-						<Select.Trigger class="w-[180px]" disabled={action === 'View'}
-							>{rnsCopy.readiness_type_id
-								? getReadinessTypes().filter((d) => d.id === Number(rnsCopy.readiness_type_id))[0]
-										.name
-								: ''}</Select.Trigger
-						>
-						<Select.Content>
-							{#each getReadinessTypes() as type}
-								<Select.Item value={`${type.id}`}>{type.name}</Select.Item>
-							{/each}
-						</Select.Content>
+					<Select.Root type="single">
+						<Select.Trigger class="w-[180px]" disabled={action === 'View'}>
+							{rnsCopy.readiness_type_rl_type}
+						</Select.Trigger>
 					</Select.Root>
 				</div>
 				<div class="flex flex-col gap-4">
 					<Label for="username">Description</Label>
 					<Textarea rows={10} bind:value={rnsCopy.rna} readonly={action === 'View'} />
 				</div>
+			</div>
+			<div class="flex flex-col gap-4">
+				<Label for="name">Curent Level</Label>
+				<Select.Root type="single">
+					<Select.Trigger class="w-[50px]"
+						>{rnsCopy.readiness_level_level}</Select.Trigger
+					>
+				</Select.Root>
 			</div>
 			{#if action === 'Edit'}
 				<Dialog.Footer>
