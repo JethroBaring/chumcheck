@@ -6,8 +6,9 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { getReadinessLevels, getReadinessTypes } from '$lib/utils';
 	import * as Select from '$lib/components/ui/select/index.js';
+	import { DeleteDialog } from '$lib/components/shared';
 
-	let { open, onOpenChange, rns, deleteRns, update, action, members, assignedMember } = $props();
+	let { open, onOpenChange, rns, deleteRns, update, action, members, assignedMember, closeDialog } = $props();
 
 	let rnsCopy = $state({ ...rns });
 
@@ -33,24 +34,7 @@
 </script>
 
 {#if action === 'Delete'}
-	<AlertDialog.Root bind:open {onOpenChange}>
-		<AlertDialog.Content>
-			<AlertDialog.Header>
-				<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
-				<AlertDialog.Description>
-					This action cannot be undone. This will permanently delete this task.
-				</AlertDialog.Description>
-			</AlertDialog.Header>
-			<AlertDialog.Footer>
-				<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-				<AlertDialog.Action
-					onclick={() => {
-						deleteRns(rns.id);
-					}}>Continue</AlertDialog.Action
-				>
-			</AlertDialog.Footer>
-		</AlertDialog.Content>
-	</AlertDialog.Root>
+	<DeleteDialog {open} {onOpenChange} {rns} deleteAction={deleteRns} name="Rns" {closeDialog} />
 {:else}
 	<Dialog.Root bind:open {onOpenChange}>
 		<Dialog.Content class="max-w-[600px]">
@@ -121,14 +105,15 @@
 			{#if action === 'Edit'}
 				<Dialog.Footer>
 					<Button
-						onclick={() => {
-							update(
+						onclick={async () => {
+							await update(
 								rnsCopy.id,
 								rnsCopy.target_level_id,
 								rnsCopy.description,
 								rnsCopy.priority_number,
 								rnsCopy.assignee_id
 							);
+							closeDialog()
 						}}>Update</Button
 					>
 				</Dialog.Footer>

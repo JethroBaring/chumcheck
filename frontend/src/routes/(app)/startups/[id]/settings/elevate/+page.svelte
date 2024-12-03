@@ -70,63 +70,6 @@
 		console.log($readinessData.data.results);
 	}
 
-	let readiness;
-	readiness = [
-		{
-			name: 'Technology',
-			prev: $readinessData.isSuccess
-				? $readinessData.data.results
-						.filter((d) => d.readiness_type === 'Technology')
-						.sort((a, b) => b.id - a.id)[0]?.readiness_level
-				: 0,
-			new: 0
-		},
-		{
-			name: 'Market',
-			prev: $readinessData.isSuccess
-				? $readinessData.data.results
-						.filter((d) => d.readiness_type === 'Market')
-						.sort((a, b) => b.id - a.id)[0]?.readiness_level
-				: 0,
-			new: 0
-		},
-		{
-			name: 'Regulatory',
-			prev: $readinessData.isSuccess
-				? $readinessData.data.results
-						.filter((d) => d.readiness_type === 'Regulatory')
-						.sort((a, b) => b.id - a.id)[0]?.readiness_level
-				: 0,
-			new: 0
-		},
-		{
-			name: 'Acceptance',
-			prev: $readinessData.isSuccess
-				? $readinessData.data.results
-						.filter((d) => d.readiness_type === 'Acceptance')
-						.sort((a, b) => b.id - a.id)[0]?.readiness_level
-				: 0,
-			new: 0
-		},
-		{
-			name: 'Organizational',
-			prev: $readinessData.isSuccess
-				? $readinessData.data.results
-						.filter((d) => d.readiness_type === 'Organizational')
-						.sort((a, b) => b.id - a.id)[0]?.readiness_level
-				: 0,
-			new: 0
-		},
-		{
-			name: 'Investment',
-			prev: $readinessData.isSuccess
-				? $readinessData.data.results
-						.filter((d) => d.readiness_type === 'Investment')
-						.sort((a, b) => b.id - a.id)[0]?.readiness_level
-				: 0,
-			new: 0
-		}
-	];
 
 	let elevatedReadiness: any = [0,0,0,0,0,0]
 
@@ -154,6 +97,8 @@
 				await axios.all(requests);
 				console.log('All readiness levels updated successfully');
 				toast.success('Elevated successfully');
+				elevatedReadiness = [0,0,0,0,0,0]
+				$readinessData.refetch()
 			} catch (error) {
 				console.error('Error updating readiness levels:', error);
 			}

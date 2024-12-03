@@ -9,6 +9,8 @@
 	import { getData } from '$lib/utils.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import Application from '$lib/components/startup/Application.svelte';
+	import { page } from '$app/stores';
+	import { toast } from 'svelte-sonner';
 
 	let { data } = $props()
 
@@ -28,6 +30,19 @@
 	const toggleApplicationForm = () => {
 		showApplicationForm = !showApplicationForm;
 	};
+
+	$effect(() => {
+		const success = $page.url.searchParams.get('success');
+
+		if (success === 'true') {
+			console.log('Success is true');
+			toast('Application successfuly.')
+			// Remove the 'success' parameter from the URL
+			const url = new URL($page.url.href);
+			url.searchParams.delete('success');
+			history.replaceState(null, '', url);
+		}
+	});
 </script>
 
 <div class="flex items-center justify-between">

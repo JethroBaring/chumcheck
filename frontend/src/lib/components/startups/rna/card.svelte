@@ -14,6 +14,10 @@
 	};
 
 	let action: Actions = $state('View');
+
+	const closeDialog = () => {
+		open = false
+	}
 </script>
 
 <Card.Root
@@ -76,7 +80,7 @@
 			{rna.rna.substring(0, 150) + `${rna.rna.length > 150 ? '...' : ''}`}
 		</div>
 		<div class="text-muted-foreground text-sm">
-			Current Level: <Badge variant="secondary">5</Badge>
+			Current Level: <Badge variant="secondary">{rna.readiness_level_level}</Badge>
 		</div>
 	</Card.Content>
 </Card.Root>
@@ -89,4 +93,5 @@
 	deleteRns={deleteRna}
 	{action}
 	{readinessData}
+	{closeDialog}
 />

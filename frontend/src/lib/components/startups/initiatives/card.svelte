@@ -21,6 +21,10 @@
 	let action: Actions = $state('View');
 
 	console.log(initiative);
+
+	const closeDialog = () => {
+		open = false
+	}
 </script>
 
 <Card.Root
@@ -185,4 +189,5 @@
 	deleteRns={deleteInitiative}
 	{members}
 	{assignedMember}
+	{closeDialog}
 />

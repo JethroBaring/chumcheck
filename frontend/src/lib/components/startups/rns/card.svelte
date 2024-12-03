@@ -18,6 +18,10 @@
 	};
 
 	let action: Actions = $state('View');
+
+	const closeDialog = () => {
+		open = false
+	}
 </script>
 
 <Card.Root
@@ -170,4 +174,5 @@
 	{deleteRns}
 	{members}
 	{assignedMember}
+	{closeDialog}
 />

@@ -8,7 +8,8 @@
 	import { getProfileColor, getReadinessTypes, zIndex } from '$lib/utils';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
-	let { open, onOpenChange, rns, deleteRns, update, action, readinessData } = $props();
+	import { DeleteDialog } from '$lib/components/shared';
+	let { open, onOpenChange, rns, deleteRns, update, action, readinessData, closeDialog } = $props();
 
 	let rnsCopy = $state({ ...rns });
 
@@ -17,28 +18,10 @@
 			rnsCopy = { ...rns };
 		}
 	});
-
 </script>
 
 {#if action === 'Delete'}
-	<AlertDialog.Root bind:open {onOpenChange}>
-		<AlertDialog.Content>
-			<AlertDialog.Header>
-				<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
-				<AlertDialog.Description>
-					This action cannot be undone. This will permanently delete this task.
-				</AlertDialog.Description>
-			</AlertDialog.Header>
-			<AlertDialog.Footer>
-				<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-				<AlertDialog.Action
-					onclick={() => {
-						deleteRns(rns.id);
-					}}>Continue</AlertDialog.Action
-				>
-			</AlertDialog.Footer>
-		</AlertDialog.Content>
-	</AlertDialog.Root>
+	<DeleteDialog {open} {onOpenChange} {rns} deleteAction={deleteRns} name="Rna" {closeDialog}/>
 {:else}
 	<Dialog.Root bind:open {onOpenChange}>
 		<Dialog.Content class="max-w-[600px]">
@@ -59,14 +42,17 @@
 			<div class="flex flex-col gap-4">
 				<Label for="name">Curent Level</Label>
 				<Select.Root type="single">
-					<Select.Trigger class="w-[50px]"
-						>{rnsCopy.readiness_level_level}</Select.Trigger
-					>
+					<Select.Trigger class="w-[50px]">{rnsCopy.readiness_level_level}</Select.Trigger>
 				</Select.Root>
 			</div>
 			{#if action === 'Edit'}
 				<Dialog.Footer>
-					<Button onclick={() => update(rnsCopy.id, rnsCopy.rna)}>Update</Button>
+					<Button
+						onclick={async () => {
+							await update(rnsCopy.id, rnsCopy.rna);
+							open = false;
+						}}>Update</Button
+					>
 				</Dialog.Footer>
 			{/if}
 		</Dialog.Content>

@@ -19,7 +19,9 @@
 	};
 
 	let action: Actions = $state('View');
-	console.log(roadblocks);
+	const closeDialog = () => {
+		open = false;
+	};
 </script>
 
 <Card.Root
@@ -35,44 +37,47 @@
 				{''}
 			</h2>
 			{#if role !== 'Startup'}
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger
-					onclick={(e) => {
-						e.stopPropagation();
-					}}
-				>
-					<Ellipsis class="h-5 w-5" />
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content align="end">
-					<DropdownMenu.Group>
-						{#if ai}
-							<DropdownMenu.Item onclick={() => addToRoadblocks(roadblocks.id)}
-								><Plus class="h-4 w-4" /> Add to Roadblocks</DropdownMenu.Item
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger
+						onclick={(e) => {
+							e.stopPropagation();
+						}}
+					>
+						<Ellipsis class="h-5 w-5" />
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						<DropdownMenu.Group>
+							{#if ai}
+								<DropdownMenu.Item
+									onclick={(e) => {
+										e.stopPropagation();
+										addToRoadblocks(roadblocks.id);
+									}}><Plus class="h-4 w-4" /> Add to Roadblocks</DropdownMenu.Item
+								>
+							{/if}
+							<DropdownMenu.Item
+								onclick={(e) => {
+									e.stopPropagation();
+									open = true;
+									action = 'Edit';
+								}}
 							>
-						{/if}
-						<DropdownMenu.Item
-							onclick={(e) => {
-								e.stopPropagation();
-								open = true;
-								action = 'Edit';
-							}}
-						>
-							<Edit class="h-4 w-4" />
-							Edit
-						</DropdownMenu.Item>
-						<DropdownMenu.Item
-							onclick={(e) => {
-								e.stopPropagation();
-								open = true;
-								action = 'Delete';
-							}}
-						>
-							<Trash class="h-4 w-4" />
-							Delete
-						</DropdownMenu.Item>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+								<Edit class="h-4 w-4" />
+								Edit
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								onclick={(e) => {
+									e.stopPropagation();
+									open = true;
+									action = 'Delete';
+								}}
+							>
+								<Trash class="h-4 w-4" />
+								Delete
+							</DropdownMenu.Item>
+						</DropdownMenu.Group>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
 			{/if}
 		</div>
 		<div class="text-sm text-muted-foreground">
@@ -171,4 +176,5 @@
 	deleteRns={deleteRoadblocks}
 	{members}
 	{assignedMember}
+	{closeDialog}
 />

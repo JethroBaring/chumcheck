@@ -140,7 +140,7 @@ export const actions: Actions = {
 				});
 
 				if (capsule_info.ok) {
-					redirect(302, '/user?toast=true');
+					redirect(302, '/startups?success=true');
 				}
 			}
 		}

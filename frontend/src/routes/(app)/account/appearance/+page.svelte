@@ -64,10 +64,10 @@
 				</div>
 				<span class="block w-full p-2 text-center font-normal"> Dark </span>
 			</Label>
-			<RadioGroup.Input name="theme" />
+			<!-- <RadioGroup.Input name="theme" /> -->
 		</RadioGroup.Root>
 	</Card.Content>
 	<Card.Footer class="border-t px-6 py-4">
-		<Button size="sm" on:click={updateTheme}>Update</Button>
+		<Button size="sm" onclick={updateTheme}>Update</Button>
 	</Card.Footer>
 </Card.Root>
