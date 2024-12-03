@@ -20,7 +20,7 @@
 		readiness_level_id: '',
 		startup_id: startupId,
 		rna: '',
-		is_ai_generated: false,
+		is_ai_generated: false
 	});
 
 	$effect(() => {
@@ -29,7 +29,7 @@
 				readiness_level_id: '',
 				startup_id: startupId,
 				rna: '',
-				is_ai_generated: false,
+				is_ai_generated: false
 			};
 		}
 	});
@@ -47,7 +47,7 @@
 					<Select.Trigger class="w-[180px]">
 						{data.readiness_level_id
 							? readinessData.filter(
-									(d) => d.readiness_level_id === Number(data.readiness_level_id)
+									(d: any) => d.readiness_level_id === Number(data.readiness_level_id)
 								)[0].readiness_type
 							: ''}
 					</Select.Trigger>
@@ -69,14 +69,17 @@
 				<Select.Trigger class="w-[50px]"
 					>{data.readiness_level_id
 						? readinessData.filter(
-								(d) => d.readiness_level_id === Number(data.readiness_level_id)
+								(d: any) => d.readiness_level_id === Number(data.readiness_level_id)
 							)[0].readiness_level
 						: ''}</Select.Trigger
 				>
 			</Select.Root>
 		</div>
 		<Dialog.Footer>
-			<Button onclick={() => create(data)}>Create</Button>
+			<Button
+				onclick={() => create(data)}
+				disabled={data.readiness_level_id === '' || data.rna === ''}>Create</Button
+			>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

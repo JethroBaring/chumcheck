@@ -114,7 +114,9 @@
 								rnsCopy.assignee_id
 							);
 							closeDialog()
-						}}>Update</Button
+						}}
+						disabled={rnsCopy.description === ''}
+						>Update</Button
 					>
 				</Dialog.Footer>
 			{/if}

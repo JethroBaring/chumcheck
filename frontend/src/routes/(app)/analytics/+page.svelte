@@ -61,7 +61,11 @@
 		{@render fallback()}
 	{/if}
 </div>
-
+<svelte:head>
+	<title
+		>ChumCheck - Analytics</title
+	>
+</svelte:head>
 {#snippet loading()}
 	<div class="grid h-[175px] grid-cols-4 gap-3">
 		{#each [1, 2, 3, 4] as column}

@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Delete, Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
+	import { Delete, Edit, Ellipsis, Plus, Trash, User } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { RoadblocksCreateDialog, RoadblocksViewEditDialog } from '.';
 	import type { Actions } from '$lib/types';
@@ -121,7 +121,7 @@
 				</div>
 			{:else}
 				<div class={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${zIndex[1]}`}>
-					?
+					<User class="h-4 w-4"/>
 				</div>
 			{/if}
 			<!-- <DropdownMenu.Root>

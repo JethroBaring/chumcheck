@@ -51,7 +51,9 @@
 						onclick={async () => {
 							await update(rnsCopy.id, rnsCopy.rna);
 							open = false;
-						}}>Update</Button
+						}}
+						disabled={rnsCopy.rna === ''}
+						>Update</Button
 					>
 				</Dialog.Footer>
 			{/if}

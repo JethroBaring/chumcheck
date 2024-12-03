@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
+	import { Edit, Ellipsis, Plus, Trash, User } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { InitiativeViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
@@ -23,8 +23,8 @@
 	console.log(initiative);
 
 	const closeDialog = () => {
-		open = false
-	}
+		open = false;
+	};
 </script>
 
 <Card.Root
@@ -138,7 +138,9 @@
 					{assignedMember.first_name.charAt(0)}
 				</div>
 			{:else}
-				<div class={`flex h-8 w-8 items-center justify-center rounded-full ${zIndex[1]}`}>?</div>
+				<div class={`bg-muted flex h-8 w-8 items-center justify-center rounded-full ${zIndex[1]}`}>
+					<User class="h-4 w-4" />
+				</div>
 			{/if}
 			<!-- <DropdownMenu.Root>
 				<DropdownMenu.Trigger>

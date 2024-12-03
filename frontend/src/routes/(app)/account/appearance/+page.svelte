@@ -11,7 +11,11 @@
 		setMode(selectedMode)
 	}
 </script>
-
+<svelte:head>
+	<title
+		>Account - Appearance</title
+	>
+</svelte:head>
 <Card.Root>
 	<Card.Header>
 		<Card.Title>Profile</Card.Title>

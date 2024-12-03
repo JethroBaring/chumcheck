@@ -44,10 +44,6 @@
 			queryKey: ['startupData'],
 			queryFn: () => getData(`/startups/${startupId}`, access!)
 		},
-		{
-			queryKey: ['startupData'],
-			queryFn: () => getData(`/startups/${startupId}`, access!)
-		}
 	]);
 
 	const { isLoading, isError } = $derived(useQueriesState($roadblocksQueries));
@@ -62,17 +58,17 @@
 	const readiness = $state(getReadiness());
 
 	const members = $derived(
-		$roadblocksQueries[3].isSuccess
+		$roadblocksQueries[2].isSuccess
 			? [
-					...$roadblocksQueries[3].data.members.map(({ id, ...rest }) => ({
+					...$roadblocksQueries[2].data.members.map(({ id, ...rest }) => ({
 						...rest
 					})),
 					{
-						user_id: $roadblocksQueries[3].data.user_id,
-						startup_id: $roadblocksQueries[3].data.id,
-						first_name: $roadblocksQueries[3].data.leader_first_name,
-						last_name: $roadblocksQueries[3].data.leader_last_name,
-						email: $roadblocksQueries[3].data.leader_email
+						user_id: $roadblocksQueries[2].data.user_id,
+						startup_id: $roadblocksQueries[2].data.id,
+						first_name: $roadblocksQueries[2].data.leader_first_name,
+						last_name: $roadblocksQueries[2].data.leader_last_name,
+						email: $roadblocksQueries[2].data.leader_email
 					}
 				]
 			: []
@@ -222,7 +218,13 @@
 		status = newStatus
 	}
 </script>
-
+<svelte:head>
+	<title
+		>{$roadblocksQueries[2].isSuccess
+			? `${$roadblocksQueries[2].data.name} - Roadblocks`
+			: 'Loading'}</title
+	>
+</svelte:head>
 {#if isLoading}
 	{@render loading()}
 {:else if isError}
@@ -288,7 +290,7 @@
 		</div>
 	{:else}
 		<div class="grid w-full grid-cols-4 gap-5 overflow-scroll">
-			{#each $roadblocksQueries[1].data.results.filter((data) => data.is_ai_generated === true) as r, index}
+			{#each $roadblocksQueries[1].data.results.filter((data: any) => data.is_ai_generated === true) as r, index}
 				<RoadblocksCard
 					roadblocks={r}
 					update={editRoadblock}

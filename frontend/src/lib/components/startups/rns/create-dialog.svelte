@@ -4,7 +4,13 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Badge } from '$lib/components/ui/badge';
-	import { getProfileColor, getReadinessLevels, getReadinessTypes, getStatusName, zIndex } from '$lib/utils';
+	import {
+		getProfileColor,
+		getReadinessLevels,
+		getReadinessTypes,
+		getStatusName,
+		zIndex
+	} from '$lib/utils';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
@@ -40,7 +46,6 @@
 	$effect(() => {
 		console.log(levels);
 	});
-
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>
@@ -108,7 +113,11 @@
 			</Select.Root>
 		</div>
 		<Dialog.Footer>
-			<Button onclick={() => create(data)}>Create</Button>
+			<Button
+				onclick={() => create(data)}
+				disabled={data.target_level_id === '' || data.description === '' ? true : false}
+				>Create</Button
+			>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

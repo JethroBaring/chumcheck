@@ -18,7 +18,7 @@
 			</button>
 		</div>
 	</Card.Header>
-	<Card.Content class="flex h-[730px] flex-col gap-3 overflow-scroll">
+	<Card.Content class="flex h-[700px] flex-col gap-3 overflow-scroll">
 		{@render children()}
 	</Card.Content>
 </Card.Root>

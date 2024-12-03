@@ -347,7 +347,11 @@
 		}
 	}
 </script>
-
+<svelte:head>
+	<title
+		>ChumCheck - Applications</title
+	>
+</svelte:head>
 {#if $queries[0].isLoading || $queries[1].isLoading || $queries[2].isLoading}
 	<div>Fetching...</div>
 {:else}

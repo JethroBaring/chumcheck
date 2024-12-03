@@ -6,7 +6,11 @@
 	import type { PageData } from './$types';
 	export let data: PageData
 </script>
-
+<svelte:head>
+	<title
+		>Account - Profile</title
+	>
+</svelte:head>
 <Card.Root>
 	<Card.Header>
 		<Card.Title>Profile</Card.Title>
