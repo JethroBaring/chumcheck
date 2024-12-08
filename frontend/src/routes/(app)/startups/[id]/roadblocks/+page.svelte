@@ -27,6 +27,7 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { RoadblocksCard, RoadblocksCreateDialog } from '$lib/components/startups/roadblocks';
+	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -122,11 +123,15 @@
 
 	const createRoadblocks = async (payload: any) => {
 		console.log(payload);
-		await axiosInstance.post('/tasks/roadblocks/', {...payload, status}, {
-			headers: {
-				Authorization: `Bearer ${data.access}`
+		await axiosInstance.post(
+			'/tasks/roadblocks/',
+			{ ...payload, status },
+			{
+				headers: {
+					Authorization: `Bearer ${data.access}`
+				}
 			}
-		});
+		);
 		toast.success('Successfully created the Roadblocks');
 		open = false;
 		$roadblocksQueries[1].refetch();
@@ -216,11 +221,11 @@
 		open = !open;
 	};
 
-	let status = $state(4)
+	let status = $state(4);
 
 	const updateStatus = (newStatus: number) => {
-		status = newStatus
-	}
+		status = newStatus;
+	};
 </script>
 
 {#if isLoading}
@@ -233,7 +238,14 @@
 	{@render fallback()}
 {/if}
 
-<RoadblocksCreateDialog {open} {onOpenChange} {members} {startupId} create={createRoadblocks} {status}/>
+<RoadblocksCreateDialog
+	{open}
+	{onOpenChange}
+	{members}
+	{startupId}
+	create={createRoadblocks}
+	{status}
+/>
 
 {#snippet card(roadblocks: any)}
 	<RoadblocksCard
@@ -248,7 +260,47 @@
 {/snippet}
 
 {#snippet loading()}
-	loading
+	<div class="flex h-full flex-col gap-3">
+		<div class="flex justify-between">
+			<div class="flex gap-3">
+				<div class="bg-background" class:hidden={data.role === 'Startup'}>
+					<Skeleton class="h-9 w-[126px]" />
+				</div>
+				<div class="bg-background">
+					<Skeleton class="h-9 w-[170px]" />
+				</div>
+				<div class="flex">
+					{#each [1, 2] as item, index}
+						<Skeleton
+							class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
+								index !== 2 - 1 ? '-mr-1' : ''
+							} `}
+						>
+							?
+						</Skeleton>
+					{/each}
+				</div>
+			</div>
+			<div class="ml-auto bg-background">
+				<Skeleton class="h-9 w-[90px]" />
+			</div>
+		</div>
+
+		<div class="grid h-full grid-cols-4 gap-5">
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-full" />
+			</div>
+		</div>
+	</div>
 {/snippet}
 
 {#snippet error()}
@@ -284,7 +336,15 @@
 	</div>
 	{#if selectedTab === 'roadblocks'}
 		<div class="flex h-full gap-5 overflow-scroll">
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role} {updateStatus}/>
+			<KanbanBoard
+				{columns}
+				{handleDndFinalize}
+				{handleDndConsider}
+				{card}
+				{showDialog}
+				role={data.role}
+				{updateStatus}
+			/>
 		</div>
 	{:else}
 		<div class="grid w-full grid-cols-4 gap-5 overflow-scroll">

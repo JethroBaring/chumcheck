@@ -30,6 +30,7 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { RnsCard, RnsCreateDialog } from '$lib/components/startups/rns/index.js';
 	import { Ellipsis } from 'lucide-svelte';
+	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -173,7 +174,7 @@
 		assignee_id?: number,
 		task_type?: number
 	) => {
-		console.log({id, level, description, priority_number, assignee_id})
+		console.log({ id, level, description, priority_number, assignee_id });
 		const payload: Record<string, any> = {};
 		if (level !== undefined) payload.target_level_id = level;
 		if (description !== undefined) payload.description = description;
@@ -259,7 +260,6 @@
 			selectedMembers.push(member);
 		}
 	};
-
 </script>
 
 {#if isLoading}
@@ -289,7 +289,49 @@
 	<title>Techwave Solution - RNS</title>
 </svelte:head>
 
-{#snippet loading()}{/snippet}
+{#snippet loading()}
+	<div class="flex h-full flex-col gap-3">
+		<div class="flex justify-between">
+			<div class="flex gap-3">
+				<div class="bg-background" class:hidden={data.role === 'Startup'}>
+					<Skeleton class="h-9 w-[126px]" />
+				</div>
+				<div class="bg-background">
+					<Skeleton class="h-9 w-[170px]" />
+				</div>
+				<div class="flex">
+					{#each [1, 2] as item, index}
+						<Skeleton
+							class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
+								index !== 2 - 1 ? '-mr-1' : ''
+							} `}
+						>
+							?
+						</Skeleton>
+					{/each}
+				</div>
+			</div>
+			<div class="ml-auto bg-background">
+				<Skeleton class="h-9 w-[90px]" />
+			</div>
+		</div>
+
+		<div class="grid h-full grid-cols-4 gap-5">
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-full" />
+			</div>
+		</div>
+	</div>
+{/snippet}
 
 {#snippet error()}{/snippet}
 
@@ -297,7 +339,7 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
 				</div>
 			</Can>

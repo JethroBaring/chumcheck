@@ -91,7 +91,7 @@
 						}
 					}
 				)
-			);
+			);1
 
 			try {
 				await axios.all(requests);

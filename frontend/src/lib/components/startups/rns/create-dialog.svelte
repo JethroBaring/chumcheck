@@ -46,7 +46,7 @@
 <Dialog.Root bind:open {onOpenChange}>
 	<Dialog.Content class="max-w-[600px]">
 		<Dialog.Header>
-			<Dialog.Title>Create {getStatusName(status)} Rns {status}</Dialog.Title>
+			<Dialog.Title>Create {getStatusName(status)} Rns</Dialog.Title>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">
 			<div class="flex flex-col gap-4">

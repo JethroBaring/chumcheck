@@ -43,7 +43,7 @@
 					{member.first_name.charAt(0)}
 				</Tooltip.Trigger>
 				<Tooltip.Content side="bottom">
-					<p>{member.first_name}</p>
+					<p>{member.first_name} {member.last_name}</p>
 				</Tooltip.Content>
 			</Tooltip.Root>
 		</Tooltip.Provider>

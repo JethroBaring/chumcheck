@@ -19,6 +19,7 @@
 	import { toast } from 'svelte-sonner';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -156,7 +157,13 @@
 		}
 	});
 
-	const readinessData = $derived($rnaQueries[2].isSuccess ? $rnaQueries[2].data.results.slice(-6).sort((a, b) => a.readiness_type.localeCompare(b.readiness_type)) : [])
+	const readinessData = $derived(
+		$rnaQueries[2].isSuccess
+			? $rnaQueries[2].data.results
+					.slice(-6)
+					.sort((a, b) => a.readiness_type.localeCompare(b.readiness_type))
+			: []
+	);
 </script>
 
 <svelte:head>
@@ -177,9 +184,32 @@
 	{@render fallback()}
 {/if}
 
-<RnaCreateDialog {open} {onOpenChange} create={createRna} {startupId} {readinessData}/>
+<RnaCreateDialog {open} {onOpenChange} create={createRna} {startupId} {readinessData} />
 
-{#snippet loading()}{/snippet}
+{#snippet loading()}
+	<div class="flex h-full flex-col gap-3">
+		<div class="flex justify-between">
+			<div class="bg-background" class:hidden={data.role === 'Startup'}>
+				<Skeleton class="h-9 w-[127px]" />
+			</div>
+			<div class="ml-auto bg-background">
+				<Skeleton class="h-9 w-[82px]" />
+			</div>
+		</div>
+
+		<div class="grid h-full grid-cols-4 gap-5">
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-[180px]" />
+			</div>
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-[180px]" />
+			</div>
+			<div class="h-full w-full bg-background">
+				<Skeleton class="h-[180px]" />
+			</div>
+		</div>
+	</div>
+{/snippet}
 
 {#snippet error()}{/snippet}
 
@@ -187,7 +217,7 @@
 	<div class="flex items-center justify-between">
 		<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
 			<div class="flex gap-3">
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<AITabs {selectedTab} name="rna" updateTab={updateRnaTab} />
 				</div>
 			</div>

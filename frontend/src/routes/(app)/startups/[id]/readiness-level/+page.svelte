@@ -9,6 +9,7 @@
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Chart from '$lib/components/ui/chart/index.js';
 	import { Can, RadarChart } from '$lib/components/shared/index.js';
+	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 
 	const { data } = $props();
 	const { access, startupId, role } = data;
@@ -191,7 +192,16 @@
 </div>
 
 {#snippet loading()}
-	hellow
+	<div class="flex h-full flex-col gap-3">
+		{#if role !== 'Startup'}
+			<div class="bg-background">
+				<Skeleton class="h-9 w-[147px]"/>
+			</div>
+		{/if}
+		<div class="bg-background h-full w-full">
+			<Skeleton class="h-full w-full"/>
+		</div>
+	</div>
 {/snippet}
 
 {#snippet error()}

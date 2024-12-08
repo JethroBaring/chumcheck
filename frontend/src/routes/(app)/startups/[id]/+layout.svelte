@@ -22,7 +22,7 @@
 			</Breadcrumb.Item>
 			<Breadcrumb.Separator />
 			<Breadcrumb.Item>
-				<Breadcrumb.Page>{info.name}</Breadcrumb.Page>
+				<Breadcrumb.Page>{$startupQuery.isLoading ? 'Loading...' : info.name}</Breadcrumb.Page>
 			</Breadcrumb.Item>
 			<Breadcrumb.Separator />
 			<Breadcrumb.Item>
@@ -32,7 +32,7 @@
 	</Breadcrumb.Root>
 	<div class="flex items-center justify-between">
 		<div>
-			<h2 class="text-3xl font-bold">{info.name}</h2>
+			<h2 class="text-3xl font-bold">{$startupQuery.isLoading ? 'Loading...' : info.name}</h2>
 		</div>
 	</div>
   {@render children()}

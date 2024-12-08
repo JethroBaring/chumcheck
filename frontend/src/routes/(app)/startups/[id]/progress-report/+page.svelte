@@ -2,7 +2,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Card from '$lib/components/ui/card';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { RocketIcon } from 'lucide-svelte';
+	import { Download, RocketIcon } from 'lucide-svelte';
 	import { StartupCard } from '$lib/components/startups';
 	import { Can, RadarChart } from '$lib/components/shared';
 	import { useQuery } from '@sveltestack/svelte-query';
@@ -30,12 +30,14 @@
 		try {
 			// Select all the pages to capture
 			const pages = document.querySelectorAll('.pdf-page');
-
+			const tables = document.querySelectorAll('.pdf-table');
 			if (pages.length === 0) {
 				alert('No pages found!');
 				return;
 			}
-
+			tables.forEach((page) => {
+				page.style.backgroundColor = 'red';
+			});
 			// Create a new PDF document
 			const pdfDoc = await PDFDocument.create();
 
@@ -89,23 +91,21 @@
 </script>
 
 <div class="flex">
-	<Button class="ml-auto" onclick={downloadMultiPagePDF}>Download</Button>
+	<Button class="ml-auto" onclick={downloadMultiPagePDF}
+		><Download class="h-4 w-4" /> Download PDF</Button
+	>
 </div>
 
-{#snippet readiness()}{/snippet}
-
-{#snippet rna()}{/snippet}
-
-{#snippet rns()}{/snippet}
-
-{#snippet roadblocks()}{/snippet}
-
 {#if $queryResult.isLoading}
-	<!-- content here -->
+	<div class="flex h-full flex-col gap-3">
+		<div class="h-full w-full bg-background">
+			<Skeleton class="h-full w-full" />
+		</div>
+	</div>
 {:else}
 	<div class="h-full overflow-scroll">
-		<Card.Root class="pdf-page h-full">
-			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
+		<Card.Root class="pdf-page h-full border-none bg-white">
+			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10 text-black">
 				<div class="w-full text-center text-3xl font-bold">ChumCheck Progress Report</div>
 				<div class="mt-10 flex flex-col gap-2">
 					<p>I. Readiness Levels</p>
@@ -121,14 +121,14 @@
 				</div>
 			</Card.Content>
 		</Card.Root>
-		<Card.Root class="pdf-page mt-3 h-full">
-			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
+		<Card.Root class="pdf-page mt-3 h-full bg-white">
+			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10 text-black">
 				<div class="mt-10 flex flex-col gap-2">
 					<p>II. RNA Result Summary(Based on Readiness and Needs Assessment)</p>
 					<div class="rounded-md border">
-						<Table.Root class="rounded-lg bg-background">
+						<Table.Root class="pdf-table rounded-lg">
 							<Table.Header>
-								<Table.Row class="text-centery h-12">
+								<Table.Row class="h-12 text-center">
 									<Table.Head class="pl-5">Readiness Type</Table.Head>
 									<Table.Head>Current Level</Table.Head>
 									<Table.Head>Details</Table.Head>
@@ -158,7 +158,7 @@
 						<div class="rounded-md border">
 							<Table.Root class="rounded-lg bg-background">
 								<Table.Header>
-									<Table.Row class="text-centery h-12">
+									<Table.Row class="h-12 text-center">
 										<Table.Head class="pl-5">Priority Number</Table.Head>
 										<Table.Head>Readiness Type</Table.Head>
 										<Table.Head>Target Level</Table.Head>
@@ -201,14 +201,14 @@
 				</div>
 			</Card.Content>
 		</Card.Root>
-		<Card.Root class="pdf-page mt-3 h-full">
-			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
+		<Card.Root class="pdf-page mt-3 h-full bg-white">
+			<Card.Content class="mt-1 flex w-full flex-col gap-5 bg-white px-10">
 				<div class="mt-10 flex flex-col gap-2">
 					<p>IV. RISKS AND ROADBLOCKS - SHORT TERM AND LONG TERM</p>
 					<div class="rounded-md border">
 						<Table.Root class="rounded-lg bg-background">
 							<Table.Header>
-								<Table.Row class="text-centery h-12">
+								<Table.Row class="h-12 text-center">
 									<Table.Head class="pl-5">Readiness Type</Table.Head>
 									<Table.Head>Current Level</Table.Head>
 									<Table.Head>Details</Table.Head>
