@@ -91,9 +91,9 @@
 		generatingInitiatives = true;
 		let ids = $initiativesQueries[1].data.results
 			.filter(
-				(data) => data.readiness_type_rl_type.slice(0, 1) === type && data.is_ai_generated === false
+				(data: any) => data.readiness_type_rl_type.slice(0, 1) === type && data.is_ai_generated === false
 			)
-			.map((d) => d.id);
+			.map((d: any) => d.id);
 
 		console.log(ids);
 		ids = [1];
@@ -209,7 +209,7 @@
 	async function handleDndFinalize(e: any, x: number, status: number) {
 		columns[x].items = e.detail.items;
 		if (e.detail.info.trigger == 'droppedIntoZone') {
-			const task = e.detail.items.find((t) => t.id == e.detail.info.id);
+			const task = e.detail.items.find((t: any) => t.id == e.detail.info.id);
 			await axiosInstance.patch(
 				`/tasks/initiatives/${task.id}/`,
 				{
@@ -228,7 +228,7 @@
 		if (!isLoading) {
 			columns.forEach((column) => {
 				column.items = $initiativesQueries[2].data.results.filter(
-					(data) => data.is_ai_generated === false && data.status === column.value
+					(data: any) => data.is_ai_generated === false && data.status === column.value
 				);
 			});
 		}
@@ -251,7 +251,13 @@
 		status = newStatus
 	}
 </script>
-
+<svelte:head>
+	<title
+		>{$initiativesQueries[3].isSuccess
+			? `${$initiativesQueries[3].data.name} - Initiatives`
+			: 'Loading'}</title
+	>
+</svelte:head>
 {#if isLoading}
 	{@render loading()}
 {:else if isError}
@@ -324,7 +330,7 @@
 				</div>
 			</Can>
 			{#if selectedTab === 'initiatives'}
-				<MembersFilter {members} updateTab={updateInitiativeTab} updateMembers={() => {}}/>
+				<MembersFilter {members} updateTab={updateInitiativeTab} />
 			{/if}
 		</div>
 		<ShowHideColumns {views} />

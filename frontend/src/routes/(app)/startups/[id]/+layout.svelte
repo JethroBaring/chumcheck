@@ -1,20 +1,33 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
 	import { getData } from '$lib/utils';
 	import { useQuery } from '@sveltestack/svelte-query';
 
-	const { children, data } = $props()
-	const { access, startupId } = data
+	const { children, data } = $props();
+	const { access, startupId } = data;
 
-	const startupQuery = useQuery(
-		'startupData',
-		() => getData(`/startups/${startupId}`, access!)
-	);
+	const startupQuery = useQuery('startupData', () => getData(`/startups/${startupId}`, access!));
 
-	const info: any = $derived($startupQuery.isSuccess ? $startupQuery.data : {})
+	const info: any = $derived($startupQuery.isSuccess ? $startupQuery.data : {});
+
+	type m = 'readiness-level' | 'progress-report' | 'rns' | 'rna' | 'initiatives' | 'roadblocks';
+
+	const getModule = (module: m) => {
+		const modules = {
+			'readiness-level': 'Readiness Level',
+			'progress-report': 'Progress Report',
+			rns: 'Recommended Next Steps',
+			rna: 'Readiness and Needs Assessment',
+			initiatives: 'Initiatives',
+			roadblocks: 'Roadblocks'
+		};
+
+		return modules[module];
+	};
 </script>
 
-<div class="flex flex-col gap-3 h-full">
+<div class="flex flex-1 flex-col gap-3">
 	<Breadcrumb.Root>
 		<Breadcrumb.List>
 			<Breadcrumb.Item>
@@ -26,7 +39,9 @@
 			</Breadcrumb.Item>
 			<Breadcrumb.Separator />
 			<Breadcrumb.Item>
-				<Breadcrumb.Page>Initiatives</Breadcrumb.Page>
+				<Breadcrumb.Page
+					>{getModule($page.url.pathname.split('/').slice(-1)[0] as m)}</Breadcrumb.Page
+				>
 			</Breadcrumb.Item>
 		</Breadcrumb.List>
 	</Breadcrumb.Root>
@@ -35,5 +50,5 @@
 			<h2 class="text-3xl font-bold">{$startupQuery.isLoading ? 'Loading...' : info.name}</h2>
 		</div>
 	</div>
-  {@render children()}
+	{@render children()}
 </div>

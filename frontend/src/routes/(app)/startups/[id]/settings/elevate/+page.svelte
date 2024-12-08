@@ -114,7 +114,11 @@
 		return levels.filter((level: any) => Number(level.id) === Number(id))[0].level
 	}
 </script>
-
+<svelte:head>
+	<title
+		>Settings - Elevate</title
+	>
+</svelte:head>
 <div class="flex flex-col gap-5">
 	<h1 class="text-xl font-semibold">Elevate</h1>
 	<div class="flex items-center justify-between">

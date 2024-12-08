@@ -36,7 +36,7 @@
 
 		if (success === 'true') {
 			console.log('Success is true');
-			toast('Application successfuly.')
+			toast.success('Application successfull.')
 			// Remove the 'success' parameter from the URL
 			const url = new URL($page.url.href);
 			url.searchParams.delete('success');
@@ -66,7 +66,11 @@
 {:else if hasStartups}
 	{@render startups()}
 {:else}{/if}
-
+<svelte:head>
+	<title
+		>ChumCheck - Startups</title
+	>
+</svelte:head>
 {#snippet loading()}
 	<div class="mt-3 grid grid-cols-4 gap-3">
 		<Skeleton class="h-40 rounded-lg" />

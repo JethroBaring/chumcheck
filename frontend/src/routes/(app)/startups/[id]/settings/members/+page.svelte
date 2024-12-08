@@ -31,7 +31,11 @@
 		console.log($queryResult.data);
 	}
 </script>
-
+<svelte:head>
+	<title
+		>Settings - Members</title
+	>
+</svelte:head>
 <div class="flex flex-col gap-5">
 	<h1 class="text-xl font-semibold">Members</h1>
 	<div class="w-2/3 rounded-md border">

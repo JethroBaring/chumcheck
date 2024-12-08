@@ -6,7 +6,11 @@
   let currentPassword = ""
   let newPassword = ""
 </script>
-
+<svelte:head>
+	<title
+		>Account - Password</title
+	>
+</svelte:head>
 <Card.Root>
 	<Card.Header>
 		<Card.Title>Change Password</Card.Title>

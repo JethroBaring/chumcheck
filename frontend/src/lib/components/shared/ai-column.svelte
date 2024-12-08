@@ -13,7 +13,7 @@
 			</button>
 		</div>
 	</Card.Header>
-	<Card.Content class="flex flex-col gap-3">
+	<Card.Content class="flex h-[700px] flex-col gap-3 overflow-scroll">
 		{@render children()}
 	</Card.Content>
 </Card.Root>

@@ -30,7 +30,11 @@
     console.log($queryResult.data)
   }
 </script>
-
+<svelte:head>
+	<title
+		>Settings - General</title
+	>
+</svelte:head>
 <div class="flex flex-col gap-5">
 	<h1 class="text-xl font-semibold">General</h1>
 	<div class="grid w-2/3 grid-cols-1 gap-5">

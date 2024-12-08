@@ -272,6 +272,14 @@
 	{@render fallback()}
 {/if}
 
+<svelte:head>
+	<title
+		>{$rnsQueries[3].isSuccess
+			? `${$rnsQueries[3].data.name} - Recommended Next Steps`
+			: 'Loading'}</title
+	>
+</svelte:head>
+
 <RnsCreateDialog {open} {onOpenChange} create={createRns} {startupId} {members} {status} />
 {#snippet card(rns: any, ai = false)}
 	<RnsCard
@@ -284,10 +292,6 @@
 		role={data.role}
 	/>
 {/snippet}
-
-<svelte:head>
-	<title>Techwave Solution - RNS</title>
-</svelte:head>
 
 {#snippet loading()}
 	<div class="flex h-full flex-col gap-3">

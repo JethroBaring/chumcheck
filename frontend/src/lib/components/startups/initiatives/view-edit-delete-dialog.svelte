@@ -98,7 +98,9 @@
 							)
 							closeDialog()
 						}
-						}>Update</Button
+						}
+						disabled={rnsCopy.description === '' || rnsCopy.measures === '' || rnsCopy.targets === '' || rnsCopy.remarks === ''}
+						>Update</Button
 					>
 				</Dialog.Footer>
 			{/if}

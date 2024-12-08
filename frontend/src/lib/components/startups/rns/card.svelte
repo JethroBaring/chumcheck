@@ -2,7 +2,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { Edit, Ellipsis, Plus, Trash } from 'lucide-svelte';
+	import { Edit, Ellipsis, Plus, Trash, User } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { RnsViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
@@ -22,6 +22,8 @@
 	const closeDialog = () => {
 		open = false
 	}
+
+	console.log(rns)
 </script>
 
 <Card.Root
@@ -81,7 +83,7 @@
 			{rns.description.substring(0, 150) + `${rns.description.length > 150 ? '...' : ''}`}
 		</div>
 		<div class="text-sm text-muted-foreground">
-			Target Level: <Badge variant="secondary">5</Badge>
+			Target Level: <Badge variant="secondary">{rns.target_level_level}</Badge>
 
 			<!-- <DropdownMenu.Root>
 				<DropdownMenu.Trigger
@@ -123,7 +125,7 @@
 				</div>
 			{:else}
 				<div class={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${zIndex[1]}`}>
-					?
+					<User class="h-4 w-4"/>
 				</div>
 			{/if}
 			<!-- <DropdownMenu.Root>
