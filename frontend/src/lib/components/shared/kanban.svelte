@@ -58,8 +58,8 @@
 					{:else}
 						{#each column.items as item (item.id)}
 							<div animate:flip={{ duration: flipDurationMs }}>
-								{#if selectedMembers.length !== 0}
-								{@render card(item)}
+								{#if selectedMembers.includes(item.assignee_id)}
+									{@render card(item)}
 								{/if}
 							</div>
 						{/each}

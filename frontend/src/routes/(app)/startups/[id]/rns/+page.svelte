@@ -65,7 +65,7 @@
 	const columns = $state(getColumns());
 	const readiness = $state(getReadiness());
 
-	const members = $derived(
+	const members = $state(
 		$rnsQueries[3].isSuccess
 			? [
 					...$rnsQueries[3].data.members.map(({ id, ...rest }) => ({
@@ -82,7 +82,7 @@
 				]
 			: []
 	);
-
+	const selectedMembers = $derived(members ? members.map((member) => member.user_id) : [])
 	const views = $derived(selectedTab === 'rns' ? columns : readiness);
 
 	$effect(() => {
@@ -251,15 +251,13 @@
 		status = newStatus;
 	};
 
-	let selectedMembers: any = $state([]);
-
-	const toggleMemberSelection = (member: number) => {
-		if (selectedMembers.includes(member)) {
-			selectedMembers = selectedMembers.filter((m: number) => m !== member);
-		} else {
-			selectedMembers.push(member);
-		}
+	const toggleMemberSelection = (index: number) => {
+		members[index].selected = !members[index].selected
 	};
+
+	$effect(() => {
+		console.log(members)
+	})
 </script>
 
 {#if isLoading}
@@ -348,7 +346,7 @@
 				</div>
 			</Can>
 			{#if selectedTab === 'rns'}
-				<MembersFilter {members} updateTab={updateRnsTab} {toggleMemberSelection} />
+				<MembersFilter {members} {toggleMemberSelection} />
 			{/if}
 		</div>
 		<ShowHideColumns {views} />

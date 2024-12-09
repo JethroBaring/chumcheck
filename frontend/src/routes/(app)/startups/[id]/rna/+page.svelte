@@ -192,19 +192,19 @@
 			<div class="bg-background" class:hidden={data.role === 'Startup'}>
 				<Skeleton class="h-9 w-[127px]" />
 			</div>
-			<div class="ml-auto bg-background">
+			<div class="bg-background ml-auto">
 				<Skeleton class="h-9 w-[82px]" />
 			</div>
 		</div>
 
 		<div class="grid h-full grid-cols-4 gap-5">
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-[180px]" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-[180px]" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-[180px]" />
 			</div>
 		</div>
@@ -217,7 +217,7 @@
 	<div class="flex items-center justify-between">
 		<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
 			<div class="flex gap-3">
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<AITabs {selectedTab} name="rna" updateTab={updateRnaTab} />
 				</div>
 			</div>
@@ -227,7 +227,7 @@
 				<Button onclick={generateRNA} disabled={generatingRNA}
 					><Sparkles class="h-4 w-4" />Generate</Button
 				>
-			{:else}
+			{:else if data.role !== 'Startup'}
 				<Button onclick={() => (open = true)}><Plus class="h-4 w-4" />Add</Button>
 			{/if}
 		</div>

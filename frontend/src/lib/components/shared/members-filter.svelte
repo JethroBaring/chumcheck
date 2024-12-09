@@ -4,21 +4,17 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { Kanban, Table, SlidersHorizontal } from 'lucide-svelte';
 
-	let { members, updateTab, toggleMemberSelection } = $props();
+	let { members = $bindable(), toggleMemberSelection } = $props();
 </script>
 
 <div class="bg-background flex h-fit justify-between rounded-lg">
 	<Tabs.Root value="rns">
 		<Tabs.List class="bg-flutter-gray/20 border">
-			<Tabs.Trigger class="flex items-center gap-1" value="rns" onclick={() => updateTab('rns')}>
+			<Tabs.Trigger class="flex items-center gap-1" value="rns">
 				<Kanban class="h-4 w-4" />
 				Board</Tabs.Trigger
 			>
-			<Tabs.Trigger
-				class="flex items-center gap-1"
-				value="ai-rns"
-				onclick={() => updateTab('ai-rns')}
-			>
+			<Tabs.Trigger class="flex items-center gap-1" value="ai-rns">
 				<Table class="h-4 w-4" />
 				Table</Tabs.Trigger
 			>
@@ -36,8 +32,7 @@
 						index !== members.length - 1 ? '-mr-1' : ''
 					} ${zIndex[index]} ${getProfileColor(member.first_name)}`}
 					onclick={() => {
-            console.log("test")
-						toggleMemberSelection(member.user_id);
+						toggleMemberSelection(index);
 					}}
 				>
 					{member.first_name.charAt(0)}
