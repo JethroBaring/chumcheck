@@ -23,6 +23,10 @@ class TaskBaseSerializer(serializers.ModelSerializer):
     )
     is_ai_generated = serializers.BooleanField()
     status = serializers.IntegerField()
+    term = serializers.ChoiceField(
+        choices=tasks_models.Task.TaskType.choices,
+        help_text="1 is for Short Term and 2 is for Long Term",
+    )
     assignee_id = serializers.PrimaryKeyRelatedField(
         source="assignee",
         queryset=users_models.BaseUser.objects,
