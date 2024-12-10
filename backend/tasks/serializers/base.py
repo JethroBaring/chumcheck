@@ -52,6 +52,7 @@ class TaskBaseSerializer(serializers.ModelSerializer):
             "target_level_level",
             "is_ai_generated",
             "assignee_id",
+            "term"
         ]
 
 
