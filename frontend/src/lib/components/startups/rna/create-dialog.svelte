@@ -36,7 +36,7 @@
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>
-	<Dialog.Content class="max-w-[600px]">
+	<Dialog.Content class="max-w-[600px]  h-4/5 overflow-scroll">
 		<Dialog.Header>
 			<Dialog.Title>Create Rna</Dialog.Title>
 		</Dialog.Header>

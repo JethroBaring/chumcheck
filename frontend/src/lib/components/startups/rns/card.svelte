@@ -96,7 +96,7 @@
 		</div>
 		<div class="flex items-center justify-between">
 			<div class="flex flex-wrap items-center gap-2">
-				<Badge variant="secondary">{rns.type === 1 ? 'Short' : 'Long'} Term</Badge>
+				<Badge variant="secondary">{rns.task_type === 1 ? 'Short' : 'Long'} Term</Badge>
 			</div>
 			{#if assignedMember}
 				<div

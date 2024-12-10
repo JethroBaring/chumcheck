@@ -23,7 +23,6 @@ class TaskBaseSerializer(serializers.ModelSerializer):
     )
     is_ai_generated = serializers.BooleanField()
     status = serializers.IntegerField()
-    task_type = serializers.ChoiceField(choices=tasks_models.TaskStatus.choices)
     assignee_id = serializers.PrimaryKeyRelatedField(
         source="assignee",
         queryset=users_models.BaseUser.objects,

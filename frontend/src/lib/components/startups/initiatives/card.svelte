@@ -173,4 +173,5 @@
 	{members}
 	{assignedMember}
 	{closeDialog}
+	{tasks}
 />

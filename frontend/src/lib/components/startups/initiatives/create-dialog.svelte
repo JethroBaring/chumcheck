@@ -33,7 +33,7 @@
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>
-	<Dialog.Content class="max-w-[600px]">
+	<Dialog.Content class="max-w-[600px] h-4/5 overflow-scroll">
 		<Dialog.Header>
 			<Dialog.Title>Create {getStatusName(status)} Roadblock</Dialog.Title>
 		</Dialog.Header>
@@ -41,7 +41,7 @@
 			<div class="flex flex-col gap-4">
 				<Label for="name">Task</Label>
 				<Select.Root type="single" bind:value={data.task_id}>
-					<Select.Trigger class="">hello</Select.Trigger>
+					<Select.Trigger class="h-20 text-wrap text-start">{data.task_id ? tasks.filter((task: any) => task.id == data.task_id)[0].description.substring(0, 100) : ''}</Select.Trigger>
 					<Select.Content>
 						{#each tasks as task}
 							<Select.Item value={`${task.id}`}>{task.description.substring(0, 90)}</Select.Item>

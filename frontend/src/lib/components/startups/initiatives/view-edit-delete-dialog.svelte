@@ -7,7 +7,7 @@
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { DeleteDialog } from '$lib/components/shared';
 
-	let { open, onOpenChange, rns, deleteRns, update, action, members, assignedMember, closeDialog } = $props();
+	let { open, onOpenChange, rns, deleteRns, update, action, members, assignedMember, closeDialog, tasks } = $props();
 
 	let rnsCopy = $state({ ...rns });
 
@@ -27,16 +27,18 @@
 			<div class="grid gap-4 py-4">
 				<div class="flex flex-col gap-4">
 					<Label for="name">Task</Label>
-					<!-- <Select.Root type="single" bind:value={data.task_id}>
-					<Select.Trigger class=""
-						>hello</Select.Trigger
+					<Select.Root type="single" bind:value={rnsCopy.task_id}>
+					<Select.Trigger class="h-20 text-wrap text-start"
+						>
+						{tasks.filter((task: any) => task.id == rnsCopy.task_id)[0].description.substring(0, 100)}
+						</Select.Trigger
 					>
 					<Select.Content>
 						{#each tasks as task}
-							<Select.Item value={`${task.id}`}>{task.description.substring(0,90)}</Select.Item>
+							<Select.Item class="" value={`${task.id}`}>{task.description.substring(0,90)}</Select.Item>
 						{/each}
 					</Select.Content>
-				</Select.Root> -->
+				</Select.Root>
 				</div>
 				<div class="flex flex-col gap-4">
 					<Label for="username">Description</Label>
