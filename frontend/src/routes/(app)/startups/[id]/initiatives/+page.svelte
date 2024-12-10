@@ -250,6 +250,19 @@
 	const updateStatus = (newStatus: number) => {
 		status = newStatus
 	}
+
+	const selectedMembers: any = $state([]);
+
+	const toggleMemberSelection = (index: number) => {
+		const userId = members[index].user_id;
+		const userIndex = selectedMembers.indexOf(userId);
+
+		if (userIndex !== -1) {
+			selectedMembers.splice(userIndex, 1);
+		} else {
+			selectedMembers.push(userId);
+		}
+	};
 </script>
 <svelte:head>
 	<title
@@ -330,18 +343,18 @@
 				</div>
 			</Can>
 			{#if selectedTab === 'initiatives'}
-				<MembersFilter {members} updateTab={updateInitiativeTab} />
+				<MembersFilter {members} {toggleMemberSelection} {selectedMembers}/>
 			{/if}
 		</div>
 		<ShowHideColumns {views} />
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'initiatives'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role} {updateStatus}/>
+			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role} {updateStatus} {selectedMembers}/>
 		{:else}
 			{#each readiness as readiness}
 				{#if readiness.show}
-					<AIColumn name={readiness.name} generate={generateInitiatives}>
+					<AIColumn name={readiness.name} generate={generateInitiatives} role={data.role}>
 						{#each $initiativesQueries[2].data.results.filter((data) => data.is_ai_generated === true) as item}
 							{@const ids = $initiativesQueries[1].data.results
 								.filter(

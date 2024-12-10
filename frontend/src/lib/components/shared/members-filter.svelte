@@ -4,7 +4,12 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { Kanban, Table, SlidersHorizontal } from 'lucide-svelte';
 
-	let { members = $bindable(), toggleMemberSelection } = $props();
+	let { members = $bindable(), toggleMemberSelection, selectedMembers } = $props();
+
+	$effect(() => {
+		console.log("here")
+		$inspect(members)
+	})
 </script>
 
 <div class="bg-background flex h-fit justify-between rounded-lg">
@@ -27,7 +32,7 @@
 			<Tooltip.Root>
 				<Tooltip.Trigger
 					class={`border-2 ${
-						member.selected ? 'ring-flutter-blue ring-2' : ''
+						selectedMembers.includes(member.user_id) ? 'ring-flutter-blue ring-2' : ''
 					} border-background flex h-9 w-9 items-center justify-center rounded-full ${
 						index !== members.length - 1 ? '-mr-1' : ''
 					} ${zIndex[index]} ${getProfileColor(member.first_name)}`}

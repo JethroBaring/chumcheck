@@ -89,6 +89,7 @@
 		}
 	});
 </script>
+
 <svelte:head>
 	<title
 		>{$queryResult.isSuccess
@@ -110,25 +111,25 @@
 	</div>
 {:else}
 	<div class="h-full overflow-scroll">
-		<Card.Root class="pdf-page h-full border-none bg-white">
-			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10 text-black">
+		<Card.Root class="pdf-page h-full">
+			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
 				<div class="w-full text-center text-3xl font-bold">ChumCheck Progress Report</div>
 				<div class="mt-10 flex flex-col gap-2">
 					<p>I. Readiness Levels</p>
 					<div class="flex items-center justify-center">
-						<RadarChart
+						<!-- <RadarChart
 							id={1231231}
 							min={1}
 							max={9}
 							data={[1, 2, 3, 4, 5, 6]}
 							labels={[1, 2, 3, 4, 5, 6]}
-						/>
+						/> -->
 					</div>
 				</div>
 			</Card.Content>
 		</Card.Root>
-		<Card.Root class="pdf-page mt-3 h-full bg-white">
-			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10 text-black">
+		<Card.Root class="pdf-page mt-3 h-full ">
+			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
 				<div class="mt-10 flex flex-col gap-2">
 					<p>II. RNA Result Summary(Based on Readiness and Needs Assessment)</p>
 					<div class="rounded-md border">
@@ -207,8 +208,8 @@
 				</div>
 			</Card.Content>
 		</Card.Root>
-		<Card.Root class="pdf-page mt-3 h-full bg-white">
-			<Card.Content class="mt-1 flex w-full flex-col gap-5 bg-white px-10">
+		<Card.Root class="pdf-page mt-3 h-full ">
+			<Card.Content class="mt-1 flex w-full flex-col gap-5  px-10">
 				<div class="mt-10 flex flex-col gap-2">
 					<p>IV. RISKS AND ROADBLOCKS - SHORT TERM AND LONG TERM</p>
 					<div class="rounded-md border">

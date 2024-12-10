@@ -45,8 +45,8 @@
 						<div class="h-40"></div>
 					{:else}
 						{#each column.items as item (item.id)}
-							<div animate:flip={{ duration: flipDurationMs }}>
-								{@render card(item)}
+							<div animate:flip={{ duration: flipDurationMs }} class:hidden={!selectedMembers.includes(item.assignee_id) && selectedMembers.length !== 0}>
+									{@render card(item)}
 							</div>
 						{/each}
 					{/if}
@@ -57,10 +57,8 @@
 						<div class="h-40"></div>
 					{:else}
 						{#each column.items as item (item.id)}
-							<div animate:flip={{ duration: flipDurationMs }}>
-								{#if selectedMembers.includes(item.assignee_id)}
+							<div animate:flip={{ duration: flipDurationMs }} class:hidden={!selectedMembers.includes(item.assignee_id) && selectedMembers.length !== 0}>
 									{@render card(item)}
-								{/if}
 							</div>
 						{/each}
 					{/if}

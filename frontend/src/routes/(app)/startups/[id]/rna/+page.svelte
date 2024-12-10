@@ -188,23 +188,25 @@
 
 {#snippet loading()}
 	<div class="flex h-full flex-col gap-3">
-		<div class="flex justify-between">
-			<div class="bg-background" class:hidden={data.role === 'Startup'}>
-				<Skeleton class="h-9 w-[127px]" />
+		{#if data.role !== 'Startup'}
+			<div class="flex justify-between">
+				<div class="bg-background">
+					<Skeleton class="h-9 w-[127px]" />
+				</div>
+				<div class="ml-auto bg-background">
+					<Skeleton class="h-9 w-[82px]" />
+				</div>
 			</div>
-			<div class="bg-background ml-auto">
-				<Skeleton class="h-9 w-[82px]" />
-			</div>
-		</div>
+		{/if}
 
 		<div class="grid h-full grid-cols-4 gap-5">
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-[180px]" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-[180px]" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-[180px]" />
 			</div>
 		</div>
@@ -217,7 +219,7 @@
 	<div class="flex items-center justify-between">
 		<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
 			<div class="flex gap-3">
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<AITabs {selectedTab} name="rna" updateTab={updateRnaTab} />
 				</div>
 			</div>

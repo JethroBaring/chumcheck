@@ -27,7 +27,7 @@
 	};
 </script>
 
-<div class="flex flex-1 flex-col gap-3">
+<div class="max-h-full flex flex-1 flex-col gap-3">
 	<Breadcrumb.Root>
 		<Breadcrumb.List>
 			<Breadcrumb.Item>

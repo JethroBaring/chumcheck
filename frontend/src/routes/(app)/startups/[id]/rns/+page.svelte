@@ -65,7 +65,7 @@
 	const columns = $state(getColumns());
 	const readiness = $state(getReadiness());
 
-	const members = $state(
+	const members = $derived(
 		$rnsQueries[3].isSuccess
 			? [
 					...$rnsQueries[3].data.members.map(({ id, ...rest }) => ({
@@ -82,7 +82,7 @@
 				]
 			: []
 	);
-	const selectedMembers = $derived(members ? members.map((member) => member.user_id) : [])
+
 	const views = $derived(selectedTab === 'rns' ? columns : readiness);
 
 	$effect(() => {
@@ -250,14 +250,23 @@
 	const updateStatus = (newStatus: number) => {
 		status = newStatus;
 	};
+	const selectedMembers: any = $state([]);
 
 	const toggleMemberSelection = (index: number) => {
-		members[index].selected = !members[index].selected
+		const userId = members[index].user_id;
+		const userIndex = selectedMembers.indexOf(userId);
+
+		if (userIndex !== -1) {
+			selectedMembers.splice(userIndex, 1);
+		} else {
+			selectedMembers.push(userId);
+		}
 	};
 
 	$effect(() => {
-		console.log(members)
-	})
+		$inspect(members);
+		$inspect(selectedMembers);
+	});
 </script>
 
 {#if isLoading}
@@ -346,7 +355,7 @@
 				</div>
 			</Can>
 			{#if selectedTab === 'rns'}
-				<MembersFilter {members} {toggleMemberSelection} />
+				<MembersFilter {members} {toggleMemberSelection} {selectedMembers}/>
 			{/if}
 		</div>
 		<ShowHideColumns {views} />
@@ -365,7 +374,7 @@
 			/>
 		{:else}
 			{#each readiness as readiness}
-				<AIColumn name={readiness.name} generate={generateRNS}>
+				<AIColumn name={readiness.name} generate={generateRNS} role={data.role}>
 					{#each $rnsQueries[1].data.results.filter((data) => data.readiness_type_rl_type === readiness.name && data.is_ai_generated === true) as item}
 						{@render card(item, true)}
 					{/each}

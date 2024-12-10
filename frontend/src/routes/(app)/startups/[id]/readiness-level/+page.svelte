@@ -270,8 +270,7 @@
 					<Card.Title>Radar Chart - Grid Circle</Card.Title>
 					<Card.Description>Showing total visitors for the last 6 months</Card.Description>
 				</Card.Header>
-				<Card.Content class="flex items-center justify-center h-full">
-						<div>
+				<Card.Content class="flex items-center justify-center">
 							<RadarChart
 							id={Number(startupId)}
 							min={1}
@@ -293,7 +292,6 @@
 								'Investment'
 							]}
 						/>
-						</div>
 						<!-- <RadarChart trl={readiness.technology} mrl={readiness.market} irl={readiness.investment} arl={readiness.acceptance} orl={readiness.organizational} rrl={readiness.regulatory}/> -->
 				</Card.Content>
 				<!-- <Card.Footer class="flex-col gap-2 text-sm">

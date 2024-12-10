@@ -24,7 +24,7 @@
 	<DeleteDialog {open} {onOpenChange} {rns} deleteAction={deleteRns} name="Roadblocks" {closeDialog}/>
 {:else}
 	<Dialog.Root bind:open {onOpenChange}>
-		<Dialog.Content class="max-w-[600px]">
+		<Dialog.Content class="max-w-[600px] h-4/5 overflow-scroll">
 			<div class="grid gap-4 py-4">
 				<div class="flex flex-col gap-4">
 					<Label for="username">Description</Label>

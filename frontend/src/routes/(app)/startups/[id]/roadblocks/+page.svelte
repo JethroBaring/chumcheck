@@ -222,6 +222,19 @@
 	const updateStatus = (newStatus: number) => {
 		status = newStatus;
 	};
+
+	const selectedMembers: any = $state([]);
+
+	const toggleMemberSelection = (index: number) => {
+		const userId = members[index].user_id;
+		const userIndex = selectedMembers.indexOf(userId);
+
+		if (userIndex !== -1) {
+			selectedMembers.splice(userIndex, 1);
+		} else {
+			selectedMembers.push(userId);
+		}
+	};
 </script>
 <svelte:head>
 	<title
@@ -318,7 +331,7 @@
 				</div>
 			</Can>
 			{#if selectedTab === 'roadblocks'}
-				<MembersFilter {members} updateTab={updateRoadblocksTab} updateMembers={() => {}} />
+				<MembersFilter {members} {toggleMemberSelection} {selectedMembers}/>
 			{/if}
 		</div>
 		<div class="flex items-center gap-3">
@@ -346,6 +359,7 @@
 				{showDialog}
 				role={data.role}
 				{updateStatus}
+				{selectedMembers}
 			/>
 		</div>
 	{:else}
