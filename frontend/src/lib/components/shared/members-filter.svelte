@@ -1,5 +1,4 @@
 <script lang="ts">
-	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { Kanban, Table, SlidersHorizontal } from 'lucide-svelte';
@@ -12,20 +11,6 @@
 	})
 </script>
 
-<div class="bg-background flex h-fit justify-between rounded-lg">
-	<Tabs.Root value="rns">
-		<Tabs.List class="bg-flutter-gray/20 border">
-			<Tabs.Trigger class="flex items-center gap-1" value="rns">
-				<Kanban class="h-4 w-4" />
-				Board</Tabs.Trigger
-			>
-			<Tabs.Trigger class="flex items-center gap-1" value="ai-rns">
-				<Table class="h-4 w-4" />
-				Table</Tabs.Trigger
-			>
-		</Tabs.List>
-	</Tabs.Root>
-</div>
 <div class="flex items-center">
 	{#each members as member, index}
 		<Tooltip.Provider>

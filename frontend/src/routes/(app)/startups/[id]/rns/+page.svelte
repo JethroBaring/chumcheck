@@ -29,8 +29,10 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { RnsCard, RnsCreateDialog } from '$lib/components/startups/rns/index.js';
-	import { Ellipsis } from 'lucide-svelte';
+	import { Ellipsis, Kanban, TableIcon } from 'lucide-svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import * as Table from '$lib/components/ui/table';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -267,6 +269,8 @@
 		$inspect(members);
 		$inspect(selectedMembers);
 	});
+
+	let selectedFormat = $state('board');
 </script>
 
 {#if isLoading}
@@ -313,7 +317,7 @@
 				<div class="flex">
 					{#each [1, 2] as item, index}
 						<Skeleton
-							class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
+							class={`border-background flex h-9 w-9 items-center justify-center rounded-full border-2 ${
 								index !== 2 - 1 ? '-mr-1' : ''
 							} `}
 						>
@@ -322,22 +326,22 @@
 					{/each}
 				</div>
 			</div>
-			<div class="ml-auto bg-background">
+			<div class="bg-background ml-auto">
 				<Skeleton class="h-9 w-[90px]" />
 			</div>
 		</div>
 
 		<div class="grid h-full grid-cols-4 gap-5">
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
 		</div>
@@ -350,28 +354,89 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
 				</div>
 			</Can>
 			{#if selectedTab === 'rns'}
-				<MembersFilter {members} {toggleMemberSelection} {selectedMembers}/>
+				<div class="bg-background flex h-fit justify-between rounded-lg">
+					<Tabs.Root value={selectedFormat}>
+						<Tabs.List class="bg-flutter-gray/20 border">
+							<Tabs.Trigger
+								class="flex items-center gap-1"
+								value="board"
+								onclick={() => (selectedFormat = 'board')}
+							>
+								<Kanban class="h-4 w-4" />
+								Board</Tabs.Trigger
+							>
+							<Tabs.Trigger
+								class="flex items-center gap-1"
+								value="table"
+								onclick={() => (selectedFormat = 'table')}
+							>
+								<TableIcon class="h-4 w-4" />
+								Table</Tabs.Trigger
+							>
+						</Tabs.List>
+					</Tabs.Root>
+				</div>
+				<MembersFilter {members} {toggleMemberSelection} {selectedMembers} />
 			{/if}
 		</div>
-		<ShowHideColumns {views} />
+		{#if selectedFormat !== 'table'}
+			<ShowHideColumns {views} />
+		{/if}
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'rns'}
-			<KanbanBoard
-				{columns}
-				{handleDndFinalize}
-				{handleDndConsider}
-				{card}
-				{showDialog}
-				role={data.role}
-				{updateStatus}
-				{selectedMembers}
-			/>
+			{#if selectedFormat === 'board'}
+				<KanbanBoard
+					{columns}
+					{handleDndFinalize}
+					{handleDndConsider}
+					{card}
+					{showDialog}
+					role={data.role}
+					{updateStatus}
+					{selectedMembers}
+				/>
+			{:else}
+				<div class="h-fit w-full rounded-md border">
+					<Table.Root class="bg-background rounded-lg">
+						<Table.Header>
+							<Table.Row class="text-centery h-12">
+								<Table.Head class="pl-5">Type</Table.Head>
+								<Table.Head class="">Description</Table.Head>
+								<Table.Head class="">Target Level</Table.Head>
+								<Table.Head class="">Term</Table.Head>
+								<Table.Head class="">Assignee</Table.Head>
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{#each $rnsQueries[1].data.results.filter((data) => data.is_ai_generated === false) as item}
+								{#if selectedMembers.includes(item.assignee_id) || selectedMembers.length === 0}
+									<Table.Row class="h-14 cursor-pointer">
+										<Table.Cell class="pl-5">{item.readiness_type_rl_type}</Table.Cell>
+										<Table.Cell class="">{item.description.substring(0, 100)}</Table.Cell>
+										<Table.Cell class="">{item.target_level_level}</Table.Cell>
+										<Table.Cell class=""
+											><Badge variant="secondary">{item.type === 1 ? 'Short' : 'Long'} Term</Badge
+											></Table.Cell
+										>
+										<Table.Cell class=""
+											>{members.filter((member: any) => member.user_id === item.assignee_id)[0]
+												?.first_name}
+											{members.filter((member: any) => member.user_id === item.assignee_id)[0]
+												?.last_name}</Table.Cell
+										>
+									</Table.Row>
+								{/if}
+							{/each}
+						</Table.Body>
+					</Table.Root>
+				</div>
+			{/if}
 		{:else}
 			{#each readiness as readiness}
 				<AIColumn name={readiness.name} generate={generateRNS} role={data.role}>

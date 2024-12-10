@@ -4,7 +4,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { Download, RocketIcon } from 'lucide-svelte';
 	import { StartupCard } from '$lib/components/startups';
-	import { Can, RadarChart } from '$lib/components/shared';
+	import { Can, RadarChart, RadarChartV2 } from '$lib/components/shared';
 	import { useQuery } from '@sveltestack/svelte-query';
 	import type { Role } from '$lib/types.js';
 	import { getData } from '$lib/utils.js';
@@ -35,9 +35,15 @@
 				alert('No pages found!');
 				return;
 			}
-			tables.forEach((page) => {
-				page.style.backgroundColor = 'red';
-			});
+			// pages.forEach((page) => {
+			// 	page.style.backgroundColor = 'white';
+			// 	page.style.color = 'black'
+			// });
+
+			// tables.forEach((page) => {
+			// 	page.style.backgroundColor = 'white';
+			// 	page.style.color = 'black'
+			// });
 			// Create a new PDF document
 			const pdfDoc = await PDFDocument.create();
 
@@ -76,6 +82,16 @@
 			link.href = URL.createObjectURL(blob);
 			link.download = 'multi-page-document.pdf';
 			link.click();
+
+			// pages.forEach((page) => {
+			// 	page.style.backgroundColor = '#020817';
+			// 	page.style.color = 'white'
+			// });
+
+			// tables.forEach((page) => {
+			// 	page.style.backgroundColor = '#020817';
+			// 	page.style.color = 'white'
+			// });
 		} catch (error) {
 			console.error('Error generating multi-page PDF:', error);
 		}
@@ -117,13 +133,13 @@
 				<div class="mt-10 flex flex-col gap-2">
 					<p>I. Readiness Levels</p>
 					<div class="flex items-center justify-center">
-						<!-- <RadarChart
+						<RadarChartV2
 							id={1231231}
 							min={1}
 							max={9}
 							data={[1, 2, 3, 4, 5, 6]}
 							labels={[1, 2, 3, 4, 5, 6]}
-						/> -->
+						/>
 					</div>
 				</div>
 			</Card.Content>
@@ -163,7 +179,7 @@
 					<p>III. RECOMMENDED NEXT STEPS (RNS) - SHORT TERM</p>
 					{#each $queryResult.data.tasks as rns, index}
 						<div class="rounded-md border">
-							<Table.Root class="rounded-lg bg-background">
+							<Table.Root class="pdf-table rounded-lg">
 								<Table.Header>
 									<Table.Row class="h-12 text-center">
 										<Table.Head class="pl-5">Priority Number</Table.Head>
@@ -213,7 +229,7 @@
 				<div class="mt-10 flex flex-col gap-2">
 					<p>IV. RISKS AND ROADBLOCKS - SHORT TERM AND LONG TERM</p>
 					<div class="rounded-md border">
-						<Table.Root class="rounded-lg bg-background">
+						<Table.Root class="pdf-table rounded-lg">
 							<Table.Header>
 								<Table.Row class="h-12 text-center">
 									<Table.Head class="pl-5">Readiness Type</Table.Head>

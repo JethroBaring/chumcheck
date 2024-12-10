@@ -25,9 +25,11 @@
 	import axios from 'axios';
 	import { toast } from 'svelte-sonner';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Ellipsis } from 'lucide-svelte';
 	import { InitiativeCard, InitiativeCreateDialog } from '$lib/components/startups/initiatives';
+	import { Ellipsis, Kanban, TableIcon } from 'lucide-svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import * as Table from '$lib/components/ui/table';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -91,7 +93,8 @@
 		generatingInitiatives = true;
 		let ids = $initiativesQueries[1].data.results
 			.filter(
-				(data: any) => data.readiness_type_rl_type.slice(0, 1) === type && data.is_ai_generated === false
+				(data: any) =>
+					data.readiness_type_rl_type.slice(0, 1) === type && data.is_ai_generated === false
 			)
 			.map((d: any) => d.id);
 
@@ -143,15 +146,19 @@
 	};
 
 	const createInitiative = async (payload: any) => {
-		console.log(payload)
-		await axiosInstance.post('/tasks/initiatives/', {
-			...payload,
-			status
-		}, {
-			headers: {
-				Authorization: `Bearer ${data.access}`
+		console.log(payload);
+		await axiosInstance.post(
+			'/tasks/initiatives/',
+			{
+				...payload,
+				status
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${data.access}`
+				}
 			}
-		});
+		);
 		toast.success('Successfully created the Initiative');
 		open = false;
 		$initiativesQueries[2].refetch();
@@ -166,24 +173,19 @@
 		initiative_number: number,
 		assignee_id?: number
 	) => {
-
 		const payload: Record<string, any> = {};
-    if (description !== undefined) payload.description = description;
-    if (measures !== undefined) payload.measures = measures;
-    if (targets !== undefined) payload.targets = targets;
-    if (remarks !== undefined) payload.remarks = remarks;
-    if (initiative_number !== undefined) payload.initiative_number = initiative_number;
-    if (assignee_id !== undefined) payload.assignee_id = assignee_id;
-		console.log(payload)
-		await axiosInstance.patch(
-			`/tasks/initiatives/${id}/`,
-			payload,
-			{
-				headers: {
-					Authorization: `Bearer ${data.access}`
-				}
+		if (description !== undefined) payload.description = description;
+		if (measures !== undefined) payload.measures = measures;
+		if (targets !== undefined) payload.targets = targets;
+		if (remarks !== undefined) payload.remarks = remarks;
+		if (initiative_number !== undefined) payload.initiative_number = initiative_number;
+		if (assignee_id !== undefined) payload.assignee_id = assignee_id;
+		console.log(payload);
+		await axiosInstance.patch(`/tasks/initiatives/${id}/`, payload, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
 			}
-		);
+		});
 		toast.success('Successfuly updated Initiatives');
 		$initiativesQueries[1].refetch();
 		open = false;
@@ -236,20 +238,22 @@
 
 	const showDialog = () => {
 		open = true;
-		console.log("test")
+		console.log('test');
 	};
-	
+
 	const onOpenChange = () => {
 		open = !open;
 	};
 
-	const tasks = $derived($initiativesQueries[1].isSuccess ? $initiativesQueries[1].data.results : [])
+	const tasks = $derived(
+		$initiativesQueries[1].isSuccess ? $initiativesQueries[1].data.results : []
+	);
 
-	let status = $state(4)
+	let status = $state(4);
 
 	const updateStatus = (newStatus: number) => {
-		status = newStatus
-	}
+		status = newStatus;
+	};
 
 	const selectedMembers: any = $state([]);
 
@@ -263,7 +267,10 @@
 			selectedMembers.push(userId);
 		}
 	};
+
+	let selectedFormat = $state('board');
 </script>
+
 <svelte:head>
 	<title
 		>{$initiativesQueries[3].isSuccess
@@ -281,54 +288,70 @@
 	{@render fallback()}
 {/if}
 
-<InitiativeCreateDialog {open} {onOpenChange} {members} {startupId} create={createInitiative} {tasks} {status}/>
+<InitiativeCreateDialog
+	{open}
+	{onOpenChange}
+	{members}
+	{startupId}
+	create={createInitiative}
+	{tasks}
+	{status}
+/>
 
 {#snippet card(initiative: any, ai: any = false)}
-	<InitiativeCard {initiative} {ai} {members} update={editInitiative} {deleteInitiative} addToInitiative={addToInitiatives} role={data.role}/>
+	<InitiativeCard
+		{initiative}
+		{ai}
+		{members}
+		update={editInitiative}
+		{deleteInitiative}
+		addToInitiative={addToInitiatives}
+		role={data.role}
+	/>
 {/snippet}
 
 {#snippet loading()}
-<div class="flex h-full flex-col gap-3">
-	<div class="flex justify-between">
-		<div class="flex gap-3">
-			<div class="bg-background" class:hidden={data.role === 'Startup'}>
-				<Skeleton class="h-9 w-[126px]" />
+	<div class="flex h-full flex-col gap-3">
+		<div class="flex justify-between">
+			<div class="flex gap-3">
+				<div class="bg-background" class:hidden={data.role === 'Startup'}>
+					<Skeleton class="h-9 w-[126px]" />
+				</div>
+				<div class="bg-background">
+					<Skeleton class="h-9 w-[170px]" />
+				</div>
+				<div class="flex">
+					{#each [1, 2] as item, index}
+						<Skeleton
+							class={`border-background flex h-9 w-9 items-center justify-center rounded-full border-2 ${
+								index !== 2 - 1 ? '-mr-1' : ''
+							} `}
+						>
+							?
+						</Skeleton>
+					{/each}
+				</div>
 			</div>
-			<div class="bg-background">
-				<Skeleton class="h-9 w-[170px]" />
-			</div>
-			<div class="flex">
-				{#each [1, 2] as item, index}
-					<Skeleton
-						class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
-							index !== 2 - 1 ? '-mr-1' : ''
-						} `}
-					>
-						?
-					</Skeleton>
-				{/each}
+			<div class="bg-background ml-auto">
+				<Skeleton class="h-9 w-[90px]" />
 			</div>
 		</div>
-		<div class="ml-auto bg-background">
-			<Skeleton class="h-9 w-[90px]" />
-		</div>
-	</div>
 
-	<div class="grid h-full grid-cols-4 gap-5">
-		<div class="h-full w-full bg-background">
-			<Skeleton class="h-full" />
-		</div>
-		<div class="h-full w-full bg-background">
-			<Skeleton class="h-full" />
-		</div>
-		<div class="h-full w-full bg-background">
-			<Skeleton class="h-full" />
-		</div>
-		<div class="h-full w-full bg-background">
-			<Skeleton class="h-full" />
+		<div class="grid h-full grid-cols-4 gap-5">
+			<div class="bg-background h-full w-full">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="bg-background h-full w-full">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="bg-background h-full w-full">
+				<Skeleton class="h-full" />
+			</div>
+			<div class="bg-background h-full w-full">
+				<Skeleton class="h-full" />
+			</div>
 		</div>
 	</div>
-</div>
 {/snippet}
 
 {#snippet error()}{/snippet}
@@ -336,21 +359,92 @@
 {#snippet accessible()}
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
-
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<AITabs {selectedTab} name="initiatives" updateTab={updateInitiativeTab} />
 				</div>
 			</Can>
 			{#if selectedTab === 'initiatives'}
-				<MembersFilter {members} {toggleMemberSelection} {selectedMembers}/>
+				<div class="bg-background flex h-fit justify-between rounded-lg">
+					<Tabs.Root value={selectedFormat}>
+						<Tabs.List class="bg-flutter-gray/20 border">
+							<Tabs.Trigger
+								class="flex items-center gap-1"
+								value="board"
+								onclick={() => (selectedFormat = 'board')}
+							>
+								<Kanban class="h-4 w-4" />
+								Board</Tabs.Trigger
+							>
+							<Tabs.Trigger
+								class="flex items-center gap-1"
+								value="table"
+								onclick={() => (selectedFormat = 'table')}
+							>
+								<TableIcon class="h-4 w-4" />
+								Table</Tabs.Trigger
+							>
+						</Tabs.List>
+					</Tabs.Root>
+				</div>
+				<MembersFilter {members} {toggleMemberSelection} {selectedMembers} />
 			{/if}
 		</div>
-		<ShowHideColumns {views} />
+		{#if selectedFormat === 'board'}
+			<ShowHideColumns {views} />
+		{/if}
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'initiatives'}
-			<KanbanBoard {columns} {handleDndFinalize} {handleDndConsider} {card} {showDialog} role={data.role} {updateStatus} {selectedMembers}/>
+			{#if selectedFormat === 'board'}
+				<KanbanBoard
+					{columns}
+					{handleDndFinalize}
+					{handleDndConsider}
+					{card}
+					{showDialog}
+					role={data.role}
+					{updateStatus}
+					{selectedMembers}
+				/>
+			{:else}
+				<div class="h-fit w-full rounded-md border">
+					<Table.Root class="bg-background rounded-lg">
+						<Table.Header>
+							<Table.Row class="text-centery h-12">
+								<Table.Head class="pl-5">Description</Table.Head>
+								<Table.Head class="">Priority No.</Table.Head>
+								<Table.Head class="">Initiative No.</Table.Head>
+								<Table.Head class="">Term</Table.Head>
+								<Table.Head class="">Assignee</Table.Head>
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{#each $initiativesQueries[2].data.results.filter((data) => data.is_ai_generated === false) as item}
+								{#if selectedMembers.includes(item.assignee_id) || selectedMembers.length === 0}
+									<Table.Row class="h-14 cursor-pointer">
+										<!-- <Table.Cell class="pl-5">{item.readiness_type_rl_type}</Table.Cell> -->
+										<Table.Cell class="pl-5">{item.description.substring(0, 100)}</Table.Cell>
+										<Table.Cell class="">5</Table.Cell>
+										<Table.Cell class="">5</Table.Cell>
+										<Table.Cell class=""
+											><Badge variant="secondary"
+												>{item.task_type === 1 ? 'Short' : 'Long'} Term</Badge
+											></Table.Cell
+										>
+										<Table.Cell class="">
+											{members.filter((member: any) => member.user_id === item.assignee_id)[0]
+												?.first_name}
+											{members.filter((member: any) => member.user_id === item.assignee_id)[0]
+												?.last_name}
+										</Table.Cell>
+									</Table.Row>
+								{/if}
+							{/each}
+						</Table.Body>
+					</Table.Root>
+				</div>
+			{/if}
 		{:else}
 			{#each readiness as readiness}
 				{#if readiness.show}
@@ -369,7 +463,7 @@
 									data.id === item.task_id
 							)[0]}
 							{#if ids.includes(item.task_id)}
-							{@render card(item, true)}
+								{@render card(item, true)}
 								<!-- <Card.Root class="min-h-[150px]">
 									<Card.Content class="flex h-full flex-col justify-between">
 										<div class="flex flex-col gap-1">

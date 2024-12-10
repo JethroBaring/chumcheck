@@ -22,12 +22,14 @@
 	import { page } from '$app/stores';
 	import axiosInstance from '$lib/axios.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Ellipsis, Sparkles } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { RoadblocksCard, RoadblocksCreateDialog } from '$lib/components/startups/roadblocks';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
+	import { Ellipsis, Kanban, Sparkles, TableIcon } from 'lucide-svelte';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import * as Table from '$lib/components/ui/table';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -44,7 +46,7 @@
 		{
 			queryKey: ['startupData'],
 			queryFn: () => getData(`/startups/${startupId}`, access!)
-		},
+		}
 	]);
 
 	const { isLoading, isError } = $derived(useQueriesState($roadblocksQueries));
@@ -235,7 +237,10 @@
 			selectedMembers.push(userId);
 		}
 	};
+
+	let selectedFormat = $state('board');
 </script>
+
 <svelte:head>
 	<title
 		>{$roadblocksQueries[2].isSuccess
@@ -287,7 +292,7 @@
 				<div class="flex">
 					{#each [1, 2] as item, index}
 						<Skeleton
-							class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
+							class={`border-background flex h-9 w-9 items-center justify-center rounded-full border-2 ${
 								index !== 2 - 1 ? '-mr-1' : ''
 							} `}
 						>
@@ -296,22 +301,22 @@
 					{/each}
 				</div>
 			</div>
-			<div class="ml-auto bg-background">
+			<div class="bg-background ml-auto">
 				<Skeleton class="h-9 w-[90px]" />
 			</div>
 		</div>
 
 		<div class="grid h-full grid-cols-4 gap-5">
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
 		</div>
@@ -326,12 +331,34 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<AITabs {selectedTab} name="roadblocks" updateTab={updateRoadblocksTab} />
 				</div>
 			</Can>
 			{#if selectedTab === 'roadblocks'}
-				<MembersFilter {members} {toggleMemberSelection} {selectedMembers}/>
+			<div class="bg-background flex h-fit justify-between rounded-lg">
+				<Tabs.Root value={selectedFormat}>
+					<Tabs.List class="bg-flutter-gray/20 border">
+						<Tabs.Trigger
+							class="flex items-center gap-1"
+							value="board"
+							onclick={() => (selectedFormat = 'board')}
+						>
+							<Kanban class="h-4 w-4" />
+							Board</Tabs.Trigger
+						>
+						<Tabs.Trigger
+							class="flex items-center gap-1"
+							value="table"
+							onclick={() => (selectedFormat = 'table')}
+						>
+							<TableIcon class="h-4 w-4" />
+							Table</Tabs.Trigger
+						>
+					</Tabs.List>
+				</Tabs.Root>
+			</div>
+				<MembersFilter {members} {toggleMemberSelection} {selectedMembers} />
 			{/if}
 		</div>
 		<div class="flex items-center gap-3">
@@ -350,18 +377,48 @@
 		</div>
 	</div>
 	{#if selectedTab === 'roadblocks'}
-		<div class="flex h-full gap-5 overflow-scroll">
-			<KanbanBoard
-				{columns}
-				{handleDndFinalize}
-				{handleDndConsider}
-				{card}
-				{showDialog}
-				role={data.role}
-				{updateStatus}
-				{selectedMembers}
-			/>
-		</div>
+		{#if selectedFormat === 'board'}
+			<div class="flex h-full gap-5 overflow-scroll">
+				<KanbanBoard
+					{columns}
+					{handleDndFinalize}
+					{handleDndConsider}
+					{card}
+					{showDialog}
+					role={data.role}
+					{updateStatus}
+					{selectedMembers}
+				/>
+			</div>
+		{:else}
+			<div class="h-fit w-full rounded-md border">
+				<Table.Root class="bg-background rounded-lg">
+					<Table.Header>
+						<Table.Row class="text-centery h-12">
+							<Table.Head class="pl-5">Description</Table.Head>
+							<Table.Head class="">Risk Number</Table.Head>
+							<Table.Head class="">Assignee</Table.Head>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each $roadblocksQueries[1].data.results.filter((data) => data.is_ai_generated === false) as item}
+							{#if selectedMembers.includes(item.assignee_id) || selectedMembers.length === 0}
+							<Table.Row class="h-14 cursor-pointer">
+								<Table.Cell class="pl-5">{item.description.substring(0, 100)}</Table.Cell>
+								<Table.Cell class="">{item.target_level_level}</Table.Cell>
+								<Table.Cell class=""
+									>{members.filter((member: any) => member.user_id === item.assignee_id)[0]
+										?.first_name}
+									{members.filter((member: any) => member.user_id === item.assignee_id)[0]
+										?.last_name}</Table.Cell
+								>
+							</Table.Row>
+							{/if}
+						{/each}
+					</Table.Body>
+				</Table.Root>
+			</div>
+		{/if}
 	{:else}
 		<div class="grid w-full grid-cols-4 gap-5 overflow-scroll">
 			{#each $roadblocksQueries[1].data.results.filter((data: any) => data.is_ai_generated === true) as r, index}

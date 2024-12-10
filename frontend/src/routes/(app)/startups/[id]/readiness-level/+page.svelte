@@ -8,7 +8,7 @@
 	import Rubric from '$lib/components/startups/readiness/rubric.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import * as Chart from '$lib/components/ui/chart/index.js';
-	import { Can, RadarChart } from '$lib/components/shared/index.js';
+	import { Can, RadarChart, RadarChartV2 } from '$lib/components/shared/index.js';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 
 	const { data } = $props();
@@ -267,11 +267,10 @@
 		{#if selectedTab === 'chart'}
 			<Card.Root class="h-full">
 				<Card.Header class="items-center">
-					<Card.Title>Radar Chart - Grid Circle</Card.Title>
-					<Card.Description>Showing total visitors for the last 6 months</Card.Description>
+					<Card.Title>Readiness Level - Radar Chart</Card.Title>
 				</Card.Header>
 				<Card.Content class="flex items-center justify-center">
-							<RadarChart
+							<RadarChartV2
 							id={Number(startupId)}
 							min={1}
 							max={9}
