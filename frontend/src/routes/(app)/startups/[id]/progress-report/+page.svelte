@@ -16,7 +16,7 @@
 
 	let { data } = $props();
 
-	const queryResult = useQuery('startupData', () =>
+	const queryResult = useQuery('startupDataProgressReport', () =>
 		getData(`/startups/${data.startupId}/progress-report`, data.access!)
 	);
 
@@ -80,7 +80,7 @@
 			const blob = new Blob([pdfBytes], { type: 'application/pdf' });
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
-			link.download = 'multi-page-document.pdf';
+			link.download = `${$queryResult.data.name} - Progress Report.pdf`;
 			link.click();
 
 			// pages.forEach((page) => {
@@ -100,10 +100,14 @@
 	let divRef: HTMLDivElement;
 
 	$effect(() => {
-		if (divRef) {
-			console.log(divRef.clientHeight);
+		if ($queryResult.isSuccess) {
+			console.log($queryResult.data.tasks);
 		}
 	});
+
+	let titleState = $state(false);
+
+	const titleIndex = $derived($queryResult.isSuccess ? $queryResult.data.tasks.sort((a, b) => a.priority_number - b.priority_number).findIndex((task) => task.initiatives && task.initiatives.length > 0) : 0)
 </script>
 
 <svelte:head>
@@ -121,7 +125,7 @@
 
 {#if $queryResult.isLoading}
 	<div class="flex h-full flex-col gap-3">
-		<div class="h-full w-full bg-background">
+		<div class="bg-background h-full w-full">
 			<Skeleton class="h-full w-full" />
 		</div>
 	</div>
@@ -129,17 +133,33 @@
 	<div class="h-full overflow-scroll">
 		<Card.Root class="pdf-page h-full">
 			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
-				<div class="w-full text-center text-3xl font-bold">ChumCheck Progress Report</div>
-				<div class="mt-10 flex flex-col gap-2">
+				<div class="w-full text-center text-3xl font-bold">{$queryResult.data.name} - Progress Report</div>
+				<div class="flex flex-col gap-2">
 					<p>I. Readiness Levels</p>
 					<div class="flex items-center justify-center">
-						<RadarChartV2
-							id={1231231}
-							min={1}
-							max={9}
-							data={[1, 2, 3, 4, 5, 6]}
-							labels={[1, 2, 3, 4, 5, 6]}
-						/>
+						{#if $queryResult.data.readiness_levels}
+							<RadarChartV2
+								id={1231231}
+								min={1}
+								max={9}
+								data={[
+									$queryResult.data.readiness_levels[0].level,
+									$queryResult.data.readiness_levels[1].level,
+									$queryResult.data.readiness_levels[2].level,
+									$queryResult.data.readiness_levels[3].level,
+									$queryResult.data.readiness_levels[4].level,
+									$queryResult.data.readiness_levels[5].level
+								]}
+								labels={[
+									'Technology',
+									'Market',
+									'Acceptance',
+									'Organizational',
+									'Regulatory',
+									'Investment'
+								]}
+							/>
+						{/if}
 					</div>
 				</div>
 			</Card.Content>
@@ -154,7 +174,7 @@
 								<Table.Row class="h-12 text-center">
 									<Table.Head class="pl-5">Readiness Type</Table.Head>
 									<Table.Head>Current Level</Table.Head>
-									<Table.Head>Details</Table.Head>
+									<Table.Head class="pr-5">Details</Table.Head>
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
@@ -163,7 +183,7 @@
 										<Table.Row class="h-14 cursor-pointer">
 											<Table.Cell class="w-48 pl-5">{rna.readiness_type_rl_type}</Table.Cell>
 											<Table.Cell class="w-40">{rna.readiness_level_level}</Table.Cell>
-											<Table.Cell>{rna.rna}</Table.Cell>
+											<Table.Cell class="pr-5">{rna.rna}</Table.Cell>
 										</Table.Row>
 									{/if}
 								{/each}
@@ -177,30 +197,32 @@
 			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
 				<div class="mt-10 flex flex-col gap-2">
 					<p>III. RECOMMENDED NEXT STEPS (RNS) - SHORT TERM</p>
-					{#each $queryResult.data.tasks as rns, index}
-						<div class="rounded-md border">
-							<Table.Root class="pdf-table rounded-lg">
-								<Table.Header>
-									<Table.Row class="h-12 text-center">
-										<Table.Head class="pl-5">Priority Number</Table.Head>
-										<Table.Head>Readiness Type</Table.Head>
-										<Table.Head>Target Level</Table.Head>
-										<Table.Head>Description</Table.Head>
-										<Table.Head>Status</Table.Head>
-									</Table.Row>
-								</Table.Header>
-								<Table.Body>
+					<div class="rounded-md border">
+						<Table.Root class="pdf-table rounded-lg">
+							<Table.Header>
+								<Table.Row class="h-12 text-center">
+									<Table.Head class="pl-5">Priority Number</Table.Head>
+									<Table.Head>Readiness Type</Table.Head>
+									<Table.Head>Target Level</Table.Head>
+									<Table.Head>Description</Table.Head>
+									<Table.Head class="pr-5">Status</Table.Head>
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{#each $queryResult.data.tasks as rns, index}
 									<Table.Row class="h-14 cursor-pointer">
 										<Table.Cell class="w-48 pl-5">{rns.priority_number}</Table.Cell>
 										<Table.Cell class="w-40">{rns.readiness_type_rl_type}</Table.Cell>
-										<Table.Cell>{rns.target_level}</Table.Cell>
+										<Table.Cell>{rns.target_level_level}</Table.Cell>
 										<Table.Cell>{rns.description}</Table.Cell>
-										<Table.Cell>{rns.status}</Table.Cell>
+										<Table.Cell class="pr-5">{rns.status}</Table.Cell>
 									</Table.Row>
-								</Table.Body>
-							</Table.Root>
-						</div>
-						<!-- <div class="rounded-md border">
+								{/each}
+							</Table.Body>
+						</Table.Root>
+					</div>
+
+					<!-- <div class="rounded-md border">
 						<Table.Root class="rounded-lg bg-background">
 							<Table.Header>
 								<Table.Row class="text-centery h-12">
@@ -220,10 +242,48 @@
 							</Table.Body>
 						</Table.Root>
 					</div> -->
-					{/each}
 				</div>
 			</Card.Content>
 		</Card.Root>
+
+		{#each $queryResult.data.tasks.sort((a, b) => a.priority_number - b.priority_number) as item, index}
+			{#if item.initiatives.length !== 0}
+				<Card.Root class="pdf-page mt-3 h-full">
+					<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
+						<div class="mt-10 flex flex-col gap-2">
+							{#if titleIndex === index}
+								<p>III. PRIORITIES</p>
+							{/if}
+							<p>PRIORITY {item.priority_number}</p>
+							<div class="rounded-md border">
+								<Table.Root class="pdf-table rounded-lg">
+									<Table.Header>
+										<Table.Row class="h-12 text-center">
+											<Table.Head class="pl-5">Initiative Number</Table.Head>
+											<Table.Head>Description</Table.Head>
+											<Table.Head>Measures</Table.Head>
+											<Table.Head>Targets</Table.Head>
+											<Table.Head class="pr-5">Status</Table.Head>
+										</Table.Row>
+									</Table.Header>
+									<Table.Body>
+										{#each item.initiatives.filter((initiative: any) => initiative.is_ai_generated === false) as rns, index}
+											<Table.Row class="h-14 cursor-pointer">
+												<Table.Cell class="w-48 pl-5">{rns.initiative_number}</Table.Cell>
+												<Table.Cell class="w-40">{rns.description.substring(0, 100)}</Table.Cell>
+												<Table.Cell>{rns.measures}</Table.Cell>
+												<Table.Cell>{rns.targets}</Table.Cell>
+												<Table.Cell class="pr-5">{rns.status}</Table.Cell>
+											</Table.Row>
+										{/each}
+									</Table.Body>
+								</Table.Root>
+							</div>
+						</div>
+					</Card.Content>
+				</Card.Root>
+			{/if}
+		{/each}
 		<Card.Root class="pdf-page mt-3 h-full ">
 			<Card.Content class="mt-1 flex w-full flex-col gap-5  px-10">
 				<div class="mt-10 flex flex-col gap-2">
@@ -232,9 +292,10 @@
 						<Table.Root class="pdf-table rounded-lg">
 							<Table.Header>
 								<Table.Row class="h-12 text-center">
-									<Table.Head class="pl-5">Readiness Type</Table.Head>
-									<Table.Head>Current Level</Table.Head>
-									<Table.Head>Details</Table.Head>
+									<Table.Head class="pl-5">Risk Number</Table.Head>
+									<Table.Head>Description</Table.Head>
+									<Table.Head>Fix/Mitigation</Table.Head>
+									<Table.Head class="pr-5">Assignee</Table.Head>
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
@@ -244,7 +305,7 @@
 											<Table.Cell class="w-40 pl-5">{roadblock.risk_number}</Table.Cell>
 											<Table.Cell class="">{roadblock.description}</Table.Cell>
 											<Table.Cell>{roadblock.fix}</Table.Cell>
-											<Table.Cell>{roadblock.assignee_last_name}</Table.Cell>
+											<Table.Cell class="pr-5">{roadblock.assignee_last_name}</Table.Cell>
 										</Table.Row>
 									{/if}
 								{/each}

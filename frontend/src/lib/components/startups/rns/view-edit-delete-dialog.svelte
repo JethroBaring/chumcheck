@@ -78,6 +78,19 @@
 				</Select.Root>
 			</div>
 			<div class="flex flex-col gap-4">
+				<Label for="name">Priority Number</Label>
+				<Select.Root type="single" bind:value={rnsCopy.priority_number}>
+					<Select.Trigger class="w-[50px]" disabled={action === 'View'}
+						>{rnsCopy?.priority_number}</Select.Trigger
+					>
+					<Select.Content>
+						{#each [1,2,3,4,5] as item}
+							<Select.Item value={`${item}`}>{item}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</div>
+			<div class="flex flex-col gap-4">
 				<Label for="name">Target Level</Label>
 				<Select.Root type="single" bind:value={rnsCopy.target_level_id}>
 					<Select.Trigger class="w-[50px]" disabled={action === 'View'}

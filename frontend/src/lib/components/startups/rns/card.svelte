@@ -20,10 +20,10 @@
 	let action: Actions = $state('View');
 
 	const closeDialog = () => {
-		open = false
-	}
+		open = false;
+	};
 
-	console.log(rns)
+	console.log(rns);
 </script>
 
 <Card.Root
@@ -79,10 +79,19 @@
 				</DropdownMenu.Root>
 			{/if}
 		</div>
-		<div class="text-sm text-muted-foreground">
+		<div class="text-muted-foreground text-sm">
 			{rns.description.substring(0, 150) + `${rns.description.length > 150 ? '...' : ''}`}
 		</div>
-		<div class="text-sm text-muted-foreground">
+		<div class="text-muted-foreground text-sm">
+			Priority No.: <Badge variant="secondary">
+				{#if rns.priority_number}
+					{rns.priority_number}
+				{:else}
+					<p class="opacity-0">1</p>
+				{/if}
+			</Badge>
+		</div>
+		<div class="text-muted-foreground text-sm">
 			Target Level: <Badge variant="secondary">{rns.target_level_level}</Badge>
 		</div>
 		<div class="flex items-center justify-between">
@@ -96,8 +105,8 @@
 					{assignedMember.first_name.charAt(0)}
 				</div>
 			{:else}
-				<div class={`flex h-8 w-8 items-center justify-center rounded-full bg-muted ${zIndex[1]}`}>
-					<User class="h-4 w-4"/>
+				<div class={`bg-muted flex h-8 w-8 items-center justify-center rounded-full ${zIndex[1]}`}>
+					<User class="h-4 w-4" />
 				</div>
 			{/if}
 		</div>

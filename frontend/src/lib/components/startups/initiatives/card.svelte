@@ -7,7 +7,7 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { InitiativeViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { initiative, ai, members, update, addToInitiative, deleteInitiative, role } = $props();
+	let { initiative, ai, members, update, addToInitiative, deleteInitiative, role, tasks } = $props();
 
 	let assignee = $state(initiative.assignee_id);
 
@@ -85,40 +85,21 @@
 				`${initiative.description.length > 150 ? '...' : ''}`}
 		</div>
 		<div class="text-muted-foreground text-sm">
-			Priority No.: <Badge variant="secondary">5</Badge>
-
-			<!-- <DropdownMenu.Root>
-				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
-				<DropdownMenu.Content align="start" class="min-w-4">
-					<DropdownMenu.Group>
-						<DropdownMenu.RadioGroup>
-							{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as item}
-								<DropdownMenu.RadioItem value={`${item}`}>{item}</DropdownMenu.RadioItem>
-							{/each}
-						</DropdownMenu.RadioGroup>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root> -->
+			Priority No.: <Badge variant="secondary">{tasks.filter((task) => task.id === initiative.task_id)[0].priority_number}</Badge>
 		</div>
 		<div class="text-muted-foreground text-sm">
-			Initiative No.: <Badge variant="secondary">5</Badge>
+			Initiative No.: <Badge variant="secondary">
+				{#if initiative.initiative_number}
+					{initiative.initiative_number}
+				{:else}
+					<p class="opacity-0">1</p>
+				{/if}
 
-			<!-- <DropdownMenu.Root>
-				<DropdownMenu.Trigger><Badge variant="secondary">5</Badge></DropdownMenu.Trigger>
-				<DropdownMenu.Content align="start" class="min-w-4">
-					<DropdownMenu.Group>
-						<DropdownMenu.RadioGroup>
-							{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as item}
-								<DropdownMenu.RadioItem value={`${item}`}>{item}</DropdownMenu.RadioItem>
-							{/each}
-						</DropdownMenu.RadioGroup>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root> -->
+			</Badge>
 		</div>
-		<div class="flex items-center justify-between">
-			<div class="flex flex-wrap items-center gap-2">
-				<Badge variant="secondary">{initiative.task_type === 1 ? 'Short' : 'Long'} Term</Badge>
+		<div class="ml-auto flex items-center justify-between">
+			<!-- <div class="flex flex-wrap items-center gap-2"> -->
+				<!-- <Badge variant="secondary">{initiative.task_type === 1 ? 'Short' : 'Long'} Term</Badge> -->
 				<!-- <DropdownMenu.Root>
 					<DropdownMenu.Trigger><Badge variant="secondary">Long Term</Badge></DropdownMenu.Trigger>
 					<DropdownMenu.Content align="start">
@@ -130,7 +111,7 @@
 						</DropdownMenu.Group>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root> -->
-			</div>
+			<!-- </div> -->
 			{#if assignedMember}
 				<div
 					class={`flex h-8 w-8 items-center justify-center rounded-full ${getProfileColor(assignedMember.first_name)}`}

@@ -40,7 +40,7 @@ class Startup(BaseModel):
         Cohort,
         on_delete=models.SET_NULL,
         related_name="startups",
-        default=None,
+        default=2,
         null=True,
     )
 

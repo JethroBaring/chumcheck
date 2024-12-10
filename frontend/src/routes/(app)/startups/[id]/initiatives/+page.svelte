@@ -307,6 +307,7 @@
 		{deleteInitiative}
 		addToInitiative={addToInitiatives}
 		role={data.role}
+		{tasks}
 	/>
 {/snippet}
 
@@ -415,7 +416,7 @@
 								<Table.Head class="pl-5">Description</Table.Head>
 								<Table.Head class="">Priority No.</Table.Head>
 								<Table.Head class="">Initiative No.</Table.Head>
-								<Table.Head class="">Term</Table.Head>
+								<!-- <Table.Head class="">Term</Table.Head> -->
 								<Table.Head class="">Assignee</Table.Head>
 							</Table.Row>
 						</Table.Header>
@@ -425,13 +426,13 @@
 									<Table.Row class="h-14 cursor-pointer">
 										<!-- <Table.Cell class="pl-5">{item.readiness_type_rl_type}</Table.Cell> -->
 										<Table.Cell class="pl-5">{item.description.substring(0, 100)}</Table.Cell>
-										<Table.Cell class="">5</Table.Cell>
-										<Table.Cell class="">5</Table.Cell>
-										<Table.Cell class=""
+										<Table.Cell class="">{tasks.filter((task) => task.id === item.task_id)[0].priority_number}</Table.Cell>
+										<Table.Cell class="">{item?.initiative_number}</Table.Cell>
+										<!-- <Table.Cell class=""
 											><Badge variant="secondary"
 												>{item.task_type === 1 ? 'Short' : 'Long'} Term</Badge
 											></Table.Cell
-										>
+										> -->
 										<Table.Cell class="">
 											{members.filter((member: any) => member.user_id === item.assignee_id)[0]
 												?.first_name}
