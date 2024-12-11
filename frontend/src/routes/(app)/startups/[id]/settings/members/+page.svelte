@@ -8,6 +8,7 @@
 	import type { PageData } from './$types';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Table from '$lib/components/ui/table';
+	import { Search } from 'lucide-svelte';
 
 	export let data: PageData;
 
@@ -30,16 +31,54 @@
 	$: if ($queryResult.isSuccess) {
 		console.log($queryResult.data);
 	}
+	let members: any = []
+	let search: string;
+	let searchedUsers: any[] = [];
+
+	async function searchUsers() {
+		const response = await fetch(`${PUBLIC_API_URL}/users/?search=${search}`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${data.access}`
+			}
+		});
+    console.log(response)
+		const d = await response.json();
+
+		if (response.ok) {
+			const membersSet = new Set(members.map((member: any) => member.id)); // Assuming each user has a unique id
+			searchedUsers = d.results.filter((user: any) => !membersSet.has(user.id));		}
+	}
+
+	function addMember(member: any) {
+		members = [...members, member]
+		searchedUsers = searchedUsers.filter(d => d.email != member.email)
+	}
+
+	function removeMember(member: any) {
+		members = members.filter((d: any) => d != member)
+		searchedUsers = [...searchedUsers, member]
+	}
 </script>
+
 <svelte:head>
-	<title
-		>Settings - Members</title
-	>
+	<title>Settings - Members</title>
 </svelte:head>
 <div class="flex flex-col gap-5">
+	<h1 class="text-xl font-semibold">Invite Member</h1>
+	<div class="flex items-end gap-3 w-2/3">
+		<div class="flex-1 grid gap-2">
+			<Label for="email">Email</Label>
+			<Input name="email" id="email" type="email" placeholder="m@example.com" required />
+		</div>
+		<Button class="w-24"><Search class="h-4 w-4"/> Search</Button>
+	</div>
+	<div>
+		Results
+	</div>
 	<h1 class="text-xl font-semibold">Members</h1>
 	<div class="w-2/3 rounded-md border">
-		<Table.Root class="rounded-lg bg-background">
+		<Table.Root class="bg-background rounded-lg">
 			<Table.Header>
 				<Table.Row class="text-centery h-12">
 					<Table.Head class="pl-5">Name</Table.Head>
@@ -93,58 +132,4 @@
 			</Table.Body>
 		</Table.Root>
 	</div>
-	<!-- <Card.Root class="w-2/3">
-		<Card.Content>
-			<Table.Root>
-				<Table.Header>
-					<Table.Row>
-						<Table.Head>Name</Table.Head>
-						<Table.Head>Role</Table.Head>
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{#if $queryResult.isLoading}
-						<Skeleton class="h-40" />
-					{:else}
-						<Table.Row>
-							<Table.Cell
-								>{$queryResult.data.leader_first_name}
-								{$queryResult.data.leader_last_name}</Table.Cell
-							>
-							<Table.Cell>Leader</Table.Cell>
-						</Table.Row>
-            {#each $queryResult.data.members as member}
-            <Table.Row>
-							<Table.Cell
-								>{member.first_name}
-								{member.last_name}</Table.Cell
-							>
-							<Table.Cell>Member</Table.Cell>
-						</Table.Row>
-            {/each}
-					{/if}
-
-				</Table.Body>
-			</Table.Root>
-		</Card.Content>
-	</Card.Root> -->
-
-	<!-- <div class="grid w-2/3 grid-cols-1 gap-5">
-		<div class="grid gap-2">
-			<Label for="firstName">Startup Name</Label>
-			{#if $queryResult.isLoading}
-				<Skeleton class="h-10" />
-			{:else}
-				<Input name="firstName" id="firstName" type="firstName" required readonly value={$queryResult.data.name}/>
-			{/if}
-		</div>
-		<div class="grid gap-2">
-			<Label for="lastName">Group Name</Label>
-			{#if $queryResult.isLoading}
-				<Skeleton class="h-10" />
-			{:else}
-				<Input name="lastName" id="lastName" type="lastName" required readonly value={$queryResult.data.group_name}/>
-			{/if}
-		</div>
-	</div> -->
 </div>
