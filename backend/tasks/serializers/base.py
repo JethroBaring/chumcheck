@@ -2,8 +2,9 @@ from drf_yasg.utils import swagger_serializer_method
 from readinesslevel import models as readinesslevel_models
 from rest_framework import serializers
 from startups import models as startups_models
-from tasks import models as tasks_models
 from users import models as users_models
+
+from tasks import models as tasks_models
 
 
 class TaskBaseSerializer(serializers.ModelSerializer):
@@ -48,6 +49,7 @@ class TaskBaseSerializer(serializers.ModelSerializer):
             "target_level_level",
             "is_ai_generated",
             "assignee_id",
+            "order"
         ]
 
 
@@ -77,6 +79,7 @@ class InitiativeBaseSerializer(serializers.ModelSerializer):
             "task_id",
             "is_ai_generated",
             "assignee_id",
+            "order"
         ]
 
 
@@ -104,4 +107,5 @@ class RoadblockBaseSerializer(serializers.ModelSerializer):
             "startup_id",
             "is_ai_generated",
             "status",
+            "order"
         ]

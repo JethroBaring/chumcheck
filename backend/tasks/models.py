@@ -58,12 +58,13 @@ class Task(BaseModel):
         null=True,
         related_name="tasks",
     )
+    order = models.SmallIntegerField(null=True, default=None)
 
     # output = ??
 
     class Meta:
         db_table = "tasks"
-        ordering = ["priority_number"]
+        ordering = ["order", "priority_number"]
 
     @property
     def readiness_type_rl_type(self):
@@ -94,10 +95,11 @@ class Initiative(BaseModel):
         null=True,
         related_name="initiatives",
     )
+    order = models.SmallIntegerField(null=True, default=None)
 
     class Meta:
         db_table = "initiatives"
-        ordering = ["initiative_number"]
+        ordering = ["order", "initiative_number"]
 
 
 class Roadblock(BaseModel):
@@ -118,10 +120,10 @@ class Roadblock(BaseModel):
         choices=TaskStatus.choices, default=TaskStatus.FOR_REVIEW
     )
     is_ai_generated = models.BooleanField(default=False)
-
+    order = models.SmallIntegerField(null=True, default=None)    
     class Meta:
         db_table = "roadblocks"
-        ordering = ["risk_number"]
+        ordering = ["order", "risk_number"]
 
     @property
     def assignee_last_name(self):
