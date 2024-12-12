@@ -8,7 +8,9 @@
 	import type { PageData } from './$types';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Table from '$lib/components/ui/table';
-	import { Search } from 'lucide-svelte';
+	import { Plus, Search } from 'lucide-svelte';
+	import { PUBLIC_API_URL } from '$env/static/public';
+	import { Switch } from '$lib/components/ui/switch/index.js';
 
 	export let data: PageData;
 
@@ -31,7 +33,7 @@
 	$: if ($queryResult.isSuccess) {
 		console.log($queryResult.data);
 	}
-	let members: any = []
+	let members: any = [];
 	let search: string;
 	let searchedUsers: any[] = [];
 
@@ -42,23 +44,28 @@
 				Authorization: `Bearer ${data.access}`
 			}
 		});
-    console.log(response)
+		console.log(response);
 		const d = await response.json();
-
+		console.log({d})
 		if (response.ok) {
 			const membersSet = new Set(members.map((member: any) => member.id)); // Assuming each user has a unique id
-			searchedUsers = d.results.filter((user: any) => !membersSet.has(user.id));		}
+			searchedUsers = d.results.filter((user: any) => !membersSet.has(user.id));
+			console.log({searchedUsers})
+		}
 	}
 
 	function addMember(member: any) {
-		members = [...members, member]
-		searchedUsers = searchedUsers.filter(d => d.email != member.email)
+		members = [...members, member];
+		searchedUsers = searchedUsers.filter((d) => d.email != member.email);
 	}
 
 	function removeMember(member: any) {
-		members = members.filter((d: any) => d != member)
-		searchedUsers = [...searchedUsers, member]
+		members = members.filter((d: any) => d != member);
+		searchedUsers = [...searchedUsers, member];
 	}
+
+	let outsideMember = false;
+
 </script>
 
 <svelte:head>
@@ -66,16 +73,37 @@
 </svelte:head>
 <div class="flex flex-col gap-5">
 	<h1 class="text-xl font-semibold">Invite Member</h1>
-	<div class="flex items-end gap-3 w-2/3">
-		<div class="flex-1 grid gap-2">
-			<Label for="email">Email</Label>
-			<Input name="email" id="email" type="email" placeholder="m@example.com" required />
+	<div class="flex items-center space-x-2">
+		<Switch id="airplane-mode" bind:checked={outsideMember} />
+		<Label for="airplane-mode">Contracted member</Label>
+	</div>
+	{#if outsideMember}
+	<div class="flex w-2/3 items-end gap-3">
+		<div class="grid flex-1 gap-2">
+			<Label for="firstName">First Name</Label>
+			<Input name="firstName" id="firstName" type="text" placeholder="John" required />
 		</div>
-		<Button class="w-24"><Search class="h-4 w-4"/> Search</Button>
+		<div class="grid flex-1 gap-2">
+			<Label for="lastName">Last Name</Label>
+			<Input name="lastName" id="lastName" type="text" placeholder="Doe" required />
+		</div>
+		<Button class="w-24"><Plus class="h-4 w-4" /> Add</Button>
 	</div>
-	<div>
-		Results
-	</div>
+	{:else}
+		<div class="flex w-2/3 items-end gap-3">
+			<div class="grid flex-1 gap-2">
+				<Label for="email">Email</Label>
+				<Input name="email" id="email" type="email" placeholder="m@example.com" required bind:value={search}/>
+			</div>
+			<Button class="w-24" onclick={searchUsers}><Search class="h-4 w-4" /> Search</Button>
+		</div>
+	<div class="text-sm">Results</div>
+	{#if searchedUsers.length !== 0}
+		{#each searchedUsers as user}
+			<div>{user.first_name} {user.last_name}</div>
+		{/each}
+	{/if}
+	{/if}
 	<h1 class="text-xl font-semibold">Members</h1>
 	<div class="w-2/3 rounded-md border">
 		<Table.Root class="bg-background rounded-lg">
