@@ -34,7 +34,7 @@ class StartupContractedMemberBaseSerializer(serializers.ModelSerializer):
 class StartupBaseSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(source="user", read_only=True)
     members = serializers.SerializerMethodField(method_name="_members")
-
+    contracted_members = serializers.SerializerMethodField(method_name="_contracted_member")
     class Meta:
         model = startups_models.Startup
         fields = [
@@ -52,11 +52,16 @@ class StartupBaseSerializer(serializers.ModelSerializer):
             "leader_first_name",
             "leader_last_name",
             "leader_email",
+            "contracted_members"
         ]
 
     @swagger_serializer_method(StartupMemberBaseSerializer())
     def _members(self, startup):
         return StartupMemberBaseSerializer(startup.members.all(), many=True).data
+    
+    @swagger_serializer_method(StartupContractedMemberBaseSerializer())
+    def _contracted_members(self, startup):
+        return StartupContractedMemberBaseSerializer(startup.contracted_members.all(), many=True).data
 
 
 class UratQuestionAnswerBaseSerializer(serializers.ModelSerializer):
