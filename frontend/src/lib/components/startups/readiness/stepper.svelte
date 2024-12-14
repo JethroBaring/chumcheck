@@ -7,7 +7,7 @@
 		'Regulatory',
 		'Organizational',
 		'Investment',
-		'Summary'
+		// 'Summary'
 	];
 </script>
 

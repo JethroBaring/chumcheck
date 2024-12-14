@@ -5,22 +5,24 @@
 	import { StartupCard } from '$lib/components/startups';
 	import { Can } from '$lib/components/shared';
 	import { useQuery } from '@sveltestack/svelte-query';
-	import type { Role } from '$lib/types.js';
 	import { getData } from '$lib/utils.js';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import Application from '$lib/components/startup/Application.svelte';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
+	import * as Accordion from '$lib/components/ui/accordion/index.js';
 
-	let { data } = $props()
+	let { data } = $props();
 
-	const queryResult = useQuery(
-		'startupData',
-		() => getData(`/startups`, data.access!)
-	);
-	
-	let role: any = data.role
-	const message = role === 'Mentor' || role === 'Manager as Mentor' ? 'Manage assigned startups' : role === 'Startup' ? 'Manage startups' : '' ;
+	const queryResult = useQuery('startupData', () => getData(`/startups`, data.access!));
+
+	let role: any = data.role;
+	const message =
+		role === 'Mentor' || role === 'Manager as Mentor'
+			? 'Manage assigned startups'
+			: role === 'Startup'
+				? 'Manage startups'
+				: '';
 
 	const isLoading = $derived($queryResult.isLoading);
 	const isError = $derived($queryResult.isError);
@@ -36,13 +38,22 @@
 
 		if (success === 'true') {
 			console.log('Success is true');
-			toast.success('Application successfull.')
+			toast.success('Application successfull.');
 			// Remove the 'success' parameter from the URL
 			const url = new URL($page.url.href);
 			url.searchParams.delete('success');
 			history.replaceState(null, '', url);
 		}
 	});
+
+	const qualifiedStartups = $derived(
+		listOfStartups.filter((startup: any) => startup.qualification_status === 3)
+	);
+	const pendingStartups = $derived(
+		listOfStartups.filter(
+			(startup: any) => startup.qualification_status === 1 || startup.qualification_status === 2
+		)
+	);
 </script>
 
 <div class="flex items-center justify-between">
@@ -52,7 +63,10 @@
 	</div>
 	<Can role={['Startup']} userRole={role}>
 		<div class="flex gap-5">
-			<Button class="flex items-center justify-center gap-2 rounded-lg" onclick={toggleApplicationForm}>
+			<Button
+				class="flex items-center justify-center gap-2 rounded-lg"
+				onclick={toggleApplicationForm}
+			>
 				<RocketIcon class="h-4 w-4" /> Apply</Button
 			>
 		</div>
@@ -67,9 +81,7 @@
 	{@render startups()}
 {:else}{/if}
 <svelte:head>
-	<title
-		>ChumCheck - Startups</title
-	>
+	<title>ChumCheck - Startups</title>
 </svelte:head>
 {#snippet loading()}
 	<div class="mt-3 grid grid-cols-4 gap-3">
@@ -86,11 +98,46 @@
 {/snippet}
 
 {#snippet startups()}
-	<div class="mt-3 grid grid-cols-4 gap-3">
-		{#each listOfStartups as startup}
-			<StartupCard {startup} />
-		{/each}
-	</div>
+	{#if role !== 'Startup'}
+		<div class="mt-3 grid grid-cols-4 gap-3">
+			{#each listOfStartups.filter((startup: any) => startup.qualification_status === 3) as startup}
+				<StartupCard {startup} />
+			{/each}
+		</div>
+	{:else}
+		<Accordion.Root type="single" class="w-full" value="qualified">
+			<Accordion.Item value="qualified">
+				<Accordion.Trigger>Qualified Startups</Accordion.Trigger>
+				<Accordion.Content>
+					<div class="mt-3 grid grid-cols-4 gap-3">
+						{#each listOfStartups.filter((startup: any) => startup.qualification_status === 3) as startup}
+							<StartupCard {startup} />
+						{/each}
+					</div>
+				</Accordion.Content>
+			</Accordion.Item>
+			<Accordion.Item value="pending" class="w-full">
+				<Accordion.Trigger>Pending Startups</Accordion.Trigger>
+				<Accordion.Content>
+					<div class="mt-3 grid grid-cols-4 gap-3">
+						{#each listOfStartups.filter((startup: any) => startup.qualification_status === 1 || startup.qualification_status === 2) as startup}
+							<StartupCard {startup} />
+						{/each}
+					</div>
+				</Accordion.Content>
+			</Accordion.Item>
+			<Accordion.Item value="denied" class="w-full">
+				<Accordion.Trigger>Denied Startups</Accordion.Trigger>
+				<Accordion.Content>
+					<div class="mt-3 grid grid-cols-4 gap-3">
+						{#each listOfStartups.filter((startup: any) => startup.qualification_status === 1 || startup.qualification_status === 2) as startup}
+							<StartupCard {startup} />
+						{/each}
+					</div>
+				</Accordion.Content>
+			</Accordion.Item>
+		</Accordion.Root>
+	{/if}
 {/snippet}
 
 <Dialog.Root open={showApplicationForm} onOpenChange={toggleApplicationForm}>

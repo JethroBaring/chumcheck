@@ -36,7 +36,7 @@
 				{#each modules as item}
 					{@const isActive = currentModule === item.link}
 					{#if role !== 'Startup' || item.name !== 'Elevate'}
-						<a href={`/startups/${data.startupId}/settings/${item.link}`} class="w-full">
+						<a href={`/startups/${data.startupId}/overview/${item.link}`} class="w-full">
 							<Button
 								variant="ghost"
 								class={cn(

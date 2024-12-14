@@ -66,7 +66,7 @@
 						{@const isActive = currentModule === item.link}
 						<a
 							data-sveltekit-preload-data="tap"
-							href={`/${module}/${startup}/${item.link}${item.name === 'Settings' ? `/${item?.subModule[0].link}` : ''}`}
+							href={`/${module}/${startup}/${item.link}${item.name === 'Overview' ? `/${item?.subModule[0].link}` : ''}`}
 							class="relative flex h-16 items-center justify-center text-center hover:text-flutter-blue active:scale-95"
 							class:text-flutter-blue={currentModule === item.link}
 						>

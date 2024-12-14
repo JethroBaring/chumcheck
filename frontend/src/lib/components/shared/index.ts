@@ -6,6 +6,8 @@ export { default as AITabs } from './ai-tabs.svelte';
 export { default as MembersFilter } from './members-filter.svelte';
 export { default as ShowHideColumns } from './show-hide-columns.svelte';
 export { default as KanbanBoard } from './kanban.svelte'
+export { default as KanbanBoardRns } from './kanban-rns.svelte'
 export { default as RadarChart }from './RadarChart.svelte'
 export { default as RadarChartV2 }from './RadarChartv2.svelte'
 export { default as DeleteDialog } from './delete-dialog.svelte'
+export { default as TaskTypeFilter } from './task-type-filter.svelte'

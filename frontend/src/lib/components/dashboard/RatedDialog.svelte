@@ -230,14 +230,12 @@
 				<div class="flex flex-col gap-3">
 					<h1 class="text-lg font-semibold">Assign Mentor</h1>
 
-					<!-- <Select.Root
-						selected={selectedMentor.value}
-						onSelectedChange={(v) => {
-							v && (selectedMentor = v.value);
-						}}
+					<Select.Root
+					type="single"
+					bind:value={selectedMentor}
 					>
 						<Select.Trigger class="w-[180px]">
-							<Select.Value placeholder="Choose a mentor" />
+							Choose a mentor
 						</Select.Trigger>
 						<Select.Content>
 							{#each mentors as mentor}
@@ -246,7 +244,7 @@
 								>
 							{/each}
 						</Select.Content>
-					</Select.Root> -->
+					</Select.Root>
 				</div>
 				<div class="flex justify-end gap-3">
 					<Button variant="destructive">Reject</Button>

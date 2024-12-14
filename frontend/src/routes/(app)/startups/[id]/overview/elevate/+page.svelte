@@ -130,7 +130,7 @@
 					<Table.Header>
 						<Table.Row class="text-centery h-12">
 							<Table.Head class="pl-5">Type</Table.Head>
-							<Table.Head class="">Current Level</Table.Head>
+							<Table.Head class="">Initial Level</Table.Head>
 							<Table.Head class="">Elevated Level</Table.Head>
 						</Table.Row>
 					</Table.Header>

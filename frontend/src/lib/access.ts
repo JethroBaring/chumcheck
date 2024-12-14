@@ -34,8 +34,8 @@ const startupModule = {
 			subModule: []
 		},
 		{
-			name: 'Settings',
-			link: 'settings',
+			name: 'Overview',
+			link: 'overview',
 			subModule: [
 				{
 					name: 'General',
@@ -52,7 +52,7 @@ const startupModule = {
 				{
 					name: 'Elevate',
 					link: 'elevate'
-				},
+				}
 			]
 		}
 	]
@@ -72,7 +72,7 @@ const settingsModule = {
 			name: 'Appearance',
 			link: 'appearance',
 			subModule: []
-		},
+		}
 		// {
 		// 	name: 'Change Password',
 		// 	link: 'password'
@@ -100,7 +100,35 @@ export const access = {
 					link: 'analytics',
 					subModule: []
 				},
-				settingsModule
+				{
+					name: 'Account',
+					link: 'account',
+					subModule: [
+						...settingsModule.subModule, // Spread the predefined settingsModule submodules
+						{
+							name: 'Role',
+							link: 'role', // The link for the manager settings page or section
+							subModule: []
+						}
+					]
+				}
+			]
+		},
+		'Manager as Mentor': {
+			modules: [
+				startupModule,
+				{
+					name: 'Account',
+					link: 'account',
+					subModule: [
+						...settingsModule.subModule, // Spread the predefined settingsModule submodules
+						{
+							name: 'Role',
+							link: 'role', // The link for the manager settings page or section
+							subModule: []
+						}
+					]
+				}
 			]
 		}
 	}

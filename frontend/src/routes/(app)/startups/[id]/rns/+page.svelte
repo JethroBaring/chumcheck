@@ -5,8 +5,10 @@
 		Can,
 		Column,
 		KanbanBoard,
+		KanbanBoardRns,
 		MembersFilter,
-		ShowHideColumns
+		ShowHideColumns,
+		TaskTypeFilter
 	} from '$lib/components/shared';
 	import {
 		getData,
@@ -33,6 +35,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import * as Table from '$lib/components/ui/table';
+	import { log10 } from 'chart.js/helpers';
 
 	const { data } = $props();
 	const { access, startupId } = data;
@@ -207,13 +210,13 @@
 	};
 
 	function handleDndConsider(e: any, x: number) {
-		console.log(x);
 		columns[x].items = e.detail.items;
 	}
 
 	async function handleDndFinalize(e: any, x: number, status: number) {
 		columns[x].items = e.detail.items;
-		if (e.detail.info.trigger == 'droppedIntoZone') {
+		console.log({ e });
+		if (e.detail.info.trigger === 'droppedIntoZone') {
 			const task = e.detail.items.find((t: any) => t.id == e.detail.info.id);
 			await axiosInstance.patch(
 				`/tasks/tasks/${task.id}/`,
@@ -226,6 +229,36 @@
 					}
 				}
 			);
+
+			// Collect all update promises for every task
+			const updatePromises: any = [];
+
+			for (let i = 0; i < columns.length; i++) {
+				columns[i].items.forEach((item: any, index) => {
+					// Create a promise for each item's update request
+					updatePromises.push(
+						axiosInstance.patch(
+							`/tasks/tasks/${item.id}/`,
+							{
+								order: index + 1, // Order starts from 1
+							},
+							{
+								headers: {
+									Authorization: `Bearer ${data.access}`
+								}
+							}
+						)
+					);
+				});
+			}
+
+			try {
+				// Execute all update requests concurrently
+				await Promise.all(updatePromises);
+				console.log('All tasks updated successfully');
+			} catch (error) {
+				console.error('Failed to update tasks', error);
+			}
 		}
 	}
 
@@ -233,7 +266,7 @@
 		if (!isLoading) {
 			columns.forEach((column) => {
 				column.items = $rnsQueries[1].data.results.filter(
-					(data) => data.is_ai_generated === false && data.status === column.value
+					(data: any) => data.is_ai_generated === false && data.status === column.value
 				);
 			});
 		}
@@ -271,6 +304,12 @@
 	});
 
 	let selectedFormat = $state('board');
+
+	let taskType = $state(3);
+
+	const updateTaskType = (newType: number) => {
+		taskType = newType;
+	};
 </script>
 
 {#if isLoading}
@@ -317,7 +356,7 @@
 				<div class="flex">
 					{#each [1, 2] as item, index}
 						<Skeleton
-							class={`border-background flex h-9 w-9 items-center justify-center rounded-full border-2 ${
+							class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
 								index !== 2 - 1 ? '-mr-1' : ''
 							} `}
 						>
@@ -326,22 +365,22 @@
 					{/each}
 				</div>
 			</div>
-			<div class="bg-background ml-auto">
+			<div class="ml-auto bg-background">
 				<Skeleton class="h-9 w-[90px]" />
 			</div>
 		</div>
 
 		<div class="grid h-full grid-cols-4 gap-5">
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
 		</div>
@@ -354,14 +393,14 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
 				</div>
 			</Can>
 			{#if selectedTab === 'rns'}
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<Tabs.Root value={selectedFormat}>
-						<Tabs.List class="bg-flutter-gray/20 border">
+						<Tabs.List class="border bg-flutter-gray/20">
 							<Tabs.Trigger
 								class="flex items-center gap-1"
 								value="board"
@@ -385,13 +424,24 @@
 			{/if}
 		</div>
 		{#if selectedFormat !== 'table'}
-			<ShowHideColumns {views} />
+			<div class="flex gap-2">
+				<TaskTypeFilter
+					statuses={[
+						{ name: 'Short Term', value: 1 },
+						{ name: 'Long Term', value: 2 },
+						{ name: 'All', value: 3 }
+					]}
+					status={taskType}
+					{updateTaskType}
+				/>
+				<ShowHideColumns {views} />
+			</div>
 		{/if}
 	</div>
 	<div class="flex h-full gap-5 overflow-scroll">
 		{#if selectedTab === 'rns'}
 			{#if selectedFormat === 'board'}
-				<KanbanBoard
+				<KanbanBoardRns
 					{columns}
 					{handleDndFinalize}
 					{handleDndConsider}
@@ -400,10 +450,11 @@
 					role={data.role}
 					{updateStatus}
 					{selectedMembers}
+					{taskType}
 				/>
 			{:else}
 				<div class="h-fit w-full rounded-md border">
-					<Table.Root class="bg-background rounded-lg">
+					<Table.Root class="rounded-lg bg-background">
 						<Table.Header>
 							<Table.Row class="text-centery h-12">
 								<Table.Head class="pl-5">Type</Table.Head>

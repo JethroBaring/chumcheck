@@ -370,7 +370,7 @@
 		</div>
 		<div class="ml-auto flex gap-2">
 			<Button variant="secondary" onclick={previous} disabled={current === 0}>Previous</Button>
-			{#if current === 6}
+			{#if current === 5}
 				<Button onclick={() => form.submit()}>Submit</Button>
 			{:else}
 				<Button onclick={next}>Next</Button>
