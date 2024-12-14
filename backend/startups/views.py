@@ -1324,7 +1324,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
         return Response({"logs": formatted_logs}, status=status.HTTP_200_OK)
 
 
-class StartupMemberViewSet(BaseViewSet, mixins.CreateModelMixin):
+class StartupMemberViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.DestroyModelMixin):
     queryset = startups_models.StartupMember.objects
     serializer_class = startups_serializers.base.StartupMemberBaseSerializer
 
@@ -1367,7 +1367,7 @@ class StartupMemberViewSet(BaseViewSet, mixins.CreateModelMixin):
         return super().create(request, *args, **kwargs)
 
 
-class StratupContractMemberViewSet(BaseViewSet, mixins.CreateModelMixin):
+class StratupContractMemberViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.DestroyModelMixin):
     queryset = startups_models.StartupContractedMember.objects
     serializer_class = startups_serializers.base.StartupContractedMemberBaseSerializer
 
