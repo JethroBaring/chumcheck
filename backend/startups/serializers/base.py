@@ -34,7 +34,7 @@ class StartupContractedMemberBaseSerializer(serializers.ModelSerializer):
 class StartupBaseSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(source="user", read_only=True)
     members = serializers.SerializerMethodField(method_name="_members")
-    contracted_members = serializers.SerializerMethodField(method_name="_contracted_member")
+    contracted_members = serializers.SerializerMethodField(method_name="_contracted_members")
     class Meta:
         model = startups_models.Startup
         fields = [
