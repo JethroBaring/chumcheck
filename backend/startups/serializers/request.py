@@ -1,7 +1,8 @@
 from rest_framework import serializers
+from users import models as users_models
+
 from startups import models as startups_models
 from startups.serializers import base as startups_base_serializers
-from users import models as users_models
 
 
 class StartupRequestSerializer(startups_base_serializers.StartupBaseSerializer):

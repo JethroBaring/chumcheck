@@ -1,7 +1,6 @@
 import pymupdf
 from django.db import transaction
-from django.db.models import (Avg, Count, F, Max, Min, OuterRef, Q, Subquery,
-                              Sum, Window)
+from django.db.models import Avg, Count, F, Max, Min, OuterRef, Q, Subquery, Sum, Window
 from django.db.models.functions import Lag
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -15,16 +14,17 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
-from startups import models as startups_models
-from startups import permissions as startups_permissions
-from startups import serializers as startups_serializers
-from startups import utils as startups_utils
-from startups.utils import generate_spider_graph
 from tasks import models as tasks_models
 from tasks import utils as tasks_utils
 from users import models as users_models
 from users import permissions as users_permissions
 from weasyprint import HTML
+
+from startups import models as startups_models
+from startups import permissions as startups_permissions
+from startups import serializers as startups_serializers
+from startups import utils as startups_utils
+from startups.utils import generate_spider_graph
 
 
 class StartupViewSet(
@@ -1322,3 +1322,95 @@ class AnalyticsViewSet(viewsets.ViewSet):
         ]
 
         return Response({"logs": formatted_logs}, status=status.HTTP_200_OK)
+
+
+class StartupMemberViewSet(BaseViewSet, mixins.CreateModelMixin):
+    queryset = startups_models.StartupMember.objects
+    serializer_class = startups_serializers.base.StartupMemberBaseSerializer
+
+    def get_permissions(self):
+        viewset_action = self.action
+
+        if viewset_action == "create":
+            return [startups_permissions.IsMentorOrManagerPermission()]
+
+        return super().get_permissions()
+
+    @swagger_auto_schema(
+        request_body=startups_serializers.base.StartupMemberBaseSerializer,
+        responses={
+            200: startups_serializers.base.StartupMemberBaseSerializer,
+            403: startups_permissions.IsMentorOrManagerPermission.message,
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        """Create Startup Member
+
+        Create an instance of startup member.
+        """
+
+        request_serializer = startups_serializers.base.StartupMemberBaseSerializer(
+            data=request.data
+        )
+        request_serializer.is_valid(raise_exception=True)
+
+        startup = request_serializer.validated_data.get("startup")
+        user = request_serializer.validated_data.get("user")
+
+        self.check_object_permissions(request, startup)
+
+        if startup.members.filter(user=user).exists():
+            return Response(
+                "User is already a member of the startup.", status=status.HTTP_200_OK
+            )
+
+        return super().create(request, *args, **kwargs)
+
+
+class StratupContractMemberViewSet(BaseViewSet, mixins.CreateModelMixin):
+    queryset = startups_models.StartupContractedMember.objects
+    serializer_class = startups_serializers.base.StartupContractedMemberBaseSerializer
+
+    def get_permissions(self):
+        viewset_action = self.action
+
+        if viewset_action == "create":
+            return [startups_permissions.IsMentorOrManagerPermission()]
+
+        return super().get_permissions()
+
+    @swagger_auto_schema(
+        request_body=startups_serializers.base.StartupContractedMemberBaseSerializer,
+        responses={
+            200: startups_serializers.base.StartupContractedMemberBaseSerializer,
+            403: startups_permissions.IsMentorOrManagerPermission.message,
+        },
+    )
+    def create(self, request, *args, **kwargs):
+        """Create Startup Contracted Member
+
+        Create an instance of startup contracted member.
+        """
+
+        request_serializer = (
+            startups_serializers.base.StartupContractedMemberBaseSerializer(
+                data=request.data
+            )
+        )
+        request_serializer.is_valid(raise_exception=True)
+
+        startup = request_serializer.validated_data.get("startup")
+        first_name = request_serializer.validated_data.get("first_name")
+        last_name = request_serializer.validated_data.get("last_name")
+
+        self.check_object_permissions(request, startup)
+
+        if startup.contracted_members.filter(
+            first_name=first_name, last_name=last_name
+        ).exists():
+            return Response(
+                "User is already a contracted member of the startup.",
+                status=status.HTTP_200_OK,
+            )
+
+        return super().create(request, *args, **kwargs)

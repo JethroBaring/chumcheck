@@ -1,4 +1,5 @@
 from rest_framework import routers
+
 from startups import views
 
 router = routers.SimpleRouter()
@@ -13,5 +14,7 @@ router.register(r"capsule-proposal-infos", views.CapsuleProposalInfoViewSet)
 router.register(r"startup-rna", views.StartupRNAViewSet)
 router.register(r"cohorts", views.CohortViewSet)
 router.register(r"analytics", views.AnalyticsViewSet)
+router.register(r"startup-members", views.StartupMemberViewSet)
+router.register(r"startup-contracted-members", views.StratupContractMemberViewSet)
 
 urlpatterns = router.urls
