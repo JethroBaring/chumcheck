@@ -11,9 +11,10 @@
 	import { Plus, Search } from 'lucide-svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { Switch } from '$lib/components/ui/switch/index.js';
+	import { toast } from 'svelte-sonner';
 
 	export let data: PageData;
-
+	let { startupId } = data;
 	const queryResult = useQuery(
 		'startupData',
 		async () =>
@@ -46,17 +47,39 @@
 		});
 		console.log(response);
 		const d = await response.json();
-		console.log({d})
+		console.log({ d });
 		if (response.ok) {
 			const membersSet = new Set(members.map((member: any) => member.id)); // Assuming each user has a unique id
 			searchedUsers = d.results.filter((user: any) => !membersSet.has(user.id));
-			console.log({searchedUsers})
+			search = ''
 		}
 	}
 
-	function addMember(member: any) {
-		members = [...members, member];
-		searchedUsers = searchedUsers.filter((d) => d.email != member.email);
+	async function addMember(userId: any) {
+		const { data } = await axiosInstance.post('/startup-member', {
+			user_id: userId,
+			startup_id: startupId,
+		});
+
+		if (data) {
+			toast.success('Successfully added a member');
+		}
+	}
+
+	let firstName: string, lastName: string;
+
+	async function addContractedMember(firstName: string, lastName: string) {
+		const { data } = await axiosInstance.post('/startup-contracted-members/', {
+			startup_id: startupId,
+			first_name: firstName,
+			last_name: lastName
+		});
+
+		if (data) {
+			toast.success('Successfully added contracted member');
+			firstName = '';
+			lastName = '';
+		}
 	}
 
 	function removeMember(member: any) {
@@ -65,7 +88,6 @@
 	}
 
 	let outsideMember = false;
-
 </script>
 
 <svelte:head>
@@ -78,35 +100,61 @@
 		<Label for="airplane-mode">Contracted member</Label>
 	</div>
 	{#if outsideMember}
-	<div class="flex w-2/3 items-end gap-3">
-		<div class="grid flex-1 gap-2">
-			<Label for="firstName">First Name</Label>
-			<Input name="firstName" id="firstName" type="text" placeholder="John" required />
+		<div class="flex w-2/3 items-end gap-3">
+			<div class="grid flex-1 gap-2">
+				<Label for="firstName">First Name</Label>
+				<Input
+					name="firstName"
+					id="firstName"
+					type="text"
+					placeholder="John"
+					required
+					bind:value={firstName}
+				/>
+			</div>
+			<div class="grid flex-1 gap-2">
+				<Label for="lastName">Last Name</Label>
+				<Input
+					name="lastName"
+					id="lastName"
+					type="text"
+					placeholder="Doe"
+					required
+					bind:value={lastName}
+				/>
+			</div>
+			<Button class="w-24" onclick={() => addContractedMember(firstName, lastName)}
+				><Plus class="h-4 w-4" /> Add</Button
+			>
 		</div>
-		<div class="grid flex-1 gap-2">
-			<Label for="lastName">Last Name</Label>
-			<Input name="lastName" id="lastName" type="text" placeholder="Doe" required />
-		</div>
-		<Button class="w-24"><Plus class="h-4 w-4" /> Add</Button>
-	</div>
 	{:else}
 		<div class="flex w-2/3 items-end gap-3">
 			<div class="grid flex-1 gap-2">
 				<Label for="email">Email</Label>
-				<Input name="email" id="email" type="email" placeholder="m@example.com" required bind:value={search}/>
+				<Input
+					name="email"
+					id="email"
+					type="email"
+					placeholder="m@example.com"
+					required
+					bind:value={search}
+				/>
 			</div>
 			<Button class="w-24" onclick={searchUsers}><Search class="h-4 w-4" /> Search</Button>
 		</div>
-	<div class="text-sm">Results</div>
-	{#if searchedUsers.length !== 0}
-		{#each searchedUsers as user}
-			<div>{user.first_name} {user.last_name}</div>
-		{/each}
-	{/if}
+		<div class="text-sm">Results</div>
+		{#if searchedUsers.length !== 0}
+			{#each searchedUsers as user}
+				<div>{user.first_name} {user.last_name}
+
+					<Button onclick={() => addMember(user.id)}></Button>
+				</div>
+			{/each}
+		{/if}
 	{/if}
 	<h1 class="text-xl font-semibold">Members</h1>
 	<div class="w-2/3 rounded-md border">
-		<Table.Root class="bg-background rounded-lg">
+		<Table.Root class="rounded-lg bg-background">
 			<Table.Header>
 				<Table.Row class="text-centery h-12">
 					<Table.Head class="pl-5">Name</Table.Head>
