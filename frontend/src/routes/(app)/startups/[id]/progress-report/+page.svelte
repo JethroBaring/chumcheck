@@ -209,7 +209,7 @@
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
-								{#each $queryResult.data.tasks as rns, index}
+								{#each $queryResult.data.tasks.filter((task: any) => task.task_type === 1) as rns, index}
 									<Table.Row class="h-14 cursor-pointer">
 										<Table.Cell class="w-48 pl-5">{rns.priority_number}</Table.Cell>
 										<Table.Cell class="w-40">{rns.readiness_type_rl_type}</Table.Cell>
@@ -221,27 +221,6 @@
 							</Table.Body>
 						</Table.Root>
 					</div>
-
-					<!-- <div class="rounded-md border">
-						<Table.Root class="rounded-lg bg-background">
-							<Table.Header>
-								<Table.Row class="text-centery h-12">
-									<Table.Head class="pl-5">Priority Number</Table.Head>
-									<Table.Head>Readiness Type</Table.Head>
-									<Table.Head>Target Level</Table.Head>
-									<Table.Head>Description</Table.Head>
-									<Table.Head>Status</Table.Head>
-								</Table.Row>
-							</Table.Header>
-							<Table.Body>
-								<Table.Row class="h-14 cursor-pointer">
-									<Table.Cell class="w-48 pl-5">{rns.readiness_type_rl_type}</Table.Cell>
-									<Table.Cell class="w-40">{rns.readiness_level_level}</Table.Cell>
-									<Table.Cell>{rns.rna}</Table.Cell>
-								</Table.Row>
-							</Table.Body>
-						</Table.Root>
-					</div> -->
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -287,7 +266,39 @@
 		<Card.Root class="pdf-page mt-3 h-full ">
 			<Card.Content class="mt-1 flex w-full flex-col gap-5  px-10">
 				<div class="mt-10 flex flex-col gap-2">
-					<p>IV. RISKS AND ROADBLOCKS - SHORT TERM AND LONG TERM</p>
+					<p>IV. RECOMMENDED NEXT STEPS (RNS) - LONG TERM</p>
+					<div class="rounded-md border">
+						<Table.Root class="pdf-table rounded-lg">
+							<Table.Header>
+								<Table.Row class="h-12 text-center">
+									<Table.Head class="pl-5">Priority Number</Table.Head>
+									<Table.Head>Readiness Type</Table.Head>
+									<Table.Head>Target Level</Table.Head>
+									<Table.Head>Description</Table.Head>
+									<Table.Head class="pr-5">Status</Table.Head>
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{#each $queryResult.data.tasks.filter((task: any) => task.task_type === 2) as rns, index}
+									<Table.Row class="h-14 cursor-pointer">
+										<Table.Cell class="w-48 pl-5">{rns.priority_number}</Table.Cell>
+										<Table.Cell class="w-40">{rns.readiness_type_rl_type}</Table.Cell>
+										<Table.Cell>{rns.target_level_level}</Table.Cell>
+										<Table.Cell>{rns.description}</Table.Cell>
+										<Table.Cell class="pr-5">{rns.status}</Table.Cell>
+									</Table.Row>
+								{/each}
+							</Table.Body>
+						</Table.Root>
+					</div>
+				</div>
+			</Card.Content>
+		</Card.Root>
+
+		<Card.Root class="pdf-page mt-3 h-full ">
+			<Card.Content class="mt-1 flex w-full flex-col gap-5  px-10">
+				<div class="mt-10 flex flex-col gap-2">
+					<p>V. RISKS AND ROADBLOCKS - SHORT TERM AND LONG TERM</p>
 					<div class="rounded-md border">
 						<Table.Root class="pdf-table rounded-lg">
 							<Table.Header>

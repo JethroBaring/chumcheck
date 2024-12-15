@@ -56,10 +56,10 @@
 	);
 
 	$effect(() => {
-		if($queryResult.isSuccess) {
-			console.log($queryResult.data)
+		if ($queryResult.isSuccess) {
+			console.log($queryResult.data);
 		}
-	})
+	});
 </script>
 
 <div class="flex items-center justify-between">
@@ -91,9 +91,9 @@
 </svelte:head>
 {#snippet loading()}
 	<div class="mt-3 grid grid-cols-4 gap-3">
-		<Skeleton class="h-40 rounded-lg" />
-		<Skeleton class="h-40 rounded-lg" />
-		<Skeleton class="h-40 rounded-lg" />
+		<div class="rounded-lg bg-background"><Skeleton class="h-40 rounded-lg" /></div>
+		<div class="rounded-lg bg-background"><Skeleton class="h-40 rounded-lg" /></div>
+		<div class="rounded-lg bg-background"><Skeleton class="h-40 rounded-lg" /></div>
 	</div>
 {/snippet}
 
@@ -111,7 +111,7 @@
 			{/each}
 		</div>
 	{:else}
-		<Accordion.Root type="multiple" class="w-full" value={["qualified"]}>
+		<Accordion.Root type="multiple" class="w-full" value={['qualified']}>
 			<Accordion.Item value="qualified">
 				<Accordion.Trigger>Qualified Startups</Accordion.Trigger>
 				<Accordion.Content>

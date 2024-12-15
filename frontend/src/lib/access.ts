@@ -100,11 +100,11 @@ export const access = {
 					link: 'analytics',
 					subModule: []
 				},
-				{
-					name: 'Cohorts',
-					link: 'cohorts',
-					subModule: []
-				},
+				// {
+				// 	name: 'Cohorts',
+				// 	link: 'cohorts',
+				// 	subModule: []
+				// },
 				{
 					name: 'Account',
 					link: 'account',

@@ -58,7 +58,7 @@
 			<a
 				data-sveltekit-preload-data="tap"
 				href={`/${modules[0].link}`}
-				class="cursor-pointer text-xl font-black normal-case">ChumCheck {currentModulev2}</a
+				class="cursor-pointer text-xl font-black normal-case">ChumCheck</a
 			>
 		</div>
 		<div class="flex h-1/3 items-center justify-center gap-5">
