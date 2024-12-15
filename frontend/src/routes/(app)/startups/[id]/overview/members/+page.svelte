@@ -8,10 +8,11 @@
 	import type { PageData } from './$types';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Table from '$lib/components/ui/table';
-	import { Plus, Search } from 'lucide-svelte';
+	import { Plus, Search, Trash } from 'lucide-svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
 	import { Switch } from '$lib/components/ui/switch/index.js';
 	import { toast } from 'svelte-sonner';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 
 	export let data: PageData;
 	let { startupId, access } = data;
@@ -71,7 +72,7 @@
 
 		if (data) {
 			toast.success('Successfully added a member');
-			$queryResult.refetch()
+			$queryResult.refetch();
 		}
 	}
 
@@ -96,43 +97,40 @@
 			toast.success('Successfully added contracted member');
 			firstName = '';
 			lastName = '';
-			$queryResult.refetch()
+			$queryResult.refetch();
 		}
 	}
-	
-	async function removeMember(memberId: number) {
-		const res = await axiosInstance.delete(
-			`/startup-members/${memberId}/`,
-			{
-				headers: {
-					Authorization: `Bearer ${access}`
-				}
-			}
-		);
 
-		if(res.status === 204) {
+	async function removeMember(memberId: number) {
+		const res = await axiosInstance.delete(`/startup-members/${memberId}/`, {
+			headers: {
+				Authorization: `Bearer ${access}`
+			}
+		});
+
+		if (res.status === 204) {
 			toast.success('Successfully removed member');
-			$queryResult.refetch()
+			$queryResult.refetch();
 		}
 	}
 
 	async function removeContractedMember(contractedMemberId: number) {
-		const res = await axiosInstance.delete(
-			`/startup-contracted-members/${contractedMemberId}/`,
-			{
-				headers: {
-					Authorization: `Bearer ${access}`
-				}
+		const res = await axiosInstance.delete(`/startup-contracted-members/${contractedMemberId}/`, {
+			headers: {
+				Authorization: `Bearer ${access}`
 			}
-		);
+		});
 
-		if(res.status === 204) {
+		if (res.status === 204) {
 			toast.success('Successfully removed contracted member');
-			$queryResult.refetch()
+			$queryResult.refetch();
 		}
 	}
 
 	let outsideMember = false;
+	let open = false;
+	let toBeDeletedId = null;
+	let contracted = false;
 </script>
 
 <svelte:head>
@@ -188,7 +186,7 @@
 			<Button class="w-24" onclick={searchUsers}><Search class="h-4 w-4" /> Search</Button>
 		</div>
 		{#if searchedUsers.length !== 0}
-		<div class="text-sm">Results</div>
+			<div class="text-sm">Results</div>
 			{#each searchedUsers as user}
 				<div>
 					{user.first_name}
@@ -209,6 +207,7 @@
 					<Table.Row class="text-centery h-12">
 						<Table.Head class="pl-5">Name</Table.Head>
 						<Table.Head class="">Role</Table.Head>
+						<Table.Head class=""></Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -218,19 +217,39 @@
 							{$queryResult.data.leader_last_name}</Table.Cell
 						>
 						<Table.Cell class="">Leader</Table.Cell>
+						<Table.Cell class=""></Table.Cell>
 					</Table.Row>
 					{#each $queryResult.data.members as member}
 						<Table.Row class="h-14 cursor-pointer">
 							<Table.Cell class="pl-5">{member.first_name} {member.last_name}</Table.Cell>
 							<Table.Cell class="">Member</Table.Cell>
-							<Table.Cell class=""><Button onclick={() => removeMember(member.id)}>Delete</Button></Table.Cell>
+							<Table.Cell class="">
+								<button
+									onclick={() => {
+										open = true
+										contracted = false;
+										toBeDeletedId = member.id;
+									}}><Trash class="h-4 w-4 text-red-500" /></button
+								>
+								<!-- <Button onclick={() => removeMember(member.id)}>Delete</Button> -->
+							</Table.Cell>
 						</Table.Row>
 					{/each}
-					{#each $queryResult.data.contracted_members as member}
+					{#each $queryResult.data.contracted_members as member, index}
 						<Table.Row class="h-14 cursor-pointer">
 							<Table.Cell class="pl-5">{member.first_name} {member.last_name}</Table.Cell>
 							<Table.Cell class="">Contracted Member</Table.Cell>
-							<Table.Cell class=""><Button onclick={() => removeContractedMember(member.id)}>Delete</Button></Table.Cell>
+							<Table.Cell class="">
+								<button
+									onclick={() => {
+										open = true
+										contracted = true;
+										toBeDeletedId = member.id;
+									}}><Trash class="h-4 w-4 text-red-500" /></button
+								>
+
+								<!-- <Button onclick={() => removeContractedMember(member.id)}>Delete</Button> -->
+							</Table.Cell>
 						</Table.Row>
 					{/each}
 				</Table.Body>
@@ -238,3 +257,27 @@
 		{/if}
 	</div>
 </div>
+<AlertDialog.Root bind:open onOpenChange={() => (open = !open)}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>Are you absolutely sure to remove this member?</AlertDialog.Title>
+			<AlertDialog.Description>
+				This action cannot be undone. This will permanently remove this member in your startup.
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+			<AlertDialog.Action
+				class="bg-red-500 hover:bg-red-600"
+				onclick={async () => {
+					if (contracted) {
+						await removeContractedMember(toBeDeletedId!);
+					} else {
+						await removeMember(toBeDeletedId!);
+					}
+					open = false;
+				}}>Delete</AlertDialog.Action
+			>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
