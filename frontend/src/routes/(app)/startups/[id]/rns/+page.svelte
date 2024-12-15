@@ -745,7 +745,7 @@
 										<Table.Cell class="">{item.description.substring(0, 100)}</Table.Cell>
 										<Table.Cell class="">{item.target_level_level}</Table.Cell>
 										<Table.Cell class=""
-											><Badge variant="secondary">{item.type === 1 ? 'Short' : 'Long'} Term</Badge
+											><Badge variant="secondary">{item.task_type === 1 ? 'Short' : 'Long'} Term</Badge
 											></Table.Cell
 										>
 										<Table.Cell class=""
