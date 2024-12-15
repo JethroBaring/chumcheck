@@ -219,7 +219,7 @@
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
-								{#each $queryResult.data.tasks.filter((task: any) => task.task_type === 1) as rns, index}
+								{#each $queryResult.data.tasks.filter((task: any) => task.task_type === 1 && task.is_ai_generated === false) as rns, index}
 									<Table.Row class="h-14 cursor-pointer">
 										<Table.Cell class="w-48 pl-5">{rns.priority_number}</Table.Cell>
 										<Table.Cell class="w-40">{rns.readiness_type_rl_type}</Table.Cell>
@@ -289,7 +289,7 @@
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
-								{#each $queryResult.data.tasks.filter((task: any) => task.task_type === 2) as rns, index}
+								{#each $queryResult.data.tasks.filter((task: any) => task.task_type === 2 && task.is_ai_generated === false) as rns, index}
 									<Table.Row class="h-14 cursor-pointer">
 										<Table.Cell class="w-48 pl-5">{rns.priority_number}</Table.Cell>
 										<Table.Cell class="w-40">{rns.readiness_type_rl_type}</Table.Cell>

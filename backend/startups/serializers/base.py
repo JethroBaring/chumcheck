@@ -242,6 +242,7 @@ class ProgressReportResponseSerializer(StartupBaseSerializer):
                 "readiness_type_rl_type",
                 "target_level_level",
                 "initiatives",
+                "is_ai_generated"
             ]
 
     class ProgressReportRoadblockSerializer(
