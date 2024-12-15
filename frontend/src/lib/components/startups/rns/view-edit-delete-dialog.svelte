@@ -76,6 +76,16 @@
 		if (id === 0) return '';
 		return levels.filter((level: any) => Number(level.id) === Number(id))[0].level;
 	};
+
+	const getLevelId = (id: any) => {
+		if (id === 0) return '';
+		return levels.filter((level: any) => Number(level.id) === Number(id))[0].id;
+	};
+
+	$effect(() => {
+		
+		if(rnsCopy.priority_number === 3)  console.log(rnsCopy)
+	})
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>
@@ -87,7 +97,6 @@
 					<Label for="username">Description</Label>
 					{#if editDescription && role !== 'Startup'}
 						<Textarea rows={12} bind:value={rnsCopy.description} class="text-justify text-base" />
-						<!-- <div contenteditable="true" bind:this={descriptionDiv} class="focus:border-none active:border-none outline-red-500">{rnsCopy.description}</div> -->
 						<div class="ml-auto flex gap-2">
 							<Button size="sm" variant="outline" onclick={() => (editDescription = false)}
 								>Cancel</Button
@@ -134,7 +143,20 @@
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Readiness Type</p>
 									{#if role !== 'Startup'}
-										<Select.Root type="single" bind:value={rnsCopy.readiness_type_id}>
+										<Select.Root
+											type="single"
+											bind:value={rnsCopy.readiness_type_id}
+											onValueChange={() => {
+
+												const newReadiness: any = getReadinessTypes().filter(
+														(d) => d.id === Number(rnsCopy.readiness_type_id)
+													)[0]
+													
+												const newLevelId = getReadinessLevels(newReadiness.name).filter((d: any) => d.level === getLevel(rnsCopy.target_level_id))[0].id
+
+												update(rnsCopy.id, { target_level_id: newLevelId, readiness_type_id: newReadiness.id })
+											}}
+										>
 											<Select.Trigger class="w-[200px] border-none"
 												>{rnsCopy.readiness_type_id
 													? getReadinessTypes().filter(
@@ -186,7 +208,7 @@
 											}}
 										>
 											<Select.Trigger class="w-[200px] border-none"
-												>{rnsCopy.task_type === '1' ? 'Short Term' : 'Long Term'}</Select.Trigger
+												>{rnsCopy.task_type === 1 ? 'Short Term' : 'Long Term'}</Select.Trigger
 											>
 											<Select.Content class="border-none">
 												<Select.Item value="1">Short Term</Select.Item>

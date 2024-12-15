@@ -219,7 +219,7 @@
 			console.log({ hannah: res.data });
 			columns.forEach((column) => {
 				column.items = res.data.results
-					.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+					.filter((data: any) => data.is_ai_generated === false && data.status === column.value && data.task_type === 1)
 					.sort((a: any, b: any) => a.order - b.order);
 			});
 		});

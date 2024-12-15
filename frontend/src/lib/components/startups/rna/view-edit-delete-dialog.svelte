@@ -111,7 +111,7 @@
 							<div class="p-2 text-sm">Details</div>
 							<Separator />
 							<div class="flex flex-col gap-2 p-2">
-								<div class="flex h-9 items-center justify-between text-sm">
+								<!-- <div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Readiness Type</p>
 									{#if role !== 'Startup'}
 										<Select.Root type="single" bind:value={rnsCopy.readiness_type_id}>
@@ -131,7 +131,7 @@
 									{:else}
 										<p class="w-[200px] p-3">{rnsCopy.readiness_type_rl_type}</p>
 									{/if}
-								</div>
+								</div> -->
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Current Level</p>
 									<p class="w-[200px] p-3">
