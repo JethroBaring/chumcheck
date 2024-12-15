@@ -30,11 +30,16 @@ class StartupContractedMemberBaseSerializer(serializers.ModelSerializer):
         model = startups_models.StartupContractedMember
         fields = ["id", "startup_id", "first_name", "last_name"]
 
+class MentorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = users_models.MentorUser
+        fields = ["id", "first_name", "last_name", "email"]
 
 class StartupBaseSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(source="user", read_only=True)
     members = serializers.SerializerMethodField(method_name="_members")
     contracted_members = serializers.SerializerMethodField(method_name="_contracted_members")
+    mentors = serializers.SerializerMethodField(method_name="_mentors")  # Add this line
     class Meta:
         model = startups_models.Startup
         fields = [
@@ -52,7 +57,8 @@ class StartupBaseSerializer(serializers.ModelSerializer):
             "leader_first_name",
             "leader_last_name",
             "leader_email",
-            "contracted_members"
+            "contracted_members",
+            "mentors"
         ]
 
     @swagger_serializer_method(StartupMemberBaseSerializer())
@@ -62,6 +68,10 @@ class StartupBaseSerializer(serializers.ModelSerializer):
     @swagger_serializer_method(StartupContractedMemberBaseSerializer())
     def _contracted_members(self, startup):
         return StartupContractedMemberBaseSerializer(startup.contracted_members.all(), many=True).data
+
+    @swagger_serializer_method(MentorSerializer())  # Use your serializer for mentors
+    def _mentors(self, startup):
+        return MentorSerializer(startup.mentors.all(), many=True).data
 
 
 class UratQuestionAnswerBaseSerializer(serializers.ModelSerializer):

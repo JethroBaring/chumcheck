@@ -101,6 +101,11 @@ export const access = {
 					subModule: []
 				},
 				{
+					name: 'Cohorts',
+					link: 'cohorts',
+					subModule: []
+				},
+				{
 					name: 'Account',
 					link: 'account',
 					subModule: [

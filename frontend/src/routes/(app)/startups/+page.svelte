@@ -105,7 +105,7 @@
 			{/each}
 		</div>
 	{:else}
-		<Accordion.Root type="single" class="w-full" value="qualified">
+		<Accordion.Root type="multiple" class="w-full" value={["qualified"]}>
 			<Accordion.Item value="qualified">
 				<Accordion.Trigger>Qualified Startups</Accordion.Trigger>
 				<Accordion.Content>

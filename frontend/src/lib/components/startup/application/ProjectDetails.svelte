@@ -59,7 +59,7 @@
 				name="startup_name"
 				id="startup_name"
 				type="text"
-				placeholder="m@example.com"
+				placeholder="startup name"
 				required
 			/>
 		</div>

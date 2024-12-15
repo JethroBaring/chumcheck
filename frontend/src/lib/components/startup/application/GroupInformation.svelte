@@ -39,7 +39,7 @@
 	<div class="flex h-0 flex-col gap-5">
 		<div class="grid gap-2">
 			<Label for="group_name">Group name</Label>
-			<Input name="group_name" id="group_name" type="text" placeholder="m@example.com" required />
+			<Input name="group_name" id="group_name" type="text" placeholder="group name" required />
 		</div>
 
 		<div class="grid gap-2">
@@ -48,7 +48,7 @@
 				name="university_name"
 				id="university_name"
 				type="text"
-				placeholder="m@example.com"
+				placeholder="university name"
 				required
 			/>
 		</div>

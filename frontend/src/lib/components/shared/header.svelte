@@ -18,6 +18,9 @@
 	const currentModule = $derived(
 		$page.url.pathname.slice(1).split('/')[$page.url.pathname.slice(1).split('/').length - 1]
 	);
+
+	const currentModulev2 = $derived($page.url.pathname.slice(1).split('/')[$page.url.pathname.slice(1).split('/').length - 2])
+
 	const module = $derived($page.url.pathname.slice(1).split('/')[0]);
 	const subModule = $derived(
 		$page.url.pathname.slice(1).split('/')[$page.url.pathname.slice(1).split('/').length - 1]
@@ -55,7 +58,7 @@
 			<a
 				data-sveltekit-preload-data="tap"
 				href={`/${modules[0].link}`}
-				class="cursor-pointer text-xl font-black normal-case">ChumCheck</a
+				class="cursor-pointer text-xl font-black normal-case">ChumCheck {currentModulev2}</a
 			>
 		</div>
 		<div class="flex h-1/3 items-center justify-center gap-5">
@@ -63,12 +66,12 @@
 				{#if module !== subModule && module !== 'account'}
 					<!-- submodule -->
 					{#each modules.filter((item) => item.link === module)[0].subModule as item}
-						{@const isActive = currentModule === item.link}
+						{@const isActive = currentModule === item.link  || currentModulev2 === item.link}
 						<a
 							data-sveltekit-preload-data="tap"
 							href={`/${module}/${startup}/${item.link}${item.name === 'Overview' ? `/${item?.subModule[0].link}` : ''}`}
 							class="relative flex h-16 items-center justify-center text-center hover:text-flutter-blue active:scale-95"
-							class:text-flutter-blue={currentModule === item.link}
+							class:text-flutter-blue={currentModule === item.link  || currentModulev2 === item.link}
 						>
 							<li>
 								{item.name}
@@ -85,12 +88,12 @@
 				{:else}
 					<!-- module -->
 					{#each modules as item}
-						{@const isActive = currentModule === item.link}
+						{@const isActive = currentModule === item.link || currentModulev2 === item.link}
 						<a
 							data-sveltekit-preload-data="tap"
 							href={`/${item.link}${item.subModule.length > 0 && item.name !== 'Startups' ? `/${item.subModule[0].link}` : ''}`}
 							class="relative flex h-16 items-center justify-center text-center hover:text-flutter-blue active:scale-95"
-							class:text-flutter-blue={currentModule === item.link}
+							class:text-flutter-blue={currentModule === item.link || currentModulev2 === item.link}
 						>
 							<li>
 								{item.name}
@@ -102,17 +105,12 @@
 					{/each}
 				{/if}
 			</ul>
-			<!-- <Button variant="ghost" class="border rounded-full">Manager</Button> -->
 			<Separator orientation="vertical" />
 			<Badge variant="outline" class="h-8 rounded-full bg-flutter-gray/20 text-sm font-normal"
 				>{user?.role ? user?.role : 'Anonymous'}</Badge
 			>
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
-					<!-- <Avatar.Root>
-						<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-						<Avatar.Fallback>Avatar</Avatar.Fallback>
-					</Avatar.Root> -->
 					<div
 						class={`flex h-9 w-9 items-center justify-center rounded-full ${getProfileColor(user.firstName)}`}
 					>
@@ -130,7 +128,7 @@
 							<a
 								class="cursor-pointer"
 								data-sveltekit-preload-data="tap"
-								href={`/${module.link}${module.subModule.length > 0 ? `/${module.subModule[0].link}` : ''}`}
+								href={`/${module.link}${module.subModule.length > 0 && module.name !== 'Startups' ? `/${module.subModule[0].link}` : ''}`}
 							>
 								<DropdownMenu.Item class="cursor-pointer">{module.name}</DropdownMenu.Item>
 							</a>
