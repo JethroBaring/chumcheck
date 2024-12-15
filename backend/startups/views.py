@@ -1219,7 +1219,7 @@ class StartupRNAViewSet(
 
 
 class CohortViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
-    queryset = startups_models.Cohort.objects
+    queryset = startups_models.Cohort.objects.all()
     serializer_class = startups_serializers.base.CohortBaseSerializer
 
     def list(self, request, *args, **kwargs):

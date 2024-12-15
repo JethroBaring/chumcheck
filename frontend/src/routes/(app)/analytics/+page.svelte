@@ -54,21 +54,6 @@
 			staleTime: 0,
 			refetchOnWindowFocus: false
 		},
-		// {
-		// 	queryKey: ['cohort'],
-		// 	queryFn: async () =>
-		// 		(
-		// 			await axiosInstance.get(`/cohorts`, {
-		// 				headers: {
-		// 					Authorization: `Bearer ${data.access}`
-		// 				}
-		// 			})
-		// 		).data,
-
-		// 	cacheTime: 0,
-		// 	staleTime: 0,
-		// 	refetchOnWindowFocus: false
-		// }
 	]);
 	
 	const isLoading = $derived($analyticsQueries[0].isLoading || $analyticsQueries[1].isLoading);
