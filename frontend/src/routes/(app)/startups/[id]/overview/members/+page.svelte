@@ -137,6 +137,8 @@
 	<title>Settings - Members</title>
 </svelte:head>
 <div class="flex flex-col gap-5">
+	{#if $queryResult.isSuccess}
+	{#if data.role === 'Mentor' || data.role === 'Manager as Mentor' || data.user.id === $queryResult.data.user_id}
 	<h1 class="text-xl font-semibold">Invite Member</h1>
 	<div class="flex items-center space-x-2">
 		<Switch id="airplane-mode" bind:checked={outsideMember} />
@@ -197,6 +199,8 @@
 			{/each}
 		{/if}
 	{/if}
+{/if}
+	{/if}
 	<h1 class="text-xl font-semibold">Members</h1>
 	<div class="w-2/3 rounded-md border">
 		{#if $queryResult.isLoading}
@@ -224,13 +228,16 @@
 							<Table.Cell class="pl-5">{member.first_name} {member.last_name}</Table.Cell>
 							<Table.Cell class="">Member</Table.Cell>
 							<Table.Cell class="">
-								<button
-									onclick={() => {
-										open = true
-										contracted = false;
-										toBeDeletedId = member.id;
-									}}><Trash class="h-4 w-4 text-red-500" /></button
-								>
+								{#if data.role === 'Mentor' || data.role === 'Manager as Mentor' || data.user.id === $queryResult.data.user_id}
+									<button
+										onclick={() => {
+											open = true;
+											contracted = false;
+											toBeDeletedId = member.id;
+										}}><Trash class="h-4 w-4 text-red-500" /></button
+									>
+								{/if}
+
 								<!-- <Button onclick={() => removeMember(member.id)}>Delete</Button> -->
 							</Table.Cell>
 						</Table.Row>
@@ -240,13 +247,15 @@
 							<Table.Cell class="pl-5">{member.first_name} {member.last_name}</Table.Cell>
 							<Table.Cell class="">Contracted Member</Table.Cell>
 							<Table.Cell class="">
-								<button
-									onclick={() => {
-										open = true
-										contracted = true;
-										toBeDeletedId = member.id;
-									}}><Trash class="h-4 w-4 text-red-500" /></button
-								>
+								{#if data.role === 'Mentor' || data.role === 'Manager as Mentor' || data.user.id === $queryResult.data.user_id}
+									<button
+										onclick={() => {
+											open = true;
+											contracted = true;
+											toBeDeletedId = member.id;
+										}}><Trash class="h-4 w-4 text-red-500" /></button
+									>
+								{/if}
 
 								<!-- <Button onclick={() => removeContractedMember(member.id)}>Delete</Button> -->
 							</Table.Cell>
@@ -266,7 +275,7 @@
 			</AlertDialog.Description>
 		</AlertDialog.Header>
 		<AlertDialog.Footer>
-			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+			<AlertDialog.Cancel onclick={() => (open = false)}>Cancel</AlertDialog.Cancel>
 			<AlertDialog.Action
 				class="bg-red-500 hover:bg-red-600"
 				onclick={async () => {

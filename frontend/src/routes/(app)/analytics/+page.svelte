@@ -13,7 +13,7 @@
 			queryKey: ['analytics'],
 			queryFn: async () =>
 				(
-					await axiosInstance.get(`/analytics/startups/?cohort_id=2`, {
+					await axiosInstance.get(`/analytics/startups/?cohort_id=1`, {
 						headers: {
 							Authorization: `Bearer ${data.access}`
 						}
@@ -29,6 +29,21 @@
 			queryFn: async () =>
 				(
 					await axiosInstance.get(`/analytics/elevate-logs/`, {
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					})
+				).data,
+
+			cacheTime: 0,
+			staleTime: 0,
+			refetchOnWindowFocus: false
+		},
+		{
+			queryKey: ['cohorts'],
+			queryFn: async () =>
+				(
+					await axiosInstance.get(`/cohorts`, {
 						headers: {
 							Authorization: `Bearer ${data.access}`
 						}
@@ -58,6 +73,12 @@
 	
 	const isLoading = $derived($analyticsQueries[0].isLoading || $analyticsQueries[1].isLoading);
 	const isError = $derived($analyticsQueries[0].isError || $analyticsQueries[1].isError);
+
+	$effect(() => {
+		if($analyticsQueries[2].isSuccess) {
+			console.log($analyticsQueries[2].data.results)
+		}
+	})
 </script>
 
 <div class="flex h-full flex-col gap-3">

@@ -205,9 +205,14 @@ class StartupRNABaseSerializer(serializers.ModelSerializer):
 
 
 class CohortBaseSerializer(serializers.ModelSerializer):
+    startup_count = serializers.SerializerMethodField()
+
     class Meta:
         model = startups_models.Cohort
-        fields = ["id", "name"]
+        fields = ["id", "name", "startup_count"]
+    
+    def get_startup_count(self, obj):
+        return obj.startups.count()
 
 
 class ProgressReportResponseSerializer(StartupBaseSerializer):

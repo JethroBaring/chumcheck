@@ -43,6 +43,7 @@
 	import Organizational from './application/Organizational.svelte';
 	import TechnologyCalculator from './application/Calculator.svelte';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { boolean } from 'zod';
 
 	let data: any;
 	let doneFetching = false
@@ -81,12 +82,12 @@
 		eligibility: false
 	};
 
-	const toggleDataPrivacy = () => {
-		formData.dataPrivacy = !formData.dataPrivacy;
+	const toggleDataPrivacy = (value: boolean) => {
+		formData.dataPrivacy = value;
 	};
 
-	const toggleEligibility = () => {
-		formData.eligibility = !formData.eligibility;
+	const toggleEligibility = (value: boolean) => {
+		formData.eligibility = value;
 	};
 	function handleStep(stepIncrement: number) {
 		currentActive += stepIncrement;

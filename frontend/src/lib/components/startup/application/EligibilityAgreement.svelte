@@ -14,13 +14,13 @@
 			agreement.
 		</p>
 
-		<RadioGroup.Root value={eligibility ? 'true' : 'false'} name="eligibility" >
+		<RadioGroup.Root value={`${eligibility}`} name="eligibility" >
 			<div class="flex items-center space-x-2">
-				<RadioGroup.Item value="true" id="eligibilityAgree" onclick={() => toggleEligibility()}/>
+				<RadioGroup.Item value="true" id="eligibilityAgree" onclick={() => toggleEligibility(true)}/>
 				<Label for="eligibilityAgree">Agree</Label>
 			</div>
 			<div class="flex items-center space-x-2">
-				<RadioGroup.Item value="false" id="eligibilityDisagree" onclick={() => toggleEligibility()}/>
+				<RadioGroup.Item value="false" id="eligibilityDisagree" onclick={() => toggleEligibility(false)}/>
 				<Label for="eligibilityDisagree">Disagree</Label>
 			</div>
 			<!-- <RadioGroup.Input name="eligibility" /> -->
