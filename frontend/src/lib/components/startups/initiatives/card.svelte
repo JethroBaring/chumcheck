@@ -7,7 +7,7 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { InitiativeViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { initiative, ai, members, update, addToInitiative, deleteInitiative, role, tasks } =
+	let { initiative, ai, members, update, addToInitiative, deleteInitiative, role, tasks, index } =
 		$props();
 
 	let assignee = $state(initiative.assignee_id);

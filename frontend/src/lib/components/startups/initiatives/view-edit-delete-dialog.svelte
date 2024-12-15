@@ -22,7 +22,8 @@
 		closeDialog,
 		tasks,
 		ai = false,
-		addToInitiative
+		addToInitiative,
+		index
 	} = $props();
 
 	let rnsCopy = $state({ ...rns });
@@ -55,8 +56,10 @@
 						{#if editDescription}
 							<Textarea rows={12} bind:value={rnsCopy.description} class="text-justify text-base" />
 							<div class="ml-auto flex gap-2">
-								<Button variant="outline" onclick={() => (editDescription = false)}>Cancel</Button
+								<Button size="sm" variant="outline" onclick={() => (editDescription = false)}
+									>Cancel</Button
 								><Button
+									size="sm"
 									onclick={async () => {
 										await update(rnsCopy.id, { description: rnsCopy.description });
 										editDescription = false;
@@ -75,10 +78,11 @@
 						<Label for="username">Measures</Label>
 						{#if editMeasures}
 							<Textarea rows={12} bind:value={rnsCopy.measures} class="text-justify text-base" />
-							<!-- <div contenteditable="true" bind:this={descriptionDiv} class="focus:border-none active:border-none outline-red-500">{rnsCopy.description}</div> -->
 							<div class="ml-auto flex gap-2">
-								<Button variant="outline" onclick={() => (editMeasures = false)}>Cancel</Button
+								<Button size="sm" variant="outline" onclick={() => (editMeasures = false)}
+									>Cancel</Button
 								><Button
+									size="sm"
 									onclick={async () => {
 										await update(rnsCopy.id, { measures: rnsCopy.measures });
 										editMeasures = false;
@@ -98,8 +102,10 @@
 						{#if editTarget}
 							<Textarea rows={12} bind:value={rnsCopy.targets} class="text-justify text-base" />
 							<div class="ml-auto flex gap-2">
-								<Button variant="outline" onclick={() => (editTarget = false)}>Cancel</Button
+								<Button size="sm" variant="outline" onclick={() => (editTarget = false)}
+									>Cancel</Button
 								><Button
+									size="sm"
 									onclick={async () => {
 										await update(rnsCopy.id, { targets: rnsCopy.targets });
 										editTarget = false;
@@ -119,8 +125,10 @@
 						{#if editRemarks}
 							<Textarea rows={12} bind:value={rnsCopy.remarks} class="text-justify text-base" />
 							<div class="ml-auto flex gap-2">
-								<Button variant="outline" onclick={() => (editRemarks = false)}>Cancel</Button
+								<Button size="sm" variant="outline" onclick={() => (editRemarks = false)}
+									>Cancel</Button
 								><Button
+									size="sm"
 									onclick={async () => {
 										await update(rnsCopy.id, { remarks: rnsCopy.remarks });
 										editRemarks = false;
@@ -143,8 +151,12 @@
 						><Trash class="h-4 w-4" /> Delete</Button
 					>
 					{#if ai}
-						<Button size="sm" onclick={() => addToInitiative(rnsCopy.id)}
-							><Check class="h-4 w-4" /> Add to RNS</Button
+						<Button
+							size="sm"
+							onclick={ () => {
+								 addToInitiative(rnsCopy.id);
+								 closeDialog()
+							}}><Check class="h-4 w-4" /> Add to RNS</Button
 						>
 					{/if}
 				</div>
@@ -180,7 +192,6 @@
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Priority No.</p>
 									<p class="w-[200px] p-3">1</p>
-									
 								</div>
 							</div>
 						</div>
@@ -190,11 +201,34 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
-<DeleteDialog
+
+<AlertDialog.Root bind:open={deleteDialogOpen} onOpenChange={deleteDialogOnOpenChange}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+			<AlertDialog.Description>
+				This action cannot be undone. This will permanently delete this Initiative.
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+			<AlertDialog.Action
+        class="bg-red-500 hover:bg-red-600"
+				onclick={ async() => {
+					await deleteRns(rns.id, index);
+					deleteDialogOpen = false
+          closeDialog()
+        }}>Continue</AlertDialog.Action
+			>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
+
+<!-- <DeleteDialog
 	open={deleteDialogOpen}
 	onOpenChange={deleteDialogOnOpenChange}
 	{rns}
 	deleteAction={deleteRns}
 	name="Initiative"
 	{closeDialog}
-/>
+/> -->

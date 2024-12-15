@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 
-	let { open, onOpenChange, rns, deleteAction, name, closeDialog } = $props();
+	let { open, onOpenChange, rns, deleteAction, name, closeDialog, index } = $props();
 </script>
 
 <AlertDialog.Root bind:open {onOpenChange}>
@@ -17,7 +17,7 @@
 			<AlertDialog.Action
         class="bg-red-500 hover:bg-red-600"
 				onclick={ async() => {
-					await deleteAction(rns.id);
+					await deleteAction(rns.id, index);
           closeDialog()
         }}>Continue</AlertDialog.Action
 			>

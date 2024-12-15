@@ -85,7 +85,36 @@
 		$rnaQueries[1].refetch();
 	};
 
+	const checkIfExist = (id: number) => {
+		const toBeAdded = $rnaQueries[1].data.results.find((item: any) => item.id === id);
+		const existingItem = $rnaQueries[1].data.results.find(
+			(d: any) =>
+				d.is_ai_generated === false && d.readiness_type_rl_type === toBeAdded.readiness_type_rl_type
+		);
+
+		if (existingItem) {
+			return true;
+		}
+
+		return false;
+	};
+
 	const addToRNA = async (id: number) => {
+		const toBeAdded = $rnaQueries[1].data.results.find((item: any) => item.id === id);
+		const existingItem = $rnaQueries[1].data.results.find(
+			(d: any) =>
+				d.is_ai_generated === false && d.readiness_type_rl_type === toBeAdded.readiness_type_rl_type
+		);
+
+		if (existingItem) {
+			await axiosInstance.delete(`/startup-rna/${existingItem.id}/`, {
+				headers: {
+					Authorization: `Bearer ${data.access}`
+				}
+			});
+			toast.info('Existing RNA data with the same readiness type deleted');
+		}
+
 		await axiosInstance.patch(
 			`/startup-rna/${id}/`,
 			{
@@ -98,7 +127,7 @@
 			}
 		);
 		toast.success('Successfuly added to RNA');
-		$rnaQueries[1].refetch();
+		$rnaQueries[1].refetch().then(() => (open = false));
 	};
 
 	const createRna = async (payload: any) => {
@@ -121,7 +150,6 @@
 		await axiosInstance.patch(
 			`/startup-rna/${id}/`,
 			{
-				is_ai_generated: false,
 				rna: description
 			},
 			{
@@ -135,7 +163,7 @@
 		$rnaQueries[1].refetch();
 	};
 
-	const deleteRNA = async (id: number) => {
+	const deleteRNA = async (id: number, index: number) => {
 		await axiosInstance.delete(`/startup-rna/${Number(id)}/`, {
 			headers: {
 				Authorization: `Bearer ${data.access}`
@@ -244,6 +272,8 @@
 				addToRna={addToRNA}
 				role={data.role}
 				{readinessData}
+				{checkIfExist}
+				
 			/>
 		{/each}
 	</div>

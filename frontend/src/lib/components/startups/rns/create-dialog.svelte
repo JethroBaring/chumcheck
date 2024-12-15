@@ -20,7 +20,7 @@
 		priority_number: null,
 		readiness_type_id: '',
 		target_level_id: '',
-		target_level_score_id: 1,
+		target_level_score_id: 2,
 		description: '',
 		startup_id: startupId,
 		task_type: '1',

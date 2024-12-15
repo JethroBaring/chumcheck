@@ -6,7 +6,7 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { RnsViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { rns, members, update, ai, addToRns, deleteRns, role } = $props();
+	let { rns, members, update, ai, addToRns, deleteRns, role, index } = $props();
 
 	let assignee = $state(rns.assignee_id);
 
@@ -77,4 +77,5 @@
 	{closeDialog}
 	{ai}
 	{addToRns}
+	{index}
 />

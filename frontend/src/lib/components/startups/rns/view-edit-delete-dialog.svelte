@@ -23,7 +23,8 @@
 		assignedMember,
 		closeDialog,
 		ai = false,
-		addToRns
+		addToRns,
+		index
 	} = $props();
 
 	let rnsCopy = $state({ ...rns });
@@ -82,8 +83,10 @@
 						<Textarea rows={12} bind:value={rnsCopy.description} class="text-justify text-base" />
 						<!-- <div contenteditable="true" bind:this={descriptionDiv} class="focus:border-none active:border-none outline-red-500">{rnsCopy.description}</div> -->
 						<div class="ml-auto flex gap-2">
-							<Button variant="outline" onclick={() => (editDescription = false)}>Cancel</Button
+							<Button size="sm" variant="outline" onclick={() => (editDescription = false)}
+								>Cancel</Button
 							><Button
+								size="sm"
 								onclick={async () => {
 									await update(rnsCopy.id, { description: rnsCopy.description });
 									editDescription = false;
@@ -105,8 +108,12 @@
 						><Trash class="h-4 w-4" /> Delete</Button
 					>
 					{#if ai}
-						<Button size="sm" onclick={() => addToRns(rnsCopy.id)}
-							><Check class="h-4 w-4" /> Add to RNS</Button
+						<Button
+							size="sm"
+							onclick={ async () => {
+								 await addToRns(rnsCopy.id);
+								 closeDialog()
+							}}><Check class="h-4 w-4" /> Add to RNS</Button
 						>
 					{/if}
 				</div>
@@ -196,11 +203,35 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
-<DeleteDialog
+
+<AlertDialog.Root bind:open={deleteDialogOpen} onOpenChange={deleteDialogOnOpenChange}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+			<AlertDialog.Description>
+				This action cannot be undone. This will permanently delete this Rns.
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+			<AlertDialog.Action
+        class="bg-red-500 hover:bg-red-600"
+				onclick={ async() => {
+					await deleteRns(rns.id, index);
+					deleteDialogOpen = false
+          closeDialog()
+        }}>Continue</AlertDialog.Action
+			>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
+
+<!-- <DeleteDialog
 	open={deleteDialogOpen}
 	onOpenChange={deleteDialogOnOpenChange}
 	{rns}
 	deleteAction={deleteRns}
 	name="Rns"
 	{closeDialog}
-/>
+	{index}
+/> -->

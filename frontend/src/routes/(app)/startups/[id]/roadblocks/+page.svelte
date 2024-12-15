@@ -116,7 +116,9 @@
 			}
 		);
 		toast.success('Successfuly added to RNA');
-		$roadblocksQueries[1].refetch();
+		$roadblocksQueries[1].refetch().then(() => {
+			open = false
+		});
 	};
 
 	const createRoadblocks = async (payload: any) => {

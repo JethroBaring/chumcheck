@@ -142,11 +142,14 @@
 	};
 
 	const addToRNS = async (id: number) => {
+		const length = columns[1].items.length;
+
 		await axiosInstance.patch(
 			`/tasks/tasks/${id}/`,
 			{
 				status: 4,
-				is_ai_generated: false
+				is_ai_generated: false,
+				priority_number: length
 			},
 			{
 				headers: {
@@ -155,11 +158,11 @@
 			}
 		);
 		toast.success('Successfuly added to RNS');
-		$rnsQueries[1].refetch();
+		$rnsQueries[1].refetch().then(() => (open = false));
 	};
 
 	const createRns = async (payload: any) => {
-		console.log(payload);
+		const statuses = ['Discontinued', 'Scheduled', 'Track', 'Delayed', 'Completed'];
 		await axiosInstance.post(
 			'/tasks/tasks/',
 			{
@@ -228,10 +231,11 @@
 					.sort((a: any, b: any) => a.order - b.order);
 			});
 		});
-	}
+	};
 
-	const deleteRNS = async (id: number) => {
-		console.log(id);
+	const deleteRNS = async (id: number, index: number) => {
+		console.log({ deleteIndex: index });
+
 		await axiosInstance.delete(`/tasks/tasks/${id}/`, {
 			headers: {
 				Authorization: `Bearer ${data.access}`
@@ -239,6 +243,130 @@
 		});
 		toast.success('Successfuly deleted a task');
 		$rnsQueries[1].refetch();
+		const updatePromises: any = [];
+		let counter = 1;
+
+		// Completed
+		columns[4].items
+			.filter((item: any) => item.id !== id)
+			.map((item: any) => {
+				item.priority_number = counter;
+				if (4 <= index) {
+					updatePromises.push(
+						axiosInstance.patch(
+							`/tasks/tasks/${item.id}/`,
+							{
+								priority_number: counter
+							},
+							{
+								headers: {
+									Authorization: `Bearer ${data.access}`
+								}
+							}
+						)
+					);
+				}
+				counter++;
+			});
+		// Delayed
+		columns[3].items
+			.filter((item: any) => item.id !== id)
+			.map((item: any) => {
+				item.priority_number = counter;
+				if (3 <= index) {
+					updatePromises.push(
+						axiosInstance.patch(
+							`/tasks/tasks/${item.id}/`,
+							{
+								priority_number: counter
+							},
+							{
+								headers: {
+									Authorization: `Bearer ${data.access}`
+								}
+							}
+						)
+					);
+				}
+				counter++;
+			});
+		// Track
+		columns[2].items
+			.filter((item: any) => item.id !== id)
+			.map((item: any) => {
+				item.priority_number = counter;
+				if (2 <= index) {
+					updatePromises.push(
+						axiosInstance.patch(
+							`/tasks/tasks/${item.id}/`,
+							{
+								priority_number: counter
+							},
+							{
+								headers: {
+									Authorization: `Bearer ${data.access}`
+								}
+							}
+						)
+					);
+				}
+				counter++;
+			});
+		// Scheduled
+		columns[1].items
+			.filter((item: any) => item.id !== id)
+			.map((item: any) => {
+				item.priority_number = counter;
+				if (1 <= index) {
+					updatePromises.push(
+						axiosInstance.patch(
+							`/tasks/tasks/${item.id}/`,
+							{
+								priority_number: counter
+							},
+							{
+								headers: {
+									Authorization: `Bearer ${data.access}`
+								}
+							}
+						)
+					);
+				}
+				counter++;
+			});
+		// Discontinued
+		columns[0].items
+			.filter((item: any) => item.id !== id)
+			.map((item: any) => {
+				item.priority_number = counter;
+				if (0 <= index) {
+					updatePromises.push(
+						axiosInstance.patch(
+							`/tasks/tasks/${item.id}/`,
+							{
+								priority_number: counter
+							},
+							{
+								headers: {
+									Authorization: `Bearer ${data.access}`
+								}
+							}
+						)
+					);
+				}
+				counter++;
+			});
+
+		try {
+			// Execute all update requests concurrently
+			await Promise.all(updatePromises);
+			$rnsQueries[1].refetch();
+			console.log('All tasks updated successfully');
+		} catch (error) {
+			$rnsQueries[1].refetch();
+			toast.error('Error updating');
+			console.error('Failed to update tasks', error);
+		}
 	};
 
 	function handleDndConsider(e: any, x: number) {
@@ -353,7 +481,7 @@
 		});
 		// Scheduled
 		columns[1].items.map((item: any) => {
-						item.priority_number = counter;
+			item.priority_number = counter;
 			updatePromises.push(
 				axiosInstance.patch(
 					`/tasks/tasks/${item.id}/`,
@@ -394,8 +522,8 @@
 			// $rnsQueries[1].refetch();
 			console.log('All tasks updated successfully');
 		} catch (error) {
-			$rnsQueries[1].refetch()
-			toast.error('Error updating')
+			$rnsQueries[1].refetch();
+			toast.error('Error updating');
 			console.error('Failed to update tasks', error);
 		}
 	}
@@ -464,7 +592,7 @@
 </svelte:head>
 
 <RnsCreateDialog {open} {onOpenChange} create={createRns} {startupId} {members} {status} />
-{#snippet card(rns: any, ai = false)}
+{#snippet card(rns: any, ai = false, index: number)}
 	<RnsCard
 		{rns}
 		{members}
@@ -472,6 +600,7 @@
 		{ai}
 		addToRns={addToRNS}
 		deleteRns={deleteRNS}
+		{index}
 		role={data.role}
 	/>
 {/snippet}
@@ -624,8 +753,10 @@
 		{:else}
 			{#each readiness as readiness}
 				<AIColumn name={readiness.name} generate={generateRNS} role={data.role}>
-					{#each $rnsQueries[1].data.results.filter((data) => data.readiness_type_rl_type === readiness.name && data.is_ai_generated === true) as item}
-						{@render card(item, true)}
+					{#each $rnsQueries[1].data.results.filter((data) => data.readiness_type_rl_type === readiness.name && data.is_ai_generated === true) as item, index}
+						<div>
+							{@render card(item, true, index)}
+						</div>
 					{/each}
 				</AIColumn>
 			{/each}

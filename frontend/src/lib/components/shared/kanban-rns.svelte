@@ -49,11 +49,10 @@
 						{#each column.items as item (item.id)}
 							<div
 								animate:flip={{ duration: flipDurationMs }}
-								class:pointer-events-none={item.task_type === 2}
 								class:hidden={(!selectedMembers.includes(item.assignee_id) &&
 									selectedMembers.length !== 0) || (taskType !== 3 && item.task_type !== taskType)}
 							>
-								{@render card(item)}
+								{@render card(item, false, index)}
 							</div>
 						{/each}
 					{/if}
@@ -69,7 +68,7 @@
 								class:hidden={!selectedMembers.includes(item.assignee_id) &&
 									selectedMembers.length !== 0}
 							>
-								{@render card(item)}
+								{@render card(item, false, index)}
 							</div>
 						{/each}
 					{/if}

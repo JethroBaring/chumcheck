@@ -94,12 +94,10 @@
 		let ids = $initiativesQueries[1].data.results
 			.filter(
 				(data: any) =>
-					data.readiness_type_rl_type.slice(0, 1) === type && data.is_ai_generated === false
+					data.readiness_type_rl_type.slice(0, 1) === type && data.is_ai_generated === false && data.task_type === 1
 			)
 			.map((d: any) => d.id);
 
-		console.log(ids);
-		ids = [1];
 		if (ids.length > 0) {
 			const requests = ids.map(async (id: any) => {
 				return await axiosInstance.post(
@@ -142,7 +140,7 @@
 		);
 		toast.success('Successfuly added to Initiatives');
 		$initiativesQueries[1].refetch();
-		$initiativesQueries[2].refetch();
+		$initiativesQueries[2].refetch().then(() => (open = false));
 	};
 
 	const createInitiative = async (payload: any) => {
@@ -201,7 +199,7 @@
 		toast.success('Successfuly updated Initiatives');
 		$initiativesQueries[1].refetch();
 		$initiativesQueries[2].refetch();
-	}
+	};
 
 	const deleteInitiative = async (id: number) => {
 		console.log(id);
@@ -295,7 +293,7 @@
 		});
 		// Scheduled
 		columns[1].items.map((item: any) => {
-						item.initiative_number = counter;
+			item.initiative_number = counter;
 			updatePromises.push(
 				axiosInstance.patch(
 					`/tasks/initiatives/${item.id}/`,
@@ -336,8 +334,8 @@
 			// $rnsQueries[1].refetch();
 			console.log('All tasks updated successfully');
 		} catch (error) {
-			$initiativesQueries[1].refetch()
-			toast.error('Error updating')
+			$initiativesQueries[1].refetch();
+			toast.error('Error updating');
 			console.error('Failed to update tasks', error);
 		}
 	}
@@ -414,7 +412,7 @@
 	{status}
 />
 
-{#snippet card(initiative: any, ai: any = false)}
+{#snippet card(initiative: any, ai: any = false, index: number)}
 	<InitiativeCard
 		{initiative}
 		{ai}
@@ -424,6 +422,7 @@
 		addToInitiative={addToInitiatives}
 		role={data.role}
 		{tasks}
+		{index}
 	/>
 {/snippet}
 
@@ -440,7 +439,7 @@
 				<div class="flex">
 					{#each [1, 2] as item, index}
 						<Skeleton
-							class={`border-background flex h-9 w-9 items-center justify-center rounded-full border-2 ${
+							class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
 								index !== 2 - 1 ? '-mr-1' : ''
 							} `}
 						>
@@ -449,22 +448,22 @@
 					{/each}
 				</div>
 			</div>
-			<div class="bg-background ml-auto">
+			<div class="ml-auto bg-background">
 				<Skeleton class="h-9 w-[90px]" />
 			</div>
 		</div>
 
 		<div class="grid h-full grid-cols-4 gap-5">
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
 		</div>
@@ -477,14 +476,14 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<AITabs {selectedTab} name="initiatives" updateTab={updateInitiativeTab} />
 				</div>
 			</Can>
 			{#if selectedTab === 'initiatives'}
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<Tabs.Root value={selectedFormat}>
-						<Tabs.List class="bg-flutter-gray/20 border">
+						<Tabs.List class="border bg-flutter-gray/20">
 							<Tabs.Trigger
 								class="flex items-center gap-1"
 								value="board"
@@ -526,13 +525,12 @@
 				/>
 			{:else}
 				<div class="h-fit w-full rounded-md border">
-					<Table.Root class="bg-background rounded-lg">
+					<Table.Root class="rounded-lg bg-background">
 						<Table.Header>
 							<Table.Row class="text-centery h-12">
 								<Table.Head class="pl-5">Description</Table.Head>
 								<Table.Head class="">Priority No.</Table.Head>
 								<Table.Head class="">Initiative No.</Table.Head>
-								<!-- <Table.Head class="">Term</Table.Head> -->
 								<Table.Head class="">Assignee</Table.Head>
 							</Table.Row>
 						</Table.Header>
@@ -540,15 +538,12 @@
 							{#each $initiativesQueries[2].data.results.filter((data) => data.is_ai_generated === false) as item}
 								{#if selectedMembers.includes(item.assignee_id) || selectedMembers.length === 0}
 									<Table.Row class="h-14 cursor-pointer">
-										<!-- <Table.Cell class="pl-5">{item.readiness_type_rl_type}</Table.Cell> -->
 										<Table.Cell class="pl-5">{item.description.substring(0, 100)}</Table.Cell>
-										<Table.Cell class="">{tasks.filter((task) => task.id === item.task_id)[0].priority_number}</Table.Cell>
+										<Table.Cell class=""
+											>{tasks.filter((task) => task.id === item.task_id)[0]
+												.priority_number}</Table.Cell
+										>
 										<Table.Cell class="">{item?.initiative_number}</Table.Cell>
-										<!-- <Table.Cell class=""
-											><Badge variant="secondary"
-												>{item.task_type === 1 ? 'Short' : 'Long'} Term</Badge
-											></Table.Cell
-										> -->
 										<Table.Cell class="">
 											{members.filter((member: any) => member.user_id === item.assignee_id)[0]
 												?.first_name}
@@ -566,7 +561,7 @@
 			{#each readiness as readiness}
 				{#if readiness.show}
 					<AIColumn name={readiness.name} generate={generateInitiatives} role={data.role}>
-						{#each $initiativesQueries[2].data.results.filter((data) => data.is_ai_generated === true) as item}
+						{#each $initiativesQueries[2].data.results.filter((data) => data.is_ai_generated === true) as item, index}
 							{@const ids = $initiativesQueries[1].data.results
 								.filter(
 									(data) =>
@@ -580,62 +575,9 @@
 									data.id === item.task_id
 							)[0]}
 							{#if ids.includes(item.task_id)}
-								{@render card(item, true)}
-								<!-- <Card.Root class="min-h-[150px]">
-									<Card.Content class="flex h-full flex-col justify-between">
-										<div class="flex flex-col gap-1">
-											<div class="flex items-center justify-between">
-												<h2 class="text-[15px] font-semibold leading-none tracking-tight">
-													Priority No. {cur.priority_number ? cur.priority_number : ''} : Initiative
-													No. {item.initiative_number ? item.initiative_number : ''}
-												</h2>
-												<DropdownMenu.Root>
-													<DropdownMenu.Trigger>
-														<Ellipsis class="h-4 w-4" />
-													</DropdownMenu.Trigger>
-													<DropdownMenu.Content align="end">
-														<DropdownMenu.Group>
-															<DropdownMenu.Item
-																onclick={() => {
-																	addToInitiatives(item.id);
-																}}>Add to Initiative</DropdownMenu.Item
-															>
-															<DropdownMenu.Item
-																onclick={() => {
-																	// currentTask = item;
-																	// open = true;
-																	// action = 'view';
-																}}>View</DropdownMenu.Item
-															>
-															<DropdownMenu.Item
-																onclick={() => {
-																	// currentTask = item;
-																	// open = true;
-																	// action = 'edit';
-																}}>Edit</DropdownMenu.Item
-															>
-															<DropdownMenu.Item
-																onclick={() => {
-																	// currentTask = item;
-																	// open = true;
-																	// action = 'delete';
-																}}>Delete</DropdownMenu.Item
-															>
-														</DropdownMenu.Group>
-													</DropdownMenu.Content>
-												</DropdownMenu.Root>
-											</div>
-											<div class="text-sm text-muted-foreground">
-												{item.description.slice(0, 100)}
-											</div>
-										</div>
-										<div class="flex flex-wrap items-center gap-2">
-											<Badge variant="secondary"
-												>{cur.task_type === 1 ? 'Short ' : 'Long '} Term</Badge
-											>
-										</div>
-									</Card.Content>
-								</Card.Root> -->
+								<div>
+									{@render card(item, true, index)}
+								</div>
 							{/if}
 						{/each}
 					</AIColumn>

@@ -53,8 +53,9 @@
 					{#if editDescription}
 						<Textarea rows={12} bind:value={rnsCopy.description} class="text-justify text-base" />
 						<div class="ml-auto flex gap-2">
-							<Button variant="outline" onclick={() => (editDescription = false)}>Cancel</Button
+							<Button size="sm" variant="outline" onclick={() => (editDescription = false)}>Cancel</Button
 							><Button
+							size="sm"
 								onclick={async () => {
 									await update(rnsCopy.id, { description: rnsCopy.description });
 									editDescription = false;
@@ -74,7 +75,9 @@
 					{#if editFix}
 						<Textarea rows={12} bind:value={rnsCopy.fix} class="text-justify text-base" />
 						<div class="ml-auto flex gap-2">
-							<Button variant="outline" onclick={() => (editFix = false)}>Cancel</Button><Button
+							<Button size="sm" variant="outline" onclick={() => (editFix = false)}>Cancel</Button
+							><Button
+								size="sm"
 								onclick={async () => {
 									await update(rnsCopy.id, { fix: rnsCopy.fix });
 									editFix = false;
@@ -96,7 +99,9 @@
 						><Trash class="h-4 w-4" /> Delete</Button
 					>
 					{#if ai}
-						<Button size="sm" onclick={() => addToRoadblocks(rnsCopy.id)}
+						<Button size="sm" onclick={() => {
+							addToRoadblocks(rnsCopy.id)
+						}}
 							><Check class="h-4 w-4" /> Add to RNS</Button
 						>
 					{/if}
