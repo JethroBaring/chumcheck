@@ -11,7 +11,8 @@
 		role,
 		updateStatus,
 		selectedMembers,
-		taskType
+		taskType,
+		longTerms
 	}: {
 		handleDndConsider: any;
 		handleDndFinalize: any;
@@ -22,11 +23,19 @@
 		updateStatus: any;
 		selectedMembers: any;
 		taskType: any;
+		longTerms: any;
 	} = $props();
 
 	const flipDurationMs = 300;
 </script>
 
+<Column name="Long Terms" showDialog={() => {}} updateStatus={() => {}} statusId={1} {role}>
+	{#each longTerms as item, index}
+		<div>
+			{@render card(item, false, index)}
+		</div>
+	{/each}
+</Column>
 {#each columns as column, index}
 	{#if column.show}
 		<Column name={column.name} {showDialog} {updateStatus} statusId={column.value} {role}>
@@ -50,7 +59,8 @@
 							<div
 								animate:flip={{ duration: flipDurationMs }}
 								class:hidden={(!selectedMembers.includes(item.assignee_id) &&
-									selectedMembers.length !== 0) || (taskType !== 3 && item.task_type !== taskType)}
+									selectedMembers.length !== 0) ||
+									(taskType !== 3 && item.task_type !== taskType)}
 							>
 								{@render card(item, false, index)}
 							</div>

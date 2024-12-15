@@ -503,6 +503,25 @@
 			counter++;
 		});
 
+		// Long Terms
+		longTerms.map((item: any) => {
+			item.priority_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/tasks/${item.id}/`,
+					{
+						priority_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		})
+
 		try {
 			// Execute all update requests concurrently
 			await Promise.all(updatePromises);
@@ -515,13 +534,17 @@
 		}
 	};
 
+	let longTerms = $state([])
+
 	$effect(() => {
 		if (!isLoading) {
 			columns.forEach((column) => {
 				column.items = $rnsQueries[1].data.results
-					.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+					.filter((data: any) => data.is_ai_generated === false && data.status === column.value && data.task_type === 1)
 					.sort((a: any, b: any) => a.priority_number - b.priority_number);
 			});
+
+			longTerms = $rnsQueries[1].data.results.filter((data: any) => data.is_ai_generated === false && data.task_type === 2)
 		}
 	});
 
@@ -700,6 +723,7 @@
 					{updateStatus}
 					{selectedMembers}
 					{taskType}
+					{longTerms}
 				/>
 			{:else}
 				<div class="h-fit w-full rounded-md border">
