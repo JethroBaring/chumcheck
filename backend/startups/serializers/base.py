@@ -126,6 +126,7 @@ class StartupReadinessLevelBaseSerializer(serializers.ModelSerializer):
     readiness_type = serializers.CharField(
         source="readiness_level.readiness_type.get_rl_type_display", read_only=True
     )
+    remark = serializers.CharField(required=False)
 
     class Meta:
         model = startups_models.StartupReadinessLevel
@@ -135,6 +136,7 @@ class StartupReadinessLevelBaseSerializer(serializers.ModelSerializer):
             "readiness_level_id",
             "readiness_level",
             "readiness_type",
+            "remark"
         ]
 
 

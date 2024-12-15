@@ -99,6 +99,7 @@ class StartupReadinessLevel(BaseModel):
         on_delete=models.CASCADE,
         related_name="startups_level",
     )
+    remark = models.TextField(default=None, null=True, blank=True)
 
 
 class URATQuestionAnswer(BaseModel):
