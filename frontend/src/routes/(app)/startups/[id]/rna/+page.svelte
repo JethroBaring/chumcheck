@@ -14,7 +14,7 @@
 	import { RnaCard, RnaCreateDialog, RnaDialog } from '$lib/components/startups/rna';
 	import type { Actions } from '$lib/types';
 	import { Button } from '$lib/components/ui/button';
-	import { Ellipsis, Plus, Sparkles } from 'lucide-svelte';
+	import { Ellipsis, Loader, Plus, Sparkles } from 'lucide-svelte';
 	import axiosInstance from '$lib/axios';
 	import { toast } from 'svelte-sonner';
 	import * as Card from '$lib/components/ui/card';
@@ -192,6 +192,16 @@
 					.sort((a: any, b: any) => a.readiness_type.localeCompare(b.readiness_type))
 			: []
 	);
+
+	$effect(() => {
+		if ($rnaQueries[2].isSuccess) {
+			console.log(
+				$rnaQueries[2].data.results
+					.slice(-6)
+					.sort((a: any, b: any) => a.readiness_type.localeCompare(b.readiness_type))
+			);
+		}
+	});
 </script>
 
 <svelte:head>
@@ -254,8 +264,13 @@
 		</Can>
 		<div class="ml-auto flex items-center gap-3">
 			{#if selectedTab === 'ai-rna'}
-				<Button onclick={generateRNA} disabled={generatingRNA}
-					><Sparkles class="h-4 w-4" />Generate</Button
+				<Button onclick={generateRNA} disabled={generatingRNA}>
+					{#if generatingRNA}
+						<Loader class="mr-2 h-4 w-4 animate-spin" />
+					{:else}
+						<Sparkles class="h-4 w-4" />
+					{/if}
+					Generate</Button
 				>
 			{:else if data.role !== 'Startup'}
 				<Button onclick={() => (open = true)}><Plus class="h-4 w-4" />Add</Button>
@@ -273,7 +288,6 @@
 				role={data.role}
 				{readinessData}
 				{checkIfExist}
-				
 			/>
 		{/each}
 	</div>

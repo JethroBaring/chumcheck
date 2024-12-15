@@ -102,6 +102,7 @@
 		test();
 	});
 
+	let submitting = false
 </script>
 
 <form method="post" class="flex flex-col gap-5 p-3" enctype="multipart/form-data">
@@ -136,7 +137,7 @@
 						: false}>Next</Button
 			>
 		{:else}
-			<Button class="w-24" type="submit">Submit</Button>
+			<Button class="w-24" type="submit" disabled={submitting}>Submit</Button>
 		{/if}
 	</div>
 </form>

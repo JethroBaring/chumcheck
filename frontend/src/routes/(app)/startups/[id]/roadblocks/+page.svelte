@@ -27,7 +27,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { RoadblocksCard, RoadblocksCreateDialog } from '$lib/components/startups/roadblocks';
 	import { Skeleton } from '$lib/components/ui/skeleton/index.js';
-	import { Ellipsis, Kanban, Sparkles, TableIcon } from 'lucide-svelte';
+	import { Ellipsis, Kanban, Loader, Sparkles, TableIcon } from 'lucide-svelte';
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import * as Table from '$lib/components/ui/table';
 
@@ -100,6 +100,7 @@
 		);
 		generatingRoadblocks = false;
 		$roadblocksQueries[1].refetch();
+		toast.success('Successfully generated Roadblocks')
 	};
 
 	const addToRoadblocks = async (id: number) => {
@@ -187,7 +188,13 @@
 		});
 		toast.success('Successfuly updated the RNA');
 		// open = false;
-		$roadblocksQueries[1].refetch();
+		$roadblocksQueries[1].refetch().then((res) => {
+			columns.forEach((column) => {
+				column.items = res.data.results.filter(
+					(data) => data.is_ai_generated === false && data.status === column.value
+				);
+			});
+		});
 	};
 
 	const deleteRoadblock = async (id: number) => {
@@ -368,10 +375,10 @@
 	const toggleMemberSelection = (index: number) => {
 		if (index === 999) {
 			const userIndex = selectedMembers.indexOf(999);
-			if(userIndex !== -1) {
+			if (userIndex !== -1) {
 				selectedMembers.splice(userIndex, 1);
 			} else {
-				selectedMembers.push(index)				
+				selectedMembers.push(index);
 			}
 		} else {
 			const userId = members[index].user_id;
@@ -516,7 +523,11 @@
 					onclick={generateRoadblocks}
 					disabled={generatingRoadblocks}
 				>
-					<Sparkles class="mr-2 h-4 w-4" />
+					{#if generatingRoadblocks}
+						<Loader class="mr-2 h-4 w-4 animate-spin" />
+					{:else}
+						<Sparkles class="mr-2 h-4 w-4" />
+					{/if}
 					Generate
 				</Button>
 			{:else}
@@ -572,7 +583,7 @@
 			{#each $roadblocksQueries[1].data.results.filter((data: any) => data.is_ai_generated === true) as r, index}
 				<RoadblocksCard
 					roadblocks={r}
-					update={editRoadblock}
+					update={updatedEditRoadblock}
 					{addToRoadblocks}
 					deleteRoadblocks={deleteRoadblock}
 					ai={true}

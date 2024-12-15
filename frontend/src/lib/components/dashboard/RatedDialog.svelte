@@ -14,6 +14,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Select from '$lib/components/ui/select';
 	import { PUBLIC_API_URL } from '$env/static/public';
+	import { isMentor } from '$lib/utils';
 
 	let showCapsule = false;
 
@@ -235,7 +236,7 @@
 					bind:value={selectedMentor}
 					>
 						<Select.Trigger class="w-[180px]">
-							Choose a mentor
+							{mentors.filter((mentor: any) => mentor.id === selectedMentor)[0].first_name} {mentors.filter((mentor: any) => mentor.id === selectedMentor)[0].last_name}
 						</Select.Trigger>
 						<Select.Content>
 							{#each mentors as mentor}

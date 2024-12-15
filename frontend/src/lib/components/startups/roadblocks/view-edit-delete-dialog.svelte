@@ -24,7 +24,8 @@
 		closeDialog,
 		ai,
 		addToRoadblocks,
-		index
+		index,
+		role
 	} = $props();
 
 	let rnsCopy = $state({ ...rns });
@@ -51,12 +52,13 @@
 				<h1 class="text-2xl font-semibold">Risk #{rnsCopy.risk_number}</h1>
 				<div class="flex flex-col gap-3">
 					<Label for="username">Description</Label>
-					{#if editDescription}
+					{#if editDescription && role !== 'Startup'}
 						<Textarea rows={12} bind:value={rnsCopy.description} class="text-justify text-base" />
 						<div class="ml-auto flex gap-2">
-							<Button size="sm" variant="outline" onclick={() => (editDescription = false)}>Cancel</Button
+							<Button size="sm" variant="outline" onclick={() => (editDescription = false)}
+								>Cancel</Button
 							><Button
-							size="sm"
+								size="sm"
 								onclick={async () => {
 									await update(rnsCopy.id, { description: rnsCopy.description });
 									editDescription = false;
@@ -73,7 +75,7 @@
 				</div>
 				<div class="flex flex-col gap-3">
 					<Label for="username">Fix</Label>
-					{#if editFix}
+					{#if editFix && role !== 'Startup'}
 						<Textarea rows={12} bind:value={rnsCopy.fix} class="text-justify text-base" />
 						<div class="ml-auto flex gap-2">
 							<Button size="sm" variant="outline" onclick={() => (editFix = false)}>Cancel</Button
@@ -96,15 +98,18 @@
 			</div>
 			<div class="flex h-fit flex-1 flex-col gap-3">
 				<div class="flex gap-3">
-					<Button size="sm" variant="destructive" onclick={() => (deleteDialogOpen = true)}
-						><Trash class="h-4 w-4" /> Delete</Button
-					>
+					{#if role !== 'Startup'}
+						<Button size="sm" variant="destructive" onclick={() => (deleteDialogOpen = true)}
+							><Trash class="h-4 w-4" /> Delete</Button
+						>
+					{/if}
 					{#if ai}
-						<Button size="sm" onclick={async () => {
-							await addToRoadblocks(rnsCopy.id)
-							closeDialog()
-						}}
-							><Check class="h-4 w-4" /> Add to Roadblocks</Button
+						<Button
+							size="sm"
+							onclick={async () => {
+								await addToRoadblocks(rnsCopy.id);
+								closeDialog();
+							}}><Check class="h-4 w-4" /> Add to Roadblocks</Button
 						>
 					{/if}
 				</div>
@@ -114,9 +119,40 @@
 							<div class="p-2">Details</div>
 							<Separator />
 							<div class="flex flex-col gap-2 p-2">
-								<div class="flex h-9 items-center justify-between text-sm">
+								<!-- <div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Current Level</p>
 									<p class="w-[200px] p-3">{rnsCopy.readiness_level_level}</p>
+								</div> -->
+								<div class="flex h-9 items-center justify-between text-sm">
+									<p class="w-[130px]">Assignee</p>
+									{#if role !== 'Startup'}
+										<Select.Root
+											type="single"
+											bind:value={rnsCopy.assignee_id}
+											onValueChange={() => {
+												update(rnsCopy.id, { assignee_id: rnsCopy.assignee_id });
+											}}
+										>
+											<Select.Trigger class="w-[200px] border-none"
+												>{rnsCopy.assignee_id
+													? `${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].last_name}`
+													: 'None'}</Select.Trigger
+											>
+											<Select.Content class="border-none">
+												{#each members as member}
+													<Select.Item value={member.user_id}
+														>{member.first_name} {member.last_name}</Select.Item
+													>
+												{/each}
+											</Select.Content>
+										</Select.Root>
+									{:else}
+										<p class="w-[200px] p-3">
+											{rnsCopy.assignee_id
+												? `${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].last_name}`
+												: 'None'}
+										</p>
+									{/if}
 								</div>
 							</div>
 						</div>
@@ -137,14 +173,13 @@
 		<AlertDialog.Footer>
 			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
 			<AlertDialog.Action
-        class="bg-red-500 hover:bg-red-600"
-				onclick={ async() => {
+				class="bg-red-500 hover:bg-red-600"
+				onclick={async () => {
 					await deleteRns(rns.id, index);
-					deleteDialogOpen = false
-          closeDialog()
-        }}>Continue</AlertDialog.Action
+					deleteDialogOpen = false;
+					closeDialog();
+				}}>Continue</AlertDialog.Action
 			>
 		</AlertDialog.Footer>
 	</AlertDialog.Content>
 </AlertDialog.Root>
-

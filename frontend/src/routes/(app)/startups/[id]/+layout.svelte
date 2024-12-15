@@ -40,7 +40,7 @@
 			<Breadcrumb.Separator />
 			<Breadcrumb.Item>
 				<Breadcrumb.Page
-					>{getModule($page.url.pathname.split('/').slice(-1)[0] as m)}</Breadcrumb.Page
+					>{getModule($page.url.pathname.split('/').slice(-1)[0] as m) || 'Pending Approval'}</Breadcrumb.Page
 				>
 			</Breadcrumb.Item>
 		</Breadcrumb.List>

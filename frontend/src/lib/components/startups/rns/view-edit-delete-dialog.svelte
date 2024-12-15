@@ -85,7 +85,7 @@
 				<h1 class="text-2xl font-semibold">Priority #{rnsCopy.priority_number}</h1>
 				<div class="flex flex-col gap-3">
 					<Label for="username">Description</Label>
-					{#if editDescription}
+					{#if editDescription && role !== 'Startup'}
 						<Textarea rows={12} bind:value={rnsCopy.description} class="text-justify text-base" />
 						<!-- <div contenteditable="true" bind:this={descriptionDiv} class="focus:border-none active:border-none outline-red-500">{rnsCopy.description}</div> -->
 						<div class="ml-auto flex gap-2">
@@ -111,16 +111,16 @@
 			<div class="flex h-fit flex-1 flex-col gap-3">
 				<div class="flex gap-3">
 					{#if role !== 'Startup'}
-					<Button size="sm" variant="destructive" onclick={() => (deleteDialogOpen = true)}
-						><Trash class="h-4 w-4" /> Delete</Button
-					>
+						<Button size="sm" variant="destructive" onclick={() => (deleteDialogOpen = true)}
+							><Trash class="h-4 w-4" /> Delete</Button
+						>
 					{/if}
 					{#if ai}
 						<Button
 							size="sm"
-							onclick={ async () => {
-								 await addToRns(rnsCopy.id);
-								 closeDialog()
+							onclick={async () => {
+								await addToRns(rnsCopy.id);
+								closeDialog();
 							}}><Check class="h-4 w-4" /> Add to RNS</Button
 						>
 					{/if}
@@ -133,75 +133,102 @@
 							<div class="flex flex-col gap-2 p-2">
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Readiness Type</p>
-									<Select.Root type="single" bind:value={rnsCopy.readiness_type_id}>
-										<Select.Trigger class="w-[200px] border-none"
-											>{rnsCopy.readiness_type_id
-												? getReadinessTypes().filter(
-														(d) => d.id === Number(rnsCopy.readiness_type_id)
-													)[0].name
-												: ''}</Select.Trigger
-										>
-										<Select.Content class="border-none">
-											{#each getReadinessTypes() as type}
-												<Select.Item value={`${type.id}`}>{type.name}</Select.Item>
-											{/each}
-										</Select.Content>
-									</Select.Root>
+									{#if role !== 'Startup'}
+										<Select.Root type="single" bind:value={rnsCopy.readiness_type_id}>
+											<Select.Trigger class="w-[200px] border-none"
+												>{rnsCopy.readiness_type_id
+													? getReadinessTypes().filter(
+															(d) => d.id === Number(rnsCopy.readiness_type_id)
+														)[0].name
+													: ''}</Select.Trigger
+											>
+											<Select.Content class="border-none">
+												{#each getReadinessTypes() as type}
+													<Select.Item value={`${type.id}`}>{type.name}</Select.Item>
+												{/each}
+											</Select.Content>
+										</Select.Root>
+									{:else}
+										<p class="w-[200px] p-3">{rnsCopy.readiness_type_rl_type}</p>
+									{/if}
 								</div>
 
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Target Level</p>
-									<Select.Root type="single" bind:value={rnsCopy.target_level_id} onValueChange={() => update(rnsCopy.id, {target_level_id: rnsCopy.target_level_id})}>
-										<Select.Trigger class="w-[200px] border-none"
-											>{getLevel(rnsCopy.target_level_id)}</Select.Trigger
+									{#if role !== 'Startup'}
+										<Select.Root
+											type="single"
+											bind:value={rnsCopy.target_level_id}
+											onValueChange={() =>
+												update(rnsCopy.id, { target_level_id: rnsCopy.target_level_id })}
 										>
-										<Select.Content class="border-none">
-											{#each levels as item}
-												<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
-											{/each}
-										</Select.Content>
-									</Select.Root>
+											<Select.Trigger class="w-[200px] border-none"
+												>{getLevel(rnsCopy.target_level_id)}</Select.Trigger
+											>
+											<Select.Content class="border-none">
+												{#each levels as item}
+													<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
+												{/each}
+											</Select.Content>
+										</Select.Root>
+									{:else}
+										<p class="w-[200px] p-3">{getLevel(rnsCopy.target_level_id)}</p>
+									{/if}
 								</div>
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Term</p>
-									<Select.Root
-										type="single"
-										bind:value={rnsCopy.task_type}
-										onValueChange={() => {
-											update(rnsCopy.id, { task_type: rnsCopy.task_type });
-										}}
-									>
-										<Select.Trigger class="w-[200px] border-none"
-											>{rnsCopy.task_type === '1' ? 'Short Term' : 'Long Term'}</Select.Trigger
+									{#if role !== 'Startup'}
+										<Select.Root
+											type="single"
+											bind:value={rnsCopy.task_type}
+											onValueChange={() => {
+												update(rnsCopy.id, { task_type: rnsCopy.task_type });
+											}}
 										>
-										<Select.Content class="border-none">
-											<Select.Item value="1">Short Term</Select.Item>
-											<Select.Item value="2">Long Term</Select.Item>
-										</Select.Content>
-									</Select.Root>
+											<Select.Trigger class="w-[200px] border-none"
+												>{rnsCopy.task_type === '1' ? 'Short Term' : 'Long Term'}</Select.Trigger
+											>
+											<Select.Content class="border-none">
+												<Select.Item value="1">Short Term</Select.Item>
+												<Select.Item value="2">Long Term</Select.Item>
+											</Select.Content>
+										</Select.Root>
+									{:else}
+										<p class="w-[200px] p-3">
+											{rnsCopy.task_type === '1' ? 'Short Term' : 'Long Term'}
+										</p>
+									{/if}
 								</div>
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Assignee</p>
-									<Select.Root
-										type="single"
-										bind:value={rnsCopy.assignee_id}
-										onValueChange={() => {
-											update(rnsCopy.id, { assignee_id: rnsCopy.assignee_id });
-										}}
-									>
-										<Select.Trigger class="w-[200px] border-none"
-											>{rnsCopy.assignee_id
-												? `${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].last_name}`
-												: 'None'}</Select.Trigger
+									{#if role !== 'Startup'}
+										<Select.Root
+											type="single"
+											bind:value={rnsCopy.assignee_id}
+											onValueChange={() => {
+												update(rnsCopy.id, { assignee_id: rnsCopy.assignee_id });
+											}}
 										>
-										<Select.Content class="border-none">
-											{#each members as member}
-												<Select.Item value={member.user_id}
-													>{member.first_name} {member.last_name}</Select.Item
-												>
-											{/each}
-										</Select.Content>
-									</Select.Root>
+											<Select.Trigger class="w-[200px] border-none"
+												>{rnsCopy.assignee_id
+													? `${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].last_name}`
+													: 'None'}</Select.Trigger
+											>
+											<Select.Content class="border-none">
+												{#each members as member}
+													<Select.Item value={member.user_id}
+														>{member.first_name} {member.last_name}</Select.Item
+													>
+												{/each}
+											</Select.Content>
+										</Select.Root>
+									{:else}
+										<p class="w-[200px] p-3">
+											{rnsCopy.assignee_id
+												? `${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].last_name}`
+												: 'None'}
+										</p>
+									{/if}
 								</div>
 							</div>
 						</div>
@@ -223,12 +250,12 @@
 		<AlertDialog.Footer>
 			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
 			<AlertDialog.Action
-        class="bg-red-500 hover:bg-red-600"
-				onclick={ async() => {
+				class="bg-red-500 hover:bg-red-600"
+				onclick={async () => {
 					await deleteRns(rns.id, index);
-					deleteDialogOpen = false
-          closeDialog()
-        }}>Continue</AlertDialog.Action
+					deleteDialogOpen = false;
+					closeDialog();
+				}}>Continue</AlertDialog.Action
 			>
 		</AlertDialog.Footer>
 	</AlertDialog.Content>

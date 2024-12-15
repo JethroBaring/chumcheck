@@ -10,7 +10,7 @@
 	let { initiative, ai, members, update, addToInitiative, deleteInitiative, role, tasks, index } =
 		$props();
 
-	let assignee = $state(initiative.assignee_id);
+	let assignee = $derived(initiative.assignee_id);
 
 	const assignedMember = $derived(members.filter((member: any) => member.user_id === assignee)[0]);
 
@@ -80,4 +80,5 @@
 	{addToInitiative}
 	{ai}
 	{index}
+	{role}
 />

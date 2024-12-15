@@ -96,9 +96,7 @@
 		const data = await response.json();
 
 		if (response.ok) {
-			const sub = applicants.filter((d) => d.id !== startupId);
-			applicants = sub;
-			toggleDialog();
+			window.location.href = "/applications"
 		}
 	}
 	// rated
@@ -211,7 +209,8 @@
 						Authorization: `Bearer ${access}`
 					},
 					body: JSON.stringify({
-						mentor_ids: [selectedMentor.toString()]
+						mentor_ids: [selectedMentor],
+						cohort_id: 1
 					})
 				}
 			);
@@ -347,10 +346,9 @@
 		}
 	}
 </script>
+
 <svelte:head>
-	<title
-		>ChumCheck - Applications</title
-	>
+	<title>ChumCheck - Applications</title>
 </svelte:head>
 {#if $queries[0].isLoading || $queries[1].isLoading || $queries[2].isLoading}
 	<div>Fetching...</div>
@@ -388,25 +386,34 @@
 						<Table.Head class="pl-5">Startup</Table.Head>
 						<Table.Head class="">Group</Table.Head>
 						<Table.Head class="">Leader</Table.Head>
+						{#if selectedTab === 'qualified'}
+							<Table.Head>Mentor</Table.Head>
+						{/if}
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
 					{#if applicants.length > 0}
 						{#each applicants as applicant}
-							<Table.Row class="h-14 cursor-pointer" onclick={() => {
-								if (selectedTab === 'pending') {
-									getPendingStartupInformation(applicant.id);
-								} else if (selectedTab === 'rated') {
-									getRatedStartupInformation(applicant.id);
-								} else {
-									getQualifiedStartupInformation(applicant.id);
-								}
-							}}>
+							<Table.Row
+								class="h-14 cursor-pointer"
+								onclick={() => {
+									if (selectedTab === 'pending') {
+										getPendingStartupInformation(applicant.id);
+									} else if (selectedTab === 'rated') {
+										getRatedStartupInformation(applicant.id);
+									} else {
+										getQualifiedStartupInformation(applicant.id);
+									}
+								}}
+							>
 								<Table.Cell class="pl-5">{applicant.name}</Table.Cell>
 								<Table.Cell>{applicant.group_name}</Table.Cell>
 								<Table.Cell class=""
 									>{applicant.leader_first_name} {applicant.leader_last_name}</Table.Cell
 								>
+								{#if selectedTab === 'qualified'}
+									<Table.Cell>{applicant?.mentors[0]?.first_name} {applicant?.mentors[0]?.last_name}</Table.Cell>
+								{/if}
 							</Table.Row>
 						{/each}
 					{:else}
@@ -419,7 +426,7 @@
 
 	<!-- pending dialog -->
 	{#if selectedTab === 'pending'}
-		<PendingDialog {inf} {que} {ans} {calc} {saveRating} {showDialog} {toggleDialog} {access}/>
+		<PendingDialog {inf} {que} {ans} {calc} {saveRating} {showDialog} {toggleDialog} {access} />
 	{:else if selectedTab === 'rated'}
 		<RatedDialog
 			{inf}

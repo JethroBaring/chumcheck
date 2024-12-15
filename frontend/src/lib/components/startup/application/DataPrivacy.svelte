@@ -29,7 +29,7 @@
 			>
 		</label>
         
-		<RadioGroup.Root value="false" name="data_privacy">
+		<RadioGroup.Root value={`${dataPrivacy}`} name="data_privacy">
 			<div class="flex items-center space-x-2">
 				<RadioGroup.Item value="true" id="dataAgree" 
 				onclick={() => toggleDataPrivacy(true)}

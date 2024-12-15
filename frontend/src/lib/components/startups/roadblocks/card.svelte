@@ -9,7 +9,7 @@
 	import type { Actions } from '$lib/types';
 	let { roadblocks, members, update, ai, addToRoadblocks, deleteRoadblocks, role, index } = $props();
 
-	let assignee = $state(roadblocks.assignee_id);
+	let assignee = $derived(roadblocks.assignee_id);
 
 	const assignedMember = $derived(members.filter((member: any) => member.user_id === assignee)[0]);
 
@@ -70,4 +70,5 @@
 	{ai}
 	{addToRoadblocks}
 	{index}
+	{role}
 />

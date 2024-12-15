@@ -7,7 +7,7 @@
 	import { access } from '$lib/access';
 	import { page } from '$app/stores';
 
-	const { data } = $props();
+	const { data, children } = $props();
 	const { role } = data
 
 	const [send, receive] = crossfade({
@@ -35,7 +35,6 @@
 			<nav class="flex flex-1 flex-col gap-3 text-sm text-muted-foreground">
 				{#each modules as item}
 					{@const isActive = currentModule === item.link}
-					{#if role !== 'Startup' || item.name !== 'Elevate'}
 						<a href={`/startups/${data.startupId}/overview/${item.link}`} class="w-full">
 							<Button
 								variant="ghost"
@@ -64,13 +63,12 @@
 								</div>
 							</Button>
 						</a>
-					{/if}
 				{/each}
 				<!-- <a href="/account_settings/profile" class="rounded-lg bg-secondary p-2 px-4 font-semibold text-primary" class:font-semibold={currentPage === 'profile'}> Profile </a>
         <a href="/account_settings/appearance" class="rounded-lg p-2 px-4 hover:bg-secondary/80" class:font-semibold={currentPage === 'appearance'}>Appearance</a>
         <a href="/account_settings/password" class="rounded-lg p-2 px-4 hover:bg-secondary/80" class:font-semibold={currentPage === 'password'}>Change Password</a> -->
 			</nav>
 		</div>
-		<slot />
+		{@render children()}
 	</Card.Content>
 </Card.Root>

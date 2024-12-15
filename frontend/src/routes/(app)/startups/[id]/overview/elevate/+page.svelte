@@ -13,6 +13,7 @@
 	import { toast } from 'svelte-sonner';
 	import * as Table from '$lib/components/ui/table';
 	import { getData, getReadinessLevels } from '$lib/utils';
+	import { Textarea } from '$lib/components/ui/textarea';
 	export let data: PageData;
 
 	const queryResult = useQuery(
@@ -74,23 +75,27 @@
 		console.log($readinessData.data.results);
 	}
 
-	$: if($rnaData.isSuccess) {
-		console.log($rnaData.data.results.filter((d) => d.is_ai_generated === false))
+	$: if ($rnaData.isSuccess) {
+		console.log($rnaData.data.results.filter((d) => d.is_ai_generated === false));
 	}
 
 	let elevatedReadiness: any = [0, 0, 0, 0, 0, 0];
+	let elevatedRemark: any = ['', '', '', '', '', ''];
 
 	async function elevate() {
 		console.log(elevatedReadiness);
-		const readinessToUpdate = elevatedReadiness.filter((r) => r !== 0);
+		const readinessToUpdate = elevatedReadiness
+			.map((r: any, index: number) => ({ readinessLevel: r, remark: elevatedRemark[index] }))
+			.filter((item: any) => item.readinessLevel !== 0);
 
 		if (readinessToUpdate.length > 0) {
-			const requests = readinessToUpdate.map((r) =>
+			const requests = readinessToUpdate.map((item: any) =>
 				axiosInstance.post(
 					`/startup-readiness-levels/`,
 					{
 						startup_id: data.startupId,
-						readiness_level_id: r
+						readiness_level_id: item.readinessLevel,
+						remark: item.remark ? item.remark : " "
 					},
 					{
 						headers: {
@@ -99,14 +104,19 @@
 					}
 				)
 			);
-			1;
 
 			try {
 				await axios.all(requests);
 				console.log('All readiness levels updated successfully');
 				toast.success('Elevated successfully');
 				elevatedReadiness = [0, 0, 0, 0, 0, 0];
-				$readinessData.refetch();
+				elevatedRemark = ['', '', '', '', '', ''];
+				$readinessData.refetch().then((res) => {
+					res.data.results
+						.slice(-6)
+						.sort((a, b) => a.readiness_type.localeCompare(b.readiness_type))
+						.map((x, index) => (elevatedReadiness[index] = x.readiness_level_id));
+				});
 			} catch (error) {
 				console.error('Error updating readiness levels:', error);
 			}
@@ -115,12 +125,25 @@
 		}
 	}
 
-	$: console.log(getReadinessLevels('Technology'));
-
 	const getLevel = (levels: any, id) => {
 		if (id === 0) return '';
 		return levels.filter((level: any) => Number(level.id) === Number(id))[0].level;
 	};
+
+	let t = false;
+
+	$: if ($readinessData.isSuccess && !t) {
+		t = true;
+		$readinessData.data.results
+			.slice(-6)
+			.sort((a, b) => a.readiness_type.localeCompare(b.readiness_type))
+			.map((x, index) => {
+				elevatedReadiness[index] = x.readiness_level_id;
+				elevatedRemark[index] = x.remark;
+			});
+
+		console.log(elevatedReadiness);
+	}
 </script>
 
 <svelte:head>
@@ -139,8 +162,10 @@
 							<Table.Head class="pl-5">Type</Table.Head>
 							<Table.Head class="">Initial Level</Table.Head>
 							<Table.Head class="">Current Level</Table.Head>
-							<Table.Head class="">Target Level</Table.Head>
-							<Table.Head class="">Next Level</Table.Head>
+							{#if data.role !== 'Startup'}
+								<Table.Head class="">Next Level</Table.Head>
+							{/if}
+							<Table.Head class="">Remarks</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
@@ -150,28 +175,47 @@
 							{#each $readinessData.data.results
 								.slice(-6)
 								.sort((a, b) => a.readiness_type.localeCompare(b.readiness_type)) as r, index}
+								{@const initial = $readinessData.data.results
+									.slice(0, 6)
+									.sort((a, b) => a.readiness_type.localeCompare(b.readiness_type))[index]}
 								<Table.Row class="h-14 cursor-pointer">
 									<Table.Cell class="pl-5">{r.readiness_type}</Table.Cell>
+									<Table.Cell class="">{initial.readiness_level}</Table.Cell>
 									<Table.Cell class="">{r.readiness_level}</Table.Cell>
-									<Table.Cell class="">{r.readiness_level}</Table.Cell>
-									<Table.Cell class="">{r.readiness_level}</Table.Cell>
-									<Table.Cell class="">
-										<Select.Root type="single" bind:value={elevatedReadiness[index]}>
-											<Select.Trigger class="w-[100px]"
-												>{getLevel(
-													getReadinessLevels(r.readiness_type),
-													elevatedReadiness[index]
-												)}</Select.Trigger
-											>
-											<Select.Content>
-												{#each getReadinessLevels(r.readiness_type) as item}
-													<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
-												{/each}
-												<!-- <Select.Item value="light">Light</Select.Item>
-												<Select.Item value="dark">Dark</Select.Item>
-												<Select.Item value="system">System</Select.Item> -->
-											</Select.Content>
-										</Select.Root>
+									{#if data.role !== 'Startup'}
+										<Table.Cell class="">
+											<Select.Root type="single" bind:value={elevatedReadiness[index]}>
+												<Select.Trigger class="w-[100px]">
+													{#if elevatedReadiness[index] !== r.readiness_level_id}
+														{getLevel(
+															getReadinessLevels(r.readiness_type),
+															elevatedReadiness[index]
+														)}
+													{/if}
+												</Select.Trigger>
+												<Select.Content>
+													{#each getReadinessLevels(r.readiness_type) as item}
+														<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
+													{/each}
+												</Select.Content>
+											</Select.Root>
+										</Table.Cell>
+									{/if}
+									<Table.Cell>
+										{#if data.role !== 'Startup'}
+											{#if elevatedReadiness[index] === r.readiness_level_id}
+												<Textarea rows={1} bind:value={r.remark} readonly />
+											{:else}
+												<Textarea rows={1} bind:value={elevatedRemark[index]} />
+											{/if}
+										{:else}
+											<Textarea
+												rows={1}
+												class="border-none outline-none active:border-none active:outline-none"
+												readonly
+												value={r.remark}
+											/>
+										{/if}
 									</Table.Cell>
 								</Table.Row>
 							{/each}
@@ -179,27 +223,9 @@
 					</Table.Body>
 				</Table.Root>
 			</div>
-
-			<!-- <Select.Root
-						onSelectedChange={(e) => {
-							r.new = e?.value;
-						}}
-					>
-						<Select.Trigger class="w-[300px]">
-							<Select.Value
-								placeholder={$readinessData.data.results
-									.filter((d) => d.readiness_type === r.name)
-									.sort((a, b) => b.id - a.id)[0]?.readiness_level}
-							/>
-						</Select.Trigger>
-
-						<Select.Content>
-							{#each $readinessLevel.data.results.filter((data) => data.readiness_type === r.name) as item}
-								<Select.Item value={item.id}>{item.level}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root> -->
 		{/if}
 	</div>
-	<div><Button onclick={elevate}>Elevate</Button></div>
+	{#if data.role !== 'Startup'}
+		<div><Button onclick={elevate}>Elevate</Button></div>
+	{/if}
 </div>

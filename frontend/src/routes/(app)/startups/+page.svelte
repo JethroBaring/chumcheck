@@ -107,7 +107,7 @@
 	{#if role !== 'Startup'}
 		<div class="mt-3 grid grid-cols-4 gap-3">
 			{#each listOfStartups.filter((startup: any) => startup.qualification_status === 3) as startup}
-				<StartupCard {startup} />
+				<StartupCard {startup} {role} />
 			{/each}
 		</div>
 	{:else}
@@ -117,7 +117,7 @@
 				<Accordion.Content>
 					<div class="mt-3 grid grid-cols-4 gap-3">
 						{#each listOfStartups.filter((startup: any) => startup.qualification_status === 3) as startup}
-							<StartupCard {startup} />
+							<StartupCard {startup} {role} />
 						{/each}
 					</div>
 				</Accordion.Content>
@@ -127,17 +127,7 @@
 				<Accordion.Content>
 					<div class="mt-3 grid grid-cols-4 gap-3">
 						{#each listOfStartups.filter((startup: any) => startup.qualification_status === 1 || startup.qualification_status === 2) as startup}
-							<StartupCard {startup} />
-						{/each}
-					</div>
-				</Accordion.Content>
-			</Accordion.Item>
-			<Accordion.Item value="denied" class="w-full">
-				<Accordion.Trigger>Denied Startups</Accordion.Trigger>
-				<Accordion.Content>
-					<div class="mt-3 grid grid-cols-4 gap-3">
-						{#each listOfStartups.filter((startup: any) => startup.qualification_status === 1 || startup.qualification_status === 2) as startup}
-							<StartupCard {startup} />
+							<StartupCard {startup} {role}/>
 						{/each}
 					</div>
 				</Accordion.Content>

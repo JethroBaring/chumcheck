@@ -113,22 +113,22 @@
 	const readiness = $derived(
 		$readinessLevelQueries[3].isSuccess
 			? {
-					technology: $readinessLevelQueries[3].data.results.filter(
+					technology: $readinessLevelQueries[3].data.results.slice(-6).filter(
 						(r: any) => r.readiness_type === 'Technology'
 					)[0].readiness_level,
-					organizational: $readinessLevelQueries[3].data.results.filter(
+					organizational: $readinessLevelQueries[3].data.results.slice(-6).filter(
 						(r: any) => r.readiness_type === 'Organizational'
 					)[0].readiness_level,
-					acceptance: $readinessLevelQueries[3].data.results.filter(
+					acceptance: $readinessLevelQueries[3].data.results.slice(-6).filter(
 						(r: any) => r.readiness_type === 'Acceptance'
 					)[0].readiness_level,
-					market: $readinessLevelQueries[3].data.results.filter(
+					market: $readinessLevelQueries[3].data.results.slice(-6).filter(
 						(r: any) => r.readiness_type === 'Market'
 					)[0].readiness_level,
-					regulatory: $readinessLevelQueries[3].data.results.filter(
+					regulatory: $readinessLevelQueries[3].data.results.slice(-6).filter(
 						(r: any) => r.readiness_type === 'Regulatory'
 					)[0].readiness_level,
-					investment: $readinessLevelQueries[3].data.results.filter(
+					investment: $readinessLevelQueries[3].data.results.slice(-6).filter(
 						(r: any) => r.readiness_type === 'Investment'
 					)[0].readiness_level
 				}

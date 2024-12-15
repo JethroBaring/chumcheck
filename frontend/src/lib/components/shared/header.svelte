@@ -63,7 +63,7 @@
 		</div>
 		<div class="flex h-1/3 items-center justify-center gap-5">
 			<ul class="flex flex-1 cursor-pointer items-center gap-7 text-sm">
-				{#if module !== subModule && module !== 'account'}
+				{#if module !== subModule && module !== 'account' && subModule !== 'pending'}
 					<!-- submodule -->
 					{#each modules.filter((item) => item.link === module)[0].subModule as item}
 						{@const isActive = currentModule === item.link  || currentModulev2 === item.link}

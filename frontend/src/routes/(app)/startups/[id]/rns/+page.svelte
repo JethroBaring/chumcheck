@@ -169,7 +169,7 @@
 			.then((res) => {
 				columns.forEach((column) => {
 					column.items = res.data.results
-						.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+						.filter((data: any) => data.is_ai_generated === false && data.status === column.value && data.task_type === 1)
 						.sort((a: any, b: any) => a.order - b.order);
 				});
 			})
@@ -197,47 +197,13 @@
 			.then((res) => {
 				columns.forEach((column) => {
 					column.items = res.data.results
-						.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
-						.sort((a: any, b: any) => a.order - b.order);
+						.filter((data: any) => data.is_ai_generated === false && data.status === column.value && data.task_type === 1)
+						.sort((a: any, b: any) => a.priority_number - b.priority_number);
 				});
 			})
 			.finally(async () => {
 				await updatePriorityNumber();
 			});
-	};
-
-	const editRNS = async (
-		id: number,
-		level?: number, // Optional parameter
-		description?: string, // Optional parameter
-		priority_number?: number, // Optional parameter,
-		assignee_id?: number,
-		task_type?: number
-	) => {
-		console.log({ id, level, description, priority_number, assignee_id });
-		const payload: Record<string, any> = {};
-		if (level !== undefined) payload.target_level_id = level;
-		if (description !== undefined) payload.description = description;
-		if (priority_number !== undefined) payload.priority_number = priority_number;
-		if (assignee_id !== undefined) payload.assignee_id = assignee_id;
-		if (task_type !== undefined) payload.task_type = task_type;
-
-		await axiosInstance.patch(`/tasks/tasks/${id}/`, payload, {
-			headers: {
-				Authorization: `Bearer ${data.access}`
-			}
-		});
-
-		toast.success('Successfully updated the RNS');
-		open = false;
-		$rnsQueries[1].refetch().then((res) => {
-			console.log({ hannah: res.data });
-			columns.forEach((column) => {
-				column.items = res.data.results
-					.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
-					.sort((a: any, b: any) => a.order - b.order);
-			});
-		});
 	};
 
 	const updatedEditRNS = async (id: number, payload: any) => {
@@ -425,7 +391,7 @@
 
 		let counter = 1;
 		// Completed
-		columns[4].items.map((item: any) => {
+		columns[4].items.filter((item: any) => item.task_type === 1).map((item: any) => {
 			item.priority_number = counter;
 			updatePromises.push(
 				axiosInstance.patch(
@@ -443,7 +409,7 @@
 			counter++;
 		});
 		// Delayed
-		columns[3].items.map((item: any) => {
+		columns[3].items.filter((item: any) => item.task_type === 1).map((item: any) => {
 			item.priority_number = counter;
 			updatePromises.push(
 				axiosInstance.patch(
@@ -461,7 +427,7 @@
 			counter++;
 		});
 		// Track
-		columns[2].items.map((item: any) => {
+		columns[2].items.filter((item: any) => item.task_type === 1).map((item: any) => {
 			item.priority_number = counter;
 			updatePromises.push(
 				axiosInstance.patch(
@@ -479,7 +445,7 @@
 			counter++;
 		});
 		// Scheduled
-		columns[1].items.map((item: any) => {
+		columns[1].items.filter((item: any) => item.task_type === 1).map((item: any) => {
 			item.priority_number = counter;
 			updatePromises.push(
 				axiosInstance.patch(
@@ -497,7 +463,7 @@
 			counter++;
 		});
 		// Discontinued
-		columns[0].items.map((item: any) => {
+		columns[0].items.filter((item: any) => item.task_type === 1).map((item: any) => {
 			item.priority_number = counter;
 			updatePromises.push(
 				axiosInstance.patch(

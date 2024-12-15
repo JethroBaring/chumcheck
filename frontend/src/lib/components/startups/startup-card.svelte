@@ -1,9 +1,11 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card/index.js';
-	let { startup }: { startup: any } = $props();
+	let { startup, role }: { startup: any; role: any } = $props();
 </script>
 
-<a href={`/startups/${startup.id}/readiness-level`}>
+<a
+	href={`/startups/${startup.id}/${startup?.qualification_status === 3 ? 'readiness-level' : 'pending'}`}
+>
 	<Card.Root class="h-40 cursor-pointer hover:bg-secondary">
 		<Card.Content class="h-full">
 			<div class="flex h-full items-center justify-center">
@@ -14,10 +16,12 @@
 						{startup.name
 							.split(' ')
 							.map((word) => word.charAt(0).toUpperCase())
-							.join('')}
+							.join('').slice(0,2)}
 					</div>
 					<h1>{startup.name}</h1>
-					<h1>Mentor: {startup?.mentors[0]?.first_name} {startup?.mentors[0]?.last_name}</h1>
+					{#if role === 'Manager as Mentor'}
+						<h1>Mentor: {startup?.mentors[0]?.first_name} {startup?.mentors[0]?.last_name}</h1>
+					{/if}
 				</div>
 			</div>
 		</Card.Content>

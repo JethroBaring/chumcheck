@@ -8,7 +8,7 @@
 	import type { Actions } from '$lib/types';
 	let { rns, members, update, ai, addToRns, deleteRns, role, index } = $props();
 
-	let assignee = $state(rns.assignee_id);
+	let assignee = $derived(rns.assignee_id);
 
 	const assignedMember = $derived(members.filter((member: any) => member.user_id === assignee)[0]);
 

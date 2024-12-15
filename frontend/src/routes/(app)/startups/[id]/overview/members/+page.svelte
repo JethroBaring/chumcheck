@@ -237,8 +237,6 @@
 										}}><Trash class="h-4 w-4 text-red-500" /></button
 									>
 								{/if}
-
-								<!-- <Button onclick={() => removeMember(member.id)}>Delete</Button> -->
 							</Table.Cell>
 						</Table.Row>
 					{/each}
@@ -256,8 +254,6 @@
 										}}><Trash class="h-4 w-4 text-red-500" /></button
 									>
 								{/if}
-
-								<!-- <Button onclick={() => removeContractedMember(member.id)}>Delete</Button> -->
 							</Table.Cell>
 						</Table.Row>
 					{/each}

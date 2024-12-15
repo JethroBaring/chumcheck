@@ -43,6 +43,10 @@
 	};
 
 	let rnaDialog = $state(false);
+
+	$effect(() => {
+		console.log(rnsCopy);
+	});
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>
@@ -108,8 +112,33 @@
 							<Separator />
 							<div class="flex flex-col gap-2 p-2">
 								<div class="flex h-9 items-center justify-between text-sm">
+									<p class="w-[130px]">Readiness Type</p>
+									{#if role !== 'Startup'}
+										<Select.Root type="single" bind:value={rnsCopy.readiness_type_id}>
+											<Select.Trigger class="w-[200px] border-none"
+												>{rnsCopy.readiness_type_id
+													? getReadinessTypes().filter(
+															(d) => d.id === Number(rnsCopy.readiness_type_id)
+														)[0].name
+													: ''}</Select.Trigger
+											>
+											<Select.Content class="border-none">
+												{#each getReadinessTypes() as type}
+													<Select.Item value={`${type.id}`}>{type.name}</Select.Item>
+												{/each}
+											</Select.Content>
+										</Select.Root>
+									{:else}
+										<p class="w-[200px] p-3">{rnsCopy.readiness_type_rl_type}</p>
+									{/if}
+								</div>
+								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Current Level</p>
-									<p class="w-[200px] p-3">{rnsCopy.readiness_level_level}</p>
+									<p class="w-[200px] p-3">
+										{readinessData?.filter(
+											(d: any) => d?.readiness_type === rnsCopy?.readiness_type_rl_type
+										)[0]?.readiness_level}
+									</p>
 								</div>
 							</div>
 						</div>

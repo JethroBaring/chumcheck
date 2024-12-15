@@ -107,7 +107,15 @@
 
 	let titleState = $state(false);
 
-	const titleIndex = $derived($queryResult.isSuccess ? $queryResult.data.tasks.sort((a, b) => a.priority_number - b.priority_number).findIndex((task) => task.initiatives && task.initiatives.length > 0) : 0)
+	const titleIndex = $derived(
+		$queryResult.isSuccess
+			? $queryResult.data.tasks
+					.sort((a, b) => a.priority_number - b.priority_number)
+					.findIndex((task) => task.initiatives && task.initiatives.length > 0)
+			: 0
+	);
+
+	const statuses = ['', 'Discontinued', 'Delayed', 'Scheduled', 'Track', 'Completed'];
 </script>
 
 <svelte:head>
@@ -125,7 +133,7 @@
 
 {#if $queryResult.isLoading}
 	<div class="flex h-full flex-col gap-3">
-		<div class="bg-background h-full w-full">
+		<div class="h-full w-full bg-background">
 			<Skeleton class="h-full w-full" />
 		</div>
 	</div>
@@ -133,7 +141,9 @@
 	<div class="h-full overflow-scroll">
 		<Card.Root class="pdf-page h-full">
 			<Card.Content class="mt-1 flex w-full flex-col gap-5 px-10">
-				<div class="w-full text-center text-3xl font-bold">{$queryResult.data.name} - Progress Report</div>
+				<div class="w-full text-center text-3xl font-bold">
+					{$queryResult.data.name} - Progress Report
+				</div>
 				<div class="flex flex-col gap-2">
 					<p>I. Readiness Levels</p>
 					<div class="flex items-center justify-center">
@@ -252,7 +262,7 @@
 												<Table.Cell class="w-40">{rns.description.substring(0, 100)}</Table.Cell>
 												<Table.Cell>{rns.measures}</Table.Cell>
 												<Table.Cell>{rns.targets}</Table.Cell>
-												<Table.Cell class="pr-5">{rns.status}</Table.Cell>
+												<Table.Cell class="pr-5">{statuses[rns.status-1]}</Table.Cell>
 											</Table.Row>
 										{/each}
 									</Table.Body>
