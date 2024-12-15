@@ -17,7 +17,6 @@
 	let { open, onOpenChange, create, members, startupId, status } = $props();
 
 	const data = $state({
-		risk_number: '',
 		description: '',
 		fix: '',
 		assignee_id: '',
@@ -53,17 +52,6 @@
 				<Select.Content>
 					{#each members as member}
 						<Select.Item value={member.user_id}>{member.first_name} {member.last_name}</Select.Item>
-					{/each}
-				</Select.Content>
-			</Select.Root>
-		</div>
-		<div class="flex flex-col gap-4">
-			<Label for="name">Risk No.</Label>
-			<Select.Root type="single" bind:value={data.risk_number}>
-				<Select.Trigger class="w-[50px]">{data.risk_number}</Select.Trigger>
-				<Select.Content>
-					{#each [1, 2, 3, 4, 5] as item}
-						<Select.Item value={`${item}`}>{item}</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>

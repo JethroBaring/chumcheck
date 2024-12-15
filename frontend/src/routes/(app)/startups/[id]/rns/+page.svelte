@@ -131,13 +131,7 @@
 			)
 		]);
 		generatingRNS = false;
-		$rnsQueries[1].refetch().then((res) => {
-			columns.forEach((column) => {
-				column.items = res.data.results
-					.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
-					.sort((a: any, b: any) => a.order - b.order);
-			});
-		});
+		$rnsQueries[1].refetch();
 		toast.success(`Successfully generated ${generatingType} RNS`);
 	};
 
@@ -158,7 +152,16 @@
 			}
 		);
 		toast.success('Successfuly added to RNS');
-		$rnsQueries[1].refetch().then(() => (open = false));
+		$rnsQueries[1]
+			.refetch()
+			.then((res) => {
+				columns.forEach((column) => {
+					column.items = res.data.results
+						.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+						.sort((a: any, b: any) => a.order - b.order);
+				});
+			})
+			.finally(async () => await updatePriorityNumber());
 	};
 
 	const createRns = async (payload: any) => {
@@ -177,7 +180,18 @@
 		);
 		toast.success('Successfully created the RNS');
 		open = false;
-		$rnsQueries[1].refetch();
+		$rnsQueries[1]
+			.refetch()
+			.then((res) => {
+				columns.forEach((column) => {
+					column.items = res.data.results
+						.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+						.sort((a: any, b: any) => a.order - b.order);
+				});
+			})
+			.finally(async () => {
+				await updatePriorityNumber();
+			});
 	};
 
 	const editRNS = async (
@@ -389,39 +403,12 @@
 				}
 			);
 
-			const tasks = e.detail.items;
-
-			// Collect all update promises for every task
-			const updatePromises: any = [];
-
-			// for (let i = 0; i < tasks.length; i++) {
-			// 	tasks[i].items.forEach((item: any, index: number) => {
-			// 		// Create a promise for each item's update request
-			// 		updatePromises.push(
-			// 			axiosInstance.patch(
-			// 				`/tasks/tasks/${item.id}/`,
-			// 				{
-			// 					order: index + 1,
-			// 				},
-			// 				{
-			// 					headers: {
-			// 						Authorization: `Bearer ${data.access}`
-			// 					}
-			// 				}
-			// 			)
-			// 		);
-			// 	});
-			// }
-
-			// try {
-			// 	// Execute all update requests concurrently
-			// 	await Promise.all(updatePromises);
-			// 	console.log('All tasks updated successfully');
-			// } catch (error) {
-			// 	console.error('Failed to update tasks', error);
-			// }
+			updatePriorityNumber();
 		}
+	}
 
+	const updatePriorityNumber = async () => {
+		console.log('i am here');
 		const updatePromises: any = [];
 
 		let counter = 1;
@@ -526,7 +513,7 @@
 			toast.error('Error updating');
 			console.error('Failed to update tasks', error);
 		}
-	}
+	};
 
 	$effect(() => {
 		if (!isLoading) {

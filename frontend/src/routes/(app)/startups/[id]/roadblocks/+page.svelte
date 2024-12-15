@@ -116,9 +116,16 @@
 			}
 		);
 		toast.success('Successfuly added to RNA');
-		$roadblocksQueries[1].refetch().then(() => {
-			open = false
-		});
+		$roadblocksQueries[1]
+			.refetch()
+			.then((res) => {
+				columns.forEach((column) => {
+					column.items = res.data.results.filter(
+						(data) => data.is_ai_generated === false && data.status === column.value
+					);
+				});
+			})
+			.finally(async () => await updateRiskNumber());
 	};
 
 	const createRoadblocks = async (payload: any) => {
@@ -134,7 +141,14 @@
 		);
 		toast.success('Successfully created the Roadblocks');
 		open = false;
-		$roadblocksQueries[1].refetch();
+		$roadblocksQueries[1].refetch().then((res) => {
+				columns.forEach((column) => {
+					column.items = res.data.results.filter(
+						(data) => data.is_ai_generated === false && data.status === column.value
+					);
+				});
+			})
+			.finally(async () => await updateRiskNumber());;
 	};
 
 	const editRoadblock = async (
@@ -164,19 +178,15 @@
 	};
 
 	const updatedEditRoadblock = async (id: number, payload: any) => {
-		await axiosInstance.patch(
-			`/tasks/roadblocks/${id}/`,
-			payload,
-			{
-				headers: {
-					Authorization: `Bearer ${data.access}`
-				}
+		await axiosInstance.patch(`/tasks/roadblocks/${id}/`, payload, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
 			}
-		);
+		});
 		toast.success('Successfuly updated the RNA');
 		// open = false;
 		$roadblocksQueries[1].refetch();
-	}
+	};
 
 	const deleteRoadblock = async (id: number) => {
 		await axiosInstance.delete(`/tasks/roadblocks/${id}/`, {
@@ -209,6 +219,10 @@
 			);
 		}
 
+		updateRiskNumber();
+	}
+
+	const updateRiskNumber = async () => {
 		const updatePromises: any = [];
 
 		let counter = 1;
@@ -268,7 +282,7 @@
 		});
 		// Scheduled
 		columns[1].items.map((item: any) => {
-						item.risk_number = counter;
+			item.risk_number = counter;
 			updatePromises.push(
 				axiosInstance.patch(
 					`/tasks/roadblocks/${item.id}/`,
@@ -309,11 +323,11 @@
 			// $rnsQueries[1].refetch();
 			console.log('All tasks updated successfully');
 		} catch (error) {
-			$roadblocksQueries[1].refetch()
-			toast.error('Error updating')
+			$roadblocksQueries[1].refetch();
+			toast.error('Error updating');
 			console.error('Failed to update tasks', error);
 		}
-	}
+	};
 
 	$effect(() => {
 		if ($roadblocksQueries[1].isSuccess) {
@@ -415,7 +429,7 @@
 				<div class="flex">
 					{#each [1, 2] as item, index}
 						<Skeleton
-							class={`border-background flex h-9 w-9 items-center justify-center rounded-full border-2 ${
+							class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
 								index !== 2 - 1 ? '-mr-1' : ''
 							} `}
 						>
@@ -424,22 +438,22 @@
 					{/each}
 				</div>
 			</div>
-			<div class="bg-background ml-auto">
+			<div class="ml-auto bg-background">
 				<Skeleton class="h-9 w-[90px]" />
 			</div>
 		</div>
 
 		<div class="grid h-full grid-cols-4 gap-5">
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="bg-background h-full w-full">
+			<div class="h-full w-full bg-background">
 				<Skeleton class="h-full" />
 			</div>
 		</div>
@@ -454,33 +468,33 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="bg-background flex h-fit justify-between rounded-lg">
+				<div class="flex h-fit justify-between rounded-lg bg-background">
 					<AITabs {selectedTab} name="roadblocks" updateTab={updateRoadblocksTab} />
 				</div>
 			</Can>
 			{#if selectedTab === 'roadblocks'}
-			<div class="bg-background flex h-fit justify-between rounded-lg">
-				<Tabs.Root value={selectedFormat}>
-					<Tabs.List class="bg-flutter-gray/20 border">
-						<Tabs.Trigger
-							class="flex items-center gap-1"
-							value="board"
-							onclick={() => (selectedFormat = 'board')}
-						>
-							<Kanban class="h-4 w-4" />
-							Board</Tabs.Trigger
-						>
-						<Tabs.Trigger
-							class="flex items-center gap-1"
-							value="table"
-							onclick={() => (selectedFormat = 'table')}
-						>
-							<TableIcon class="h-4 w-4" />
-							Table</Tabs.Trigger
-						>
-					</Tabs.List>
-				</Tabs.Root>
-			</div>
+				<div class="flex h-fit justify-between rounded-lg bg-background">
+					<Tabs.Root value={selectedFormat}>
+						<Tabs.List class="border bg-flutter-gray/20">
+							<Tabs.Trigger
+								class="flex items-center gap-1"
+								value="board"
+								onclick={() => (selectedFormat = 'board')}
+							>
+								<Kanban class="h-4 w-4" />
+								Board</Tabs.Trigger
+							>
+							<Tabs.Trigger
+								class="flex items-center gap-1"
+								value="table"
+								onclick={() => (selectedFormat = 'table')}
+							>
+								<TableIcon class="h-4 w-4" />
+								Table</Tabs.Trigger
+							>
+						</Tabs.List>
+					</Tabs.Root>
+				</div>
 				<MembersFilter {members} {toggleMemberSelection} {selectedMembers} />
 			{/if}
 		</div>
@@ -515,7 +529,7 @@
 			</div>
 		{:else}
 			<div class="h-fit w-full rounded-md border">
-				<Table.Root class="bg-background rounded-lg">
+				<Table.Root class="rounded-lg bg-background">
 					<Table.Header>
 						<Table.Row class="text-centery h-12">
 							<Table.Head class="pl-5">Description</Table.Head>
@@ -526,16 +540,16 @@
 					<Table.Body>
 						{#each $roadblocksQueries[1].data.results.filter((data) => data.is_ai_generated === false) as item}
 							{#if selectedMembers.includes(item.assignee_id) || selectedMembers.length === 0}
-							<Table.Row class="h-14 cursor-pointer">
-								<Table.Cell class="pl-5">{item.description.substring(0, 100)}</Table.Cell>
-								<Table.Cell class="">{item.target_level_level}</Table.Cell>
-								<Table.Cell class=""
-									>{members.filter((member: any) => member.user_id === item.assignee_id)[0]
-										?.first_name}
-									{members.filter((member: any) => member.user_id === item.assignee_id)[0]
-										?.last_name}</Table.Cell
-								>
-							</Table.Row>
+								<Table.Row class="h-14 cursor-pointer">
+									<Table.Cell class="pl-5">{item.description.substring(0, 100)}</Table.Cell>
+									<Table.Cell class="">{item.target_level_level}</Table.Cell>
+									<Table.Cell class=""
+										>{members.filter((member: any) => member.user_id === item.assignee_id)[0]
+											?.first_name}
+										{members.filter((member: any) => member.user_id === item.assignee_id)[0]
+											?.last_name}</Table.Cell
+									>
+								</Table.Row>
 							{/if}
 						{/each}
 					</Table.Body>

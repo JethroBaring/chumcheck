@@ -12,7 +12,7 @@
 	import axios from 'axios';
 	import { toast } from 'svelte-sonner';
 	import * as Table from '$lib/components/ui/table';
-	import { getReadinessLevels } from '$lib/utils';
+	import { getData, getReadinessLevels } from '$lib/utils';
 	export let data: PageData;
 
 	const queryResult = useQuery(
@@ -49,6 +49,10 @@
 		}
 	);
 
+	const rnaData = useQuery('rnaDataElevate', async () =>
+		getData(`/startup-rna/?startup_id=${data.startupId}`, data.access!)
+	);
+
 	const readinessLevel = useQuery(
 		'readinessLevels',
 		async () =>
@@ -70,11 +74,14 @@
 		console.log($readinessData.data.results);
 	}
 
+	$: if($rnaData.isSuccess) {
+		console.log($rnaData.data.results.filter((d) => d.is_ai_generated === false))
+	}
 
-	let elevatedReadiness: any = [0,0,0,0,0,0]
+	let elevatedReadiness: any = [0, 0, 0, 0, 0, 0];
 
 	async function elevate() {
-		console.log(elevatedReadiness)
+		console.log(elevatedReadiness);
 		const readinessToUpdate = elevatedReadiness.filter((r) => r !== 0);
 
 		if (readinessToUpdate.length > 0) {
@@ -91,14 +98,15 @@
 						}
 					}
 				)
-			);1
+			);
+			1;
 
 			try {
 				await axios.all(requests);
 				console.log('All readiness levels updated successfully');
 				toast.success('Elevated successfully');
-				elevatedReadiness = [0,0,0,0,0,0]
-				$readinessData.refetch()
+				elevatedReadiness = [0, 0, 0, 0, 0, 0];
+				$readinessData.refetch();
 			} catch (error) {
 				console.error('Error updating readiness levels:', error);
 			}
@@ -110,14 +118,13 @@
 	$: console.log(getReadinessLevels('Technology'));
 
 	const getLevel = (levels: any, id) => {
-		if(id === 0) return ''
-		return levels.filter((level: any) => Number(level.id) === Number(id))[0].level
-	}
+		if (id === 0) return '';
+		return levels.filter((level: any) => Number(level.id) === Number(id))[0].level;
+	};
 </script>
+
 <svelte:head>
-	<title
-		>Settings - Elevate</title
-	>
+	<title>Settings - Elevate</title>
 </svelte:head>
 <div class="flex flex-col gap-5">
 	<h1 class="text-xl font-semibold">Elevate</h1>
@@ -125,26 +132,37 @@
 		{#if $readinessData.isLoading}
 			<Skeleton class="h-10" />
 		{:else}
-			<div class="w-2/3 rounded-md border">
+			<div class="w-3/4 rounded-md border">
 				<Table.Root class="rounded-lg bg-background">
 					<Table.Header>
 						<Table.Row class="text-centery h-12">
 							<Table.Head class="pl-5">Type</Table.Head>
 							<Table.Head class="">Initial Level</Table.Head>
-							<Table.Head class="">Elevated Level</Table.Head>
+							<Table.Head class="">Current Level</Table.Head>
+							<Table.Head class="">Target Level</Table.Head>
+							<Table.Head class="">Next Level</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
 						{#if $queryResult.isLoading}
 							<Skeleton class="h-40" />
 						{:else}
-							{#each $readinessData.data.results.slice(-6).sort((a, b) => a.readiness_type.localeCompare(b.readiness_type)) as r, index}
+							{#each $readinessData.data.results
+								.slice(-6)
+								.sort((a, b) => a.readiness_type.localeCompare(b.readiness_type)) as r, index}
 								<Table.Row class="h-14 cursor-pointer">
 									<Table.Cell class="pl-5">{r.readiness_type}</Table.Cell>
 									<Table.Cell class="">{r.readiness_level}</Table.Cell>
+									<Table.Cell class="">{r.readiness_level}</Table.Cell>
+									<Table.Cell class="">{r.readiness_level}</Table.Cell>
 									<Table.Cell class="">
 										<Select.Root type="single" bind:value={elevatedReadiness[index]}>
-											<Select.Trigger class="w-[100px]">{getLevel(getReadinessLevels(r.readiness_type), elevatedReadiness[index])}</Select.Trigger>
+											<Select.Trigger class="w-[100px]"
+												>{getLevel(
+													getReadinessLevels(r.readiness_type),
+													elevatedReadiness[index]
+												)}</Select.Trigger
+											>
 											<Select.Content>
 												{#each getReadinessLevels(r.readiness_type) as item}
 													<Select.Item value={`${item.id}`}>{item.level}</Select.Item>

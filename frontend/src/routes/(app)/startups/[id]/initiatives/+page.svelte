@@ -94,7 +94,9 @@
 		let ids = $initiativesQueries[1].data.results
 			.filter(
 				(data: any) =>
-					data.readiness_type_rl_type.slice(0, 1) === type && data.is_ai_generated === false && data.task_type === 1
+					data.readiness_type_rl_type.slice(0, 1) === type &&
+					data.is_ai_generated === false &&
+					data.task_type === 1
 			)
 			.map((d: any) => d.id);
 
@@ -140,7 +142,16 @@
 		);
 		toast.success('Successfuly added to Initiatives');
 		$initiativesQueries[1].refetch();
-		$initiativesQueries[2].refetch().then(() => (open = false));
+		$initiativesQueries[2]
+			.refetch()
+			.then((res) => {
+				columns.forEach((column) => {
+					column.items = res.data.results.filter(
+						(data: any) => data.is_ai_generated === false && data.status === column.value
+					);
+				});
+			})
+			.finally(async () => await updateInitiativeNumber());
 	};
 
 	const createInitiative = async (payload: any) => {
@@ -159,7 +170,16 @@
 		);
 		toast.success('Successfully created the Initiative');
 		open = false;
-		$initiativesQueries[2].refetch();
+		$initiativesQueries[2]
+			.refetch()
+			.then((res) => {
+				columns.forEach((column) => {
+					column.items = res.data.results.filter(
+						(data: any) => data.is_ai_generated === false && data.status === column.value
+					);
+				});
+			})
+			.finally(async () => await updateInitiativeNumber());
 	};
 
 	const editInitiative = async (
@@ -234,6 +254,20 @@
 			);
 		}
 
+		updateInitiativeNumber();
+	}
+
+	$effect(() => {
+		if (!isLoading) {
+			columns.forEach((column) => {
+				column.items = $initiativesQueries[2].data.results.filter(
+					(data: any) => data.is_ai_generated === false && data.status === column.value
+				);
+			});
+		}
+	});
+
+	const updateInitiativeNumber = async () => {
 		const updatePromises: any = [];
 
 		let counter = 1;
@@ -338,17 +372,7 @@
 			toast.error('Error updating');
 			console.error('Failed to update tasks', error);
 		}
-	}
-
-	$effect(() => {
-		if (!isLoading) {
-			columns.forEach((column) => {
-				column.items = $initiativesQueries[2].data.results.filter(
-					(data: any) => data.is_ai_generated === false && data.status === column.value
-				);
-			});
-		}
-	});
+	};
 
 	const showDialog = () => {
 		open = true;
