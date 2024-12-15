@@ -2,7 +2,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { Edit, Ellipsis, Plus, Trash, User } from 'lucide-svelte';
+	import { Edit, Ellipsis, Plus, Target, Trash, User } from 'lucide-svelte';
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { RnsViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
@@ -23,7 +23,6 @@
 		open = false;
 	};
 
-	console.log(rns);
 </script>
 
 <Card.Root
@@ -36,66 +35,19 @@
 	<Card.Content class="flex flex-col gap-2">
 		<div class="flex items-center justify-between">
 			<h2 class="text-[15px] font-semibold leading-none tracking-tight">
-				{rns.readiness_type_rl_type}
+				Priority #{rns.priority_number ? rns.priority_number : ''}
 			</h2>
-			{#if role !== 'Startup'}
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger
-						onclick={(e) => {
-							e.stopPropagation();
-						}}
-					>
-						<Ellipsis class="h-5 w-5" />
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content align="end">
-						<DropdownMenu.Group>
-							{#if ai}
-								<DropdownMenu.Item onclick={() => addToRns(rns.id)}
-									><Plus class="h-4 w-4" /> Add to Rns</DropdownMenu.Item
-								>
-							{/if}
-							<DropdownMenu.Item
-								onclick={(e) => {
-									e.stopPropagation();
-									open = true;
-									action = 'Edit';
-								}}
-							>
-								<Edit class="h-4 w-4" />
-								Edit
-							</DropdownMenu.Item>
-							<DropdownMenu.Item
-								onclick={(e) => {
-									e.stopPropagation();
-									open = true;
-									action = 'Delete';
-								}}
-							>
-								<Trash class="h-4 w-4" />
-								Delete
-							</DropdownMenu.Item>
-						</DropdownMenu.Group>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-			{/if}
+			
 		</div>
 		<div class="text-muted-foreground text-sm">
 			{rns.description.substring(0, 150) + `${rns.description.length > 150 ? '...' : ''}`}
 		</div>
-		<div class="text-muted-foreground text-sm">
-			Priority No.: <Badge variant="secondary">
-				{#if rns.priority_number}
-					{rns.priority_number}
-				{:else}
-					<p class="opacity-0">1</p>
-				{/if}
-			</Badge>
-		</div>
-		<div class="text-muted-foreground text-sm">
-			Target Level: <Badge variant="secondary">{rns.target_level_level}</Badge>
+		<div class="flex gap-1 items-center text-muted-foreground text-sm">
+			<Target class="h-4 w-4"/> Target Level: <Badge variant="secondary">{rns.target_level_level}</Badge>
 		</div>
 		<div class="flex items-center justify-between">
 			<div class="flex flex-wrap items-center gap-2">
+				<Badge variant="secondary">Organizational</Badge>
 				<Badge variant="secondary">{rns.task_type === 1 ? 'Short' : 'Long'} Term</Badge>
 			</div>
 			{#if assignedMember}
@@ -123,4 +75,6 @@
 	{members}
 	{assignedMember}
 	{closeDialog}
+	{ai}
+	{addToRns}
 />

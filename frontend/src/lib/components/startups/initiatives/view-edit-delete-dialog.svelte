@@ -6,8 +6,24 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { DeleteDialog } from '$lib/components/shared';
+	import { Check, Trash } from 'lucide-svelte';
+	import { Separator } from '$lib/components/ui/separator';
+	import * as Card from '$lib/components/ui/card/index.js';
 
-	let { open, onOpenChange, rns, deleteRns, update, action, members, assignedMember, closeDialog, tasks } = $props();
+	let {
+		open,
+		onOpenChange,
+		rns,
+		deleteRns,
+		update,
+		action,
+		members,
+		assignedMember,
+		closeDialog,
+		tasks,
+		ai = false,
+		addToInitiative
+	} = $props();
 
 	let rnsCopy = $state({ ...rns });
 
@@ -17,95 +33,168 @@
 		}
 	});
 
+	let editDescription = $state(false);
+	let editMeasures = $state(false);
+	let editTarget = $state(false);
+	let editRemarks = $state(false);
+
+	let deleteDialogOpen = $state(false);
+	const deleteDialogOnOpenChange = () => {
+		deleteDialogOpen = !deleteDialogOnOpenChange;
+	};
 </script>
 
-{#if action === 'Delete'}
-<DeleteDialog {open} {onOpenChange} {rns} deleteAction={deleteRns} name="Initiative" {closeDialog}/>
-{:else}
-	<Dialog.Root bind:open {onOpenChange}>
-		<Dialog.Content class="max-w-[600px] h-4/5 overflow-scroll">
-			<div class="grid gap-4 py-4">
-				<div class="flex flex-col gap-4">
-					<Label for="name">Task</Label>
-					<Select.Root type="single" bind:value={rnsCopy.task_id}>
-					<Select.Trigger class="h-20 text-wrap text-start"
+<Dialog.Root bind:open {onOpenChange}>
+	<Dialog.Content class="h-4/6 max-w-[1200px] overflow-scroll">
+		<div class="flex gap-10">
+			<div class="flex w-4/6 flex-col gap-5">
+				<h1 class="text-2xl font-semibold">Initiative #{rnsCopy.initiative_number}</h1>
+				<div class="flex h-[550px] flex-col gap-5 overflow-scroll">
+					<div class="flex flex-col gap-3">
+						<Label for="username">Description</Label>
+						{#if editDescription}
+							<Textarea rows={12} bind:value={rnsCopy.description} class="text-justify text-base" />
+							<div class="ml-auto flex gap-2">
+								<Button variant="outline" onclick={() => (editDescription = false)}>Cancel</Button
+								><Button
+									onclick={async () => {
+										await update(rnsCopy.id, { description: rnsCopy.description });
+										editDescription = false;
+									}}>Save</Button
+								>
+							</div>
+						{:else}
+							<button onclick={() => (editDescription = true)}>
+								<div class="text-justify">
+									{rnsCopy.description}
+								</div>
+							</button>
+						{/if}
+					</div>
+					<div class="flex flex-col gap-3">
+						<Label for="username">Measures</Label>
+						{#if editMeasures}
+							<Textarea rows={12} bind:value={rnsCopy.measures} class="text-justify text-base" />
+							<!-- <div contenteditable="true" bind:this={descriptionDiv} class="focus:border-none active:border-none outline-red-500">{rnsCopy.description}</div> -->
+							<div class="ml-auto flex gap-2">
+								<Button variant="outline" onclick={() => (editMeasures = false)}>Cancel</Button
+								><Button
+									onclick={async () => {
+										await update(rnsCopy.id, { measures: rnsCopy.measures });
+										editMeasures = false;
+									}}>Save</Button
+								>
+							</div>
+						{:else}
+							<button onclick={() => (editMeasures = true)}>
+								<div class="text-justify">
+									{rnsCopy.measures}
+								</div>
+							</button>
+						{/if}
+					</div>
+					<div class="flex flex-col gap-3">
+						<Label for="username">Target</Label>
+						{#if editTarget}
+							<Textarea rows={12} bind:value={rnsCopy.targets} class="text-justify text-base" />
+							<div class="ml-auto flex gap-2">
+								<Button variant="outline" onclick={() => (editTarget = false)}>Cancel</Button
+								><Button
+									onclick={async () => {
+										await update(rnsCopy.id, { targets: rnsCopy.targets });
+										editTarget = false;
+									}}>Save</Button
+								>
+							</div>
+						{:else}
+							<button onclick={() => (editTarget = true)}>
+								<div class="text-justify">
+									{rnsCopy.targets}
+								</div>
+							</button>
+						{/if}
+					</div>
+					<div class="flex flex-col gap-3">
+						<Label for="username">Remarks</Label>
+						{#if editRemarks}
+							<Textarea rows={12} bind:value={rnsCopy.remarks} class="text-justify text-base" />
+							<div class="ml-auto flex gap-2">
+								<Button variant="outline" onclick={() => (editRemarks = false)}>Cancel</Button
+								><Button
+									onclick={async () => {
+										await update(rnsCopy.id, { remarks: rnsCopy.remarks });
+										editRemarks = false;
+									}}>Save</Button
+								>
+							</div>
+						{:else}
+							<button onclick={() => (editRemarks = true)}>
+								<div class="text-justify">
+									{rnsCopy.remarks}
+								</div>
+							</button>
+						{/if}
+					</div>
+				</div>
+			</div>
+			<div class="flex h-fit flex-1 flex-col gap-3">
+				<div class="flex gap-3">
+					<Button size="sm" variant="destructive" onclick={() => (deleteDialogOpen = true)}
+						><Trash class="h-4 w-4" /> Delete</Button
+					>
+					{#if ai}
+						<Button size="sm" onclick={() => addToInitiative(rnsCopy.id)}
+							><Check class="h-4 w-4" /> Add to RNS</Button
 						>
-						{tasks.filter((task: any) => task.id == rnsCopy.task_id)[0].description.substring(0, 100)}
-						</Select.Trigger
-					>
-					<Select.Content>
-						{#each tasks as task}
-							<Select.Item class="" value={`${task.id}`}>{task.description.substring(0,90)}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
+					{/if}
 				</div>
-				<div class="flex flex-col gap-4">
-					<Label for="username">Description</Label>
-					<Textarea rows={4} bind:value={rnsCopy.description} readonly={action === 'View'} />
-				</div>
-				<div class="flex flex-col gap-4">
-					<Label for="username">Measures</Label>
-					<Textarea rows={2} bind:value={rnsCopy.measures} readonly={action === 'View'} />
-				</div>
-				<div class="flex flex-col gap-4">
-					<Label for="username">Target</Label>
-					<Textarea rows={2} bind:value={rnsCopy.targets} readonly={action === 'View'} />
-				</div>
-				<div class="flex flex-col gap-4">
-					<Label for="username">Remarks</Label>
-					<Textarea rows={2} bind:value={rnsCopy.remarks} readonly={action === 'View'} />
-				</div>
+				<Card.Root class="rounded-md">
+					<Card.Content class="p-0">
+						<div class="flex flex-col">
+							<div class="p-2">Details</div>
+							<Separator />
+							<div class="flex flex-col gap-2 p-2">
+								<div class="flex h-9 items-center justify-between text-sm">
+									<p class="w-[130px]">Assignee</p>
+									<Select.Root
+										type="single"
+										bind:value={rnsCopy.assignee_id}
+										onValueChange={() => {
+											update(rnsCopy.id, { assignee_id: rnsCopy.assignee_id });
+										}}
+									>
+										<Select.Trigger class="w-[200px] border-none"
+											>{rnsCopy.assignee_id
+												? `${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].last_name}`
+												: 'None'}</Select.Trigger
+										>
+										<Select.Content class="border-none">
+											{#each members as member}
+												<Select.Item value={member.user_id}
+													>{member.first_name} {member.last_name}</Select.Item
+												>
+											{/each}
+										</Select.Content>
+									</Select.Root>
+								</div>
+								<div class="flex h-9 items-center justify-between text-sm">
+									<p class="w-[130px]">Priority No.</p>
+									<p class="w-[200px] p-3">1</p>
+									
+								</div>
+							</div>
+						</div>
+					</Card.Content>
+				</Card.Root>
 			</div>
-			<div class="flex flex-col gap-4">
-				<Label for="name">Assignee</Label>
-				<Select.Root type="single" bind:value={rnsCopy.assignee_id}>
-					<Select.Trigger class="w-[180px]" disabled={action === 'View'}
-						>{rnsCopy.assignee_id
-							? `${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].first_name} ${members.filter((member: any) => member.user_id === rnsCopy.assignee_id)[0].last_name}`
-							: ''}</Select.Trigger
-					>
-					<Select.Content>
-						{#each members as member}
-							<Select.Item value={member.user_id}
-								>{member.first_name} {member.last_name}</Select.Item
-							>
-						{/each}
-					</Select.Content>
-				</Select.Root>
-			</div>
-			<div class="flex flex-col gap-4">
-				<Label for="name">Initiative No.</Label>
-				<Select.Root type="single" bind:value={rnsCopy.initiative_number}>
-					<Select.Trigger class="w-[180px]">{rnsCopy.initiative_number}</Select.Trigger>
-					<Select.Content>
-						{#each [1, 2, 3, 4, 5] as item}
-							<Select.Item value={`${item}`}>{item}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
-			</div>
-			{#if action === 'Edit'}
-				<Dialog.Footer>
-					<Button
-						onclick={async () => {
-							await update(
-								rnsCopy.id,
-								rnsCopy.description,
-								rnsCopy.measures,
-								rnsCopy.targets,
-								rnsCopy.remarks,
-								rnsCopy.initiative_number,
-								rnsCopy.assignee_id
-							)
-							closeDialog()
-						}
-						}
-						disabled={rnsCopy.description === '' || rnsCopy.measures === '' || rnsCopy.targets === '' || rnsCopy.remarks === ''}
-						>Update</Button
-					>
-				</Dialog.Footer>
-			{/if}
-		</Dialog.Content>
-	</Dialog.Root>
-{/if}
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
+<DeleteDialog
+	open={deleteDialogOpen}
+	onOpenChange={deleteDialogOnOpenChange}
+	{rns}
+	deleteAction={deleteRns}
+	name="Initiative"
+	{closeDialog}
+/>

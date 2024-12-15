@@ -43,6 +43,12 @@ export const getLocal = (name: string) => {
 export const getColumns = () => {
 	return [
 		{
+			name: 'Discontinued',
+			value: 2,
+			items: [],
+			show: true
+		},
+		{
 			name: 'Scheduled',
 			value: 4,
 			items: [],
@@ -66,12 +72,6 @@ export const getColumns = () => {
 			items: [],
 			show: true
 		},
-		{
-			name: 'Discontinued',
-			value: 2,
-			items: [],
-			show: true
-		}
 	];
 };
 

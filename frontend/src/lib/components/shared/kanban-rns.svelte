@@ -46,7 +46,7 @@
 					{#if column.items.length === 0}
 						<div class="h-40"></div>
 					{:else}
-						{#each column.items.slice().sort((a, b) => a.order - b.order) as item (item.id)}
+						{#each column.items as item (item.id)}
 							<div
 								animate:flip={{ duration: flipDurationMs }}
 								class:pointer-events-none={item.task_type === 2}

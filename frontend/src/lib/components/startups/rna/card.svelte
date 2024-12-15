@@ -94,4 +94,6 @@
 	{action}
 	{readinessData}
 	{closeDialog}
+	{ai}
+	{addToRna}
 />

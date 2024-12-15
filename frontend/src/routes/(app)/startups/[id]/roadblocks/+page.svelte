@@ -161,6 +161,21 @@
 		$roadblocksQueries[1].refetch();
 	};
 
+	const updatedEditRoadblock = async (id: number, payload: any) => {
+		await axiosInstance.patch(
+			`/tasks/roadblocks/${id}/`,
+			payload,
+			{
+				headers: {
+					Authorization: `Bearer ${data.access}`
+				}
+			}
+		);
+		toast.success('Successfuly updated the RNA');
+		// open = false;
+		$roadblocksQueries[1].refetch();
+	}
+
 	const deleteRoadblock = async (id: number) => {
 		await axiosInstance.delete(`/tasks/roadblocks/${id}/`, {
 			headers: {
@@ -190,6 +205,111 @@
 					}
 				}
 			);
+		}
+
+		const updatePromises: any = [];
+
+		let counter = 1;
+		// Completed
+		columns[4].items.map((item: any) => {
+			item.risk_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/roadblocks/${item.id}/`,
+					{
+						risk_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+		// Delayed
+		columns[3].items.map((item: any) => {
+			item.risk_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/roadblocks/${item.id}/`,
+					{
+						risk_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+		// Track
+		columns[2].items.map((item: any) => {
+			item.risk_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/roadblocks/${item.id}/`,
+					{
+						risk_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+		// Scheduled
+		columns[1].items.map((item: any) => {
+						item.risk_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/roadblocks/${item.id}/`,
+					{
+						risk_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+		// Discontinued
+		columns[0].items.map((item: any) => {
+			item.risk_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/roadblocks/${item.id}/`,
+					{
+						risk_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+
+		try {
+			// Execute all update requests concurrently
+			await Promise.all(updatePromises);
+			// $rnsQueries[1].refetch();
+			console.log('All tasks updated successfully');
+		} catch (error) {
+			$roadblocksQueries[1].refetch()
+			toast.error('Error updating')
+			console.error('Failed to update tasks', error);
 		}
 	}
 
@@ -272,7 +392,7 @@
 		{roadblocks}
 		{members}
 		ai={false}
-		update={editRoadblock}
+		update={updatedEditRoadblock}
 		{addToRoadblocks}
 		deleteRoadblocks={deleteRoadblock}
 		role={data.role}

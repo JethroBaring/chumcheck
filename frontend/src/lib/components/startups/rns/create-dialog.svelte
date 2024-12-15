@@ -43,9 +43,6 @@
 		)
 	);
 
-	$effect(() => {
-		console.log(levels);
-	});
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>

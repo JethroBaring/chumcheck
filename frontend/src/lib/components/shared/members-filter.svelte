@@ -5,10 +5,6 @@
 
 	let { members = $bindable(), toggleMemberSelection, selectedMembers } = $props();
 
-	$effect(() => {
-		console.log("here")
-		$inspect(members)
-	})
 </script>
 
 <div class="flex items-center">

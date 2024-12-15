@@ -131,7 +131,13 @@
 			)
 		]);
 		generatingRNS = false;
-		$rnsQueries[1].refetch();
+		$rnsQueries[1].refetch().then((res) => {
+			columns.forEach((column) => {
+				column.items = res.data.results
+					.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+					.sort((a: any, b: any) => a.order - b.order);
+			});
+		});
 		toast.success(`Successfully generated ${generatingType} RNS`);
 	};
 
@@ -195,8 +201,34 @@
 
 		toast.success('Successfully updated the RNS');
 		open = false;
-		$rnsQueries[1].refetch();
+		$rnsQueries[1].refetch().then((res) => {
+			console.log({ hannah: res.data });
+			columns.forEach((column) => {
+				column.items = res.data.results
+					.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+					.sort((a: any, b: any) => a.order - b.order);
+			});
+		});
 	};
+
+	const updatedEditRNS = async (id: number, payload: any) => {
+		await axiosInstance.patch(`/tasks/tasks/${id}/`, payload, {
+			headers: {
+				Authorization: `Bearer ${data.access}`
+			}
+		});
+
+		toast.success('Successfully updated the RNS');
+		open = false;
+		$rnsQueries[1].refetch().then((res) => {
+			console.log({ hannah: res.data });
+			columns.forEach((column) => {
+				column.items = res.data.results
+					.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+					.sort((a: any, b: any) => a.order - b.order);
+			});
+		});
+	}
 
 	const deleteRNS = async (id: number) => {
 		console.log(id);
@@ -215,7 +247,6 @@
 
 	async function handleDndFinalize(e: any, x: number, status: number) {
 		columns[x].items = e.detail.items;
-		console.log({ e });
 		if (e.detail.info.trigger === 'droppedIntoZone') {
 			const task = e.detail.items.find((t: any) => t.id == e.detail.info.id);
 			await axiosInstance.patch(
@@ -230,44 +261,151 @@
 				}
 			);
 
+			const tasks = e.detail.items;
+
 			// Collect all update promises for every task
 			const updatePromises: any = [];
 
-			for (let i = 0; i < columns.length; i++) {
-				columns[i].items.forEach((item: any, index) => {
-					// Create a promise for each item's update request
-					updatePromises.push(
-						axiosInstance.patch(
-							`/tasks/tasks/${item.id}/`,
-							{
-								order: index + 1, // Order starts from 1
-							},
-							{
-								headers: {
-									Authorization: `Bearer ${data.access}`
-								}
-							}
-						)
-					);
-				});
-			}
+			// for (let i = 0; i < tasks.length; i++) {
+			// 	tasks[i].items.forEach((item: any, index: number) => {
+			// 		// Create a promise for each item's update request
+			// 		updatePromises.push(
+			// 			axiosInstance.patch(
+			// 				`/tasks/tasks/${item.id}/`,
+			// 				{
+			// 					order: index + 1,
+			// 				},
+			// 				{
+			// 					headers: {
+			// 						Authorization: `Bearer ${data.access}`
+			// 					}
+			// 				}
+			// 			)
+			// 		);
+			// 	});
+			// }
 
-			try {
-				// Execute all update requests concurrently
-				await Promise.all(updatePromises);
-				console.log('All tasks updated successfully');
-			} catch (error) {
-				console.error('Failed to update tasks', error);
-			}
+			// try {
+			// 	// Execute all update requests concurrently
+			// 	await Promise.all(updatePromises);
+			// 	console.log('All tasks updated successfully');
+			// } catch (error) {
+			// 	console.error('Failed to update tasks', error);
+			// }
+		}
+
+		const updatePromises: any = [];
+
+		let counter = 1;
+		// Completed
+		columns[4].items.map((item: any) => {
+			item.priority_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/tasks/${item.id}/`,
+					{
+						priority_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+		// Delayed
+		columns[3].items.map((item: any) => {
+			item.priority_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/tasks/${item.id}/`,
+					{
+						priority_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+		// Track
+		columns[2].items.map((item: any) => {
+			item.priority_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/tasks/${item.id}/`,
+					{
+						priority_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+		// Scheduled
+		columns[1].items.map((item: any) => {
+						item.priority_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/tasks/${item.id}/`,
+					{
+						priority_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+		// Discontinued
+		columns[0].items.map((item: any) => {
+			item.priority_number = counter;
+			updatePromises.push(
+				axiosInstance.patch(
+					`/tasks/tasks/${item.id}/`,
+					{
+						priority_number: counter
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${data.access}`
+						}
+					}
+				)
+			);
+			counter++;
+		});
+
+		try {
+			// Execute all update requests concurrently
+			await Promise.all(updatePromises);
+			// $rnsQueries[1].refetch();
+			console.log('All tasks updated successfully');
+		} catch (error) {
+			$rnsQueries[1].refetch()
+			toast.error('Error updating')
+			console.error('Failed to update tasks', error);
 		}
 	}
 
 	$effect(() => {
 		if (!isLoading) {
 			columns.forEach((column) => {
-				column.items = $rnsQueries[1].data.results.filter(
-					(data: any) => data.is_ai_generated === false && data.status === column.value
-				);
+				column.items = $rnsQueries[1].data.results
+					.filter((data: any) => data.is_ai_generated === false && data.status === column.value)
+					.sort((a: any, b: any) => a.priority_number - b.priority_number);
 			});
 		}
 	});
@@ -297,11 +435,6 @@
 			selectedMembers.push(userId);
 		}
 	};
-
-	$effect(() => {
-		$inspect(members);
-		$inspect(selectedMembers);
-	});
 
 	let selectedFormat = $state('board');
 
@@ -335,7 +468,7 @@
 	<RnsCard
 		{rns}
 		{members}
-		update={editRNS}
+		update={updatedEditRNS}
 		{ai}
 		addToRns={addToRNS}
 		deleteRns={deleteRNS}

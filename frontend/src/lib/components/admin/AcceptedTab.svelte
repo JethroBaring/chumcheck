@@ -82,7 +82,6 @@
 				que = questions_data.results;
 				ans = answers_data.results;
 				calc = calculator_data;
-                console.log(data)
 				// return {
 				// 	info: data,
 				// 	questions: questions_data.results,

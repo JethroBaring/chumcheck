@@ -14,7 +14,7 @@
 	import { toast } from 'svelte-sonner';
 
 	export let data: PageData;
-	let { startupId } = data;
+	let { startupId, access } = data;
 	const queryResult = useQuery(
 		'startupData',
 		async () =>
@@ -51,40 +51,85 @@
 		if (response.ok) {
 			const membersSet = new Set(members.map((member: any) => member.id)); // Assuming each user has a unique id
 			searchedUsers = d.results.filter((user: any) => !membersSet.has(user.id));
-			search = ''
+			search = '';
 		}
 	}
 
 	async function addMember(userId: any) {
-		const { data } = await axiosInstance.post('/startup-member', {
-			user_id: userId,
-			startup_id: startupId,
-		});
+		const { data } = await axiosInstance.post(
+			'/startup-members/',
+			{
+				user_id: userId,
+				startup_id: startupId
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${access}`
+				}
+			}
+		);
 
 		if (data) {
 			toast.success('Successfully added a member');
+			$queryResult.refetch()
 		}
 	}
 
 	let firstName: string, lastName: string;
 
-	async function addContractedMember(firstName: string, lastName: string) {
-		const { data } = await axiosInstance.post('/startup-contracted-members/', {
-			startup_id: startupId,
-			first_name: firstName,
-			last_name: lastName
-		});
+	async function addContractedMember(first: string, last: string) {
+		const { data } = await axiosInstance.post(
+			'/startup-contracted-members/',
+			{
+				startup_id: startupId,
+				first_name: first,
+				last_name: last
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${access}`
+				}
+			}
+		);
 
 		if (data) {
 			toast.success('Successfully added contracted member');
 			firstName = '';
 			lastName = '';
+			$queryResult.refetch()
+		}
+	}
+	
+	async function removeMember(memberId: number) {
+		const res = await axiosInstance.delete(
+			`/startup-members/${memberId}/`,
+			{
+				headers: {
+					Authorization: `Bearer ${access}`
+				}
+			}
+		);
+
+		if(res.status === 204) {
+			toast.success('Successfully removed member');
+			$queryResult.refetch()
 		}
 	}
 
-	function removeMember(member: any) {
-		members = members.filter((d: any) => d != member);
-		searchedUsers = [...searchedUsers, member];
+	async function removeContractedMember(contractedMemberId: number) {
+		const res = await axiosInstance.delete(
+			`/startup-contracted-members/${contractedMemberId}/`,
+			{
+				headers: {
+					Authorization: `Bearer ${access}`
+				}
+			}
+		);
+
+		if(res.status === 204) {
+			toast.success('Successfully removed contracted member');
+			$queryResult.refetch()
+		}
 	}
 
 	let outsideMember = false;
@@ -142,29 +187,31 @@
 			</div>
 			<Button class="w-24" onclick={searchUsers}><Search class="h-4 w-4" /> Search</Button>
 		</div>
-		<div class="text-sm">Results</div>
 		{#if searchedUsers.length !== 0}
+		<div class="text-sm">Results</div>
 			{#each searchedUsers as user}
-				<div>{user.first_name} {user.last_name}
+				<div>
+					{user.first_name}
+					{user.last_name}
 
-					<Button onclick={() => addMember(user.id)}></Button>
+					<Button onclick={() => addMember(user.id)}>Add</Button>
 				</div>
 			{/each}
 		{/if}
 	{/if}
 	<h1 class="text-xl font-semibold">Members</h1>
 	<div class="w-2/3 rounded-md border">
-		<Table.Root class="rounded-lg bg-background">
-			<Table.Header>
-				<Table.Row class="text-centery h-12">
-					<Table.Head class="pl-5">Name</Table.Head>
-					<Table.Head class="">Role</Table.Head>
-				</Table.Row>
-			</Table.Header>
-			<Table.Body>
-				{#if $queryResult.isLoading}
-					<Skeleton class="h-40" />
-				{:else}
+		{#if $queryResult.isLoading}
+			<Skeleton class="h-40" />
+		{:else}
+			<Table.Root class="rounded-lg bg-background">
+				<Table.Header>
+					<Table.Row class="text-centery h-12">
+						<Table.Head class="pl-5">Name</Table.Head>
+						<Table.Head class="">Role</Table.Head>
+					</Table.Row>
+				</Table.Header>
+				<Table.Body>
 					<Table.Row class="h-14 cursor-pointer">
 						<Table.Cell class="pl-5"
 							>{$queryResult.data.leader_first_name}
@@ -176,36 +223,18 @@
 						<Table.Row class="h-14 cursor-pointer">
 							<Table.Cell class="pl-5">{member.first_name} {member.last_name}</Table.Cell>
 							<Table.Cell class="">Member</Table.Cell>
+							<Table.Cell class=""><Button onclick={() => removeMember(member.id)}>Delete</Button></Table.Cell>
 						</Table.Row>
 					{/each}
-				{/if}
-
-				<!-- {#each criterias as criteria, i}
-					<Table.Row class="h-14 cursor-pointer">
-						<input
-							type="hidden"
-							name={`${type}Criteria${questionnaire.level}${i + 1}`}
-							value={`${criteria.id}`}
-						/>
-						<Table.Cell class="w-1/4 pl-5">{criteria.criteria}</Table.Cell>
-						<Table.Cell class="w-[200px]">
-							<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="5"/>
-						</Table.Cell>
-						<Table.Cell class="w-[200px]">
-							<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="4"/>
-						</Table.Cell>
-						<Table.Cell class="w-[200px]">
-							<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="3"/>
-						</Table.Cell>
-						<Table.Cell class="w-[200px]">
-							<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="2"/>
-						</Table.Cell>
-						<Table.Cell class="w-[200px]">
-							<RadioButton name={`${type}${questionnaire.level}${i + 1}`} value="1" checked/>
-						</Table.Cell>
-					</Table.Row>
-				{/each} -->
-			</Table.Body>
-		</Table.Root>
+					{#each $queryResult.data.contracted_members as member}
+						<Table.Row class="h-14 cursor-pointer">
+							<Table.Cell class="pl-5">{member.first_name} {member.last_name}</Table.Cell>
+							<Table.Cell class="">Contracted Member</Table.Cell>
+							<Table.Cell class=""><Button onclick={() => removeContractedMember(member.id)}>Delete</Button></Table.Cell>
+						</Table.Row>
+					{/each}
+				</Table.Body>
+			</Table.Root>
+		{/if}
 	</div>
 </div>

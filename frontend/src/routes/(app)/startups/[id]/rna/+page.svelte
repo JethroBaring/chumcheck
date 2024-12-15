@@ -161,7 +161,7 @@
 		$rnaQueries[2].isSuccess
 			? $rnaQueries[2].data.results
 					.slice(-6)
-					.sort((a, b) => a.readiness_type.localeCompare(b.readiness_type))
+					.sort((a: any, b: any) => a.readiness_type.localeCompare(b.readiness_type))
 			: []
 	);
 </script>
