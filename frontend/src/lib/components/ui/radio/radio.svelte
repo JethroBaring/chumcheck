@@ -1,20 +1,24 @@
 <script lang="ts">
-	import Check from "svelte-radix/Check.svelte";
+	import Check from 'svelte-radix/Check.svelte';
 
-	let { name, readonly = false, value, checked } = $props()
+	let { name, readonly = false, value, checked, id, questionnaire } = $props();
 </script>
 
-<div class="w-full h-full flex items-center justify-center">
-	<div class='relative flex items-center justify-center w-fit '>
-		<label for={name}></label>
+<div class="flex h-full w-full items-center justify-center gap-3">
+	<div class="relative flex w-fit items-center justify-center">
 		<input
-			type='radio'
-			name={name}
-			{readonly}
-			value={value}
-			checked={checked}
-			class="peer appearance-none aspect-square h-4 w-4 rounded-full border border-primary text-primary shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+			type="radio"
+			{name}
+			{id}
+			disabled={readonly}
+			{value}
+			{checked}
+			class="peer aspect-square h-4 w-4 appearance-none rounded-full border border-primary text-primary shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
 		/>
-		<Check class='hidden peer-checked:block h-3.5 w-3.5 fill-primary absolute text-primary' />
+		<Check class="absolute hidden h-3.5 w-3.5 fill-primary text-primary peer-checked:block" />
 	</div>
+	{#if questionnaire}
+		<label for={id} class="cursor-pointer" class:pointer-events-none={readonly}>Level {questionnaire.level} - {questionnaire.name}</label
+		>
+	{/if}
 </div>

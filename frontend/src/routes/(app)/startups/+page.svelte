@@ -54,6 +54,12 @@
 			(startup: any) => startup.qualification_status === 1 || startup.qualification_status === 2
 		)
 	);
+
+	$effect(() => {
+		if($queryResult.isSuccess) {
+			console.log($queryResult.data)
+		}
+	})
 </script>
 
 <div class="flex items-center justify-between">

@@ -97,7 +97,7 @@
 									addToRna(rnsCopy.id);
 									open = false;
 								}
-							}}><Check class="h-4 w-4" /> Add to RNS</Button
+							}}><Check class="h-4 w-4" /> Add to RNA</Button
 						>
 					{/if}
 				</div>

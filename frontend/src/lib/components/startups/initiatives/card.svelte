@@ -4,7 +4,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Edit, Ellipsis, Plus, Trash, User } from 'lucide-svelte';
-	import { getProfileColor, zIndex } from '$lib/utils';
+	import { getPriorityStyles, getProfileColor, zIndex } from '$lib/utils';
 	import { InitiativeViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
 	let { initiative, ai, members, update, addToInitiative, deleteInitiative, role, tasks, index } =
@@ -46,8 +46,9 @@
 				`${initiative.description.length > 150 ? '...' : ''}`}
 		</div>
 		<div class="flex items-center justify-between">
-			<Badge variant="secondary"
-				>Priority #{tasks.filter((task: any) => task.id === initiative.task_id)[0]
+			<Badge class={`${getPriorityStyles(tasks.filter((task: any) => task.id === initiative.task_id)[0]
+					.priority_number)}`}
+				>RNS Priority #{tasks.filter((task: any) => task.id === initiative.task_id)[0]
 					.priority_number}</Badge
 			>
 			{#if assignedMember}
@@ -78,4 +79,5 @@
 	{tasks}
 	{addToInitiative}
 	{ai}
+	{index}
 />

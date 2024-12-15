@@ -112,7 +112,7 @@
 							/>
 						</div>
 					</div>
-					{#each inf.members as member, i}
+					{#each inf.members.slice(1) as member, i}
 						<div class="grid gap-2">
 							<Label for="email">Member #{i + 1}</Label>
 							<div class="flex gap-3">

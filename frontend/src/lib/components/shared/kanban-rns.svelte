@@ -58,7 +58,7 @@
 						{#each column.items as item (item.id)}
 							<div
 								animate:flip={{ duration: flipDurationMs }}
-								class:hidden={(!selectedMembers.includes(item.assignee_id) &&
+								class:hidden={(!selectedMembers.includes(item.assignee_id ? item.assignee_id : 999) &&
 									selectedMembers.length !== 0) ||
 									(taskType !== 3 && item.task_type !== taskType)}
 							>
@@ -75,7 +75,7 @@
 						{#each column.items.slice().sort((a, b) => a.order - b.order) as item (item.id)}
 							<div
 								animate:flip={{ duration: flipDurationMs }}
-								class:hidden={!selectedMembers.includes(item.assignee_id) &&
+								class:hidden={!selectedMembers.includes(item.assignee_id ? item.assignee_id : 999) &&
 									selectedMembers.length !== 0}
 							>
 								{@render card(item, false, index)}

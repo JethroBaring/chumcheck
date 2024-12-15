@@ -104,7 +104,7 @@
 							await addToRoadblocks(rnsCopy.id)
 							closeDialog()
 						}}
-							><Check class="h-4 w-4" /> Add to RNS</Button
+							><Check class="h-4 w-4" /> Add to Roadblocks</Button
 						>
 					{/if}
 				</div>

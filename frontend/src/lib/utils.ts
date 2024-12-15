@@ -71,7 +71,7 @@ export const getColumns = () => {
 			value: 6,
 			items: [],
 			show: true
-		},
+		}
 	];
 };
 
@@ -191,6 +191,38 @@ export const profileColor = [
 	'bg-stone-500'
 ];
 
+export const getPriorityStyles = (priority: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => {
+	const priorityClasses = {
+		1: 'bg-red-700 hover:bg-red-800',
+		2: 'bg-orange-700 hover:bg-orange-800',
+		3: 'bg-yellow-700 hover:bg-yellow-800',
+		4: 'bg-lime-700 hover:bg-lime-800',
+		5: 'bg-green-700 hover:bg-green-800',
+		6: 'bg-teal-700 hover:bg-teal-800',
+		7: 'bg-blue-700 hover:bg-blue-800',
+		8: 'bg-indigo-700 hover:bg-indigo-800',
+		9: 'bg-purple-700 hover:bg-purple-800',
+		10: 'bg-pink-700 hover:bg-pink-800'
+	};
+
+	// Default styles if priority is out of range
+	return priorityClasses[priority] || 'bg-gray-500 hover:bg-gray-600';
+};
+
+export const getReadinessStyles = (type: "Technology" | "Market" | "Acceptnace" | "Regulatory" | "Organizational" | "Investment") => {
+	const readinessClasses = {
+			Technology: "bg-gray-700 hover:bg-gray-800",       // Neutral
+			Market: "bg-cyan-700 hover:bg-cyan-800",          // Bright cyan
+			Acceptance: "bg-amber-700 hover:bg-amber-800",    // Amber
+			Regulatory: "bg-fuchsia-700 hover:bg-fuchsia-800", // Fuchsia
+			Organizational: "bg-emerald-700 hover:bg-emerald-800", // Emerald
+			Investment: "bg-slate-700 hover:bg-slate-800",    // Slate
+	};
+
+	// Default styles if type is unrecognized
+	return readinessClasses[type] || "bg-zinc-500 hover:bg-zinc-600"; // Backup gray
+};
+
 export function getProfileColor(firstName: string) {
 	if (!firstName || typeof firstName !== 'string') {
 		return 'bg-gray-500'; // Default color if no valid name is provided
@@ -239,74 +271,73 @@ export const getReadinessLevels = (
 	readiness: 'Technology' | 'Market' | 'Acceptance' | 'Organizational' | 'Regulatory' | 'Investment'
 ) => {
 	const levels = {
-    Technology: [
-        { id: 2, level: 1 },
-        { id: 3, level: 2 },
-        { id: 4, level: 3 },
-        { id: 5, level: 4 },
-        { id: 6, level: 5 },
-        { id: 7, level: 6 },
-        { id: 8, level: 7 },
-        { id: 9, level: 8 },
-        { id: 10, level: 9 }
-    ],
-    Market: [
-        { id: 11, level: 1 },
-        { id: 12, level: 2 },
-        { id: 13, level: 3 },
-        { id: 14, level: 4 },
-        { id: 15, level: 5 },
-        { id: 16, level: 6 },
-        { id: 17, level: 7 },
-        { id: 18, level: 8 },
-        { id: 19, level: 9 }
-    ],
-    Acceptance: [
-        { id: 20, level: 1 },
-        { id: 21, level: 2 },
-        { id: 22, level: 3 },
-        { id: 23, level: 4 },
-        { id: 24, level: 5 },
-        { id: 25, level: 6 },
-        { id: 26, level: 7 },
-        { id: 27, level: 8 },
-        { id: 28, level: 9 }
-    ],
-    Organizational: [
-        { id: 29, level: 1 },
-        { id: 30, level: 2 },
-        { id: 31, level: 3 },
-        { id: 32, level: 4 },
-        { id: 33, level: 5 },
-        { id: 34, level: 6 },
-        { id: 35, level: 7 },
-        { id: 36, level: 8 },
-        { id: 37, level: 9 }
-    ],
-    Regulatory: [
-        { id: 38, level: 1 },
-        { id: 39, level: 2 },
-        { id: 40, level: 3 },
-        { id: 41, level: 4 },
-        { id: 42, level: 5 },
-        { id: 43, level: 6 },
-        { id: 44, level: 7 },
-        { id: 45, level: 8 },
-        { id: 46, level: 9 }
-    ],
-    Investment: [
-        { id: 47, level: 1 },
-        { id: 48, level: 2 },
-        { id: 49, level: 3 },
-        { id: 50, level: 4 },
-        { id: 51, level: 5 },
-        { id: 52, level: 6 },
-        { id: 53, level: 7 },
-        { id: 54, level: 8 },
-        { id: 55, level: 9 }
-    ]
-};
-
+		Technology: [
+			{ id: 2, level: 1 },
+			{ id: 3, level: 2 },
+			{ id: 4, level: 3 },
+			{ id: 5, level: 4 },
+			{ id: 6, level: 5 },
+			{ id: 7, level: 6 },
+			{ id: 8, level: 7 },
+			{ id: 9, level: 8 },
+			{ id: 10, level: 9 }
+		],
+		Market: [
+			{ id: 11, level: 1 },
+			{ id: 12, level: 2 },
+			{ id: 13, level: 3 },
+			{ id: 14, level: 4 },
+			{ id: 15, level: 5 },
+			{ id: 16, level: 6 },
+			{ id: 17, level: 7 },
+			{ id: 18, level: 8 },
+			{ id: 19, level: 9 }
+		],
+		Acceptance: [
+			{ id: 20, level: 1 },
+			{ id: 21, level: 2 },
+			{ id: 22, level: 3 },
+			{ id: 23, level: 4 },
+			{ id: 24, level: 5 },
+			{ id: 25, level: 6 },
+			{ id: 26, level: 7 },
+			{ id: 27, level: 8 },
+			{ id: 28, level: 9 }
+		],
+		Organizational: [
+			{ id: 29, level: 1 },
+			{ id: 30, level: 2 },
+			{ id: 31, level: 3 },
+			{ id: 32, level: 4 },
+			{ id: 33, level: 5 },
+			{ id: 34, level: 6 },
+			{ id: 35, level: 7 },
+			{ id: 36, level: 8 },
+			{ id: 37, level: 9 }
+		],
+		Regulatory: [
+			{ id: 38, level: 1 },
+			{ id: 39, level: 2 },
+			{ id: 40, level: 3 },
+			{ id: 41, level: 4 },
+			{ id: 42, level: 5 },
+			{ id: 43, level: 6 },
+			{ id: 44, level: 7 },
+			{ id: 45, level: 8 },
+			{ id: 46, level: 9 }
+		],
+		Investment: [
+			{ id: 47, level: 1 },
+			{ id: 48, level: 2 },
+			{ id: 49, level: 3 },
+			{ id: 50, level: 4 },
+			{ id: 51, level: 5 },
+			{ id: 52, level: 6 },
+			{ id: 53, level: 7 },
+			{ id: 54, level: 8 },
+			{ id: 55, level: 9 }
+		]
+	};
 
 	return levels[readiness];
 };

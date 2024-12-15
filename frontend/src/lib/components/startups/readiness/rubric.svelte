@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Label from '$lib/components/ui/label/label.svelte';
 	import { RadioButton } from '$lib/components/ui/radio';
 	import { CriteriaTable } from '.';
 
@@ -15,9 +16,10 @@
 						name={`${type}ReadinessLevel`}
 						value={questionnaire.id}
 						checked={index === 0}
+						id={`${type}ReadinessLevel${questionnaire.id}`}
+						questionnaire={questionnaire}
 					/>
 				</div>
-				<p>{questionnaire.level} {questionnaire.name}</p>
 			</div>
 			<CriteriaTable {criterias} {type} {questionnaire} />
 		</div>

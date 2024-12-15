@@ -141,14 +141,16 @@
 		);
 		toast.success('Successfully created the Roadblocks');
 		open = false;
-		$roadblocksQueries[1].refetch().then((res) => {
+		$roadblocksQueries[1]
+			.refetch()
+			.then((res) => {
 				columns.forEach((column) => {
 					column.items = res.data.results.filter(
 						(data) => data.is_ai_generated === false && data.status === column.value
 					);
 				});
 			})
-			.finally(async () => await updateRiskNumber());;
+			.finally(async () => await updateRiskNumber());
 	};
 
 	const editRoadblock = async (
@@ -364,13 +366,22 @@
 	const selectedMembers: any = $state([]);
 
 	const toggleMemberSelection = (index: number) => {
-		const userId = members[index].user_id;
-		const userIndex = selectedMembers.indexOf(userId);
-
-		if (userIndex !== -1) {
-			selectedMembers.splice(userIndex, 1);
+		if (index === 999) {
+			const userIndex = selectedMembers.indexOf(999);
+			if(userIndex !== -1) {
+				selectedMembers.splice(userIndex, 1);
+			} else {
+				selectedMembers.push(index)				
+			}
 		} else {
-			selectedMembers.push(userId);
+			const userId = members[index].user_id;
+			const userIndex = selectedMembers.indexOf(userId);
+
+			if (userIndex !== -1) {
+				selectedMembers.splice(userIndex, 1);
+			} else {
+				selectedMembers.push(userId);
+			}
 		}
 	};
 

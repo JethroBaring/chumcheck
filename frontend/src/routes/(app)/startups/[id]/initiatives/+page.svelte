@@ -141,17 +141,18 @@
 			}
 		);
 		toast.success('Successfuly added to Initiatives');
-		$initiativesQueries[1].refetch();
-		$initiativesQueries[2]
-			.refetch()
-			.then((res) => {
-				columns.forEach((column) => {
-					column.items = res.data.results.filter(
-						(data: any) => data.is_ai_generated === false && data.status === column.value
-					);
-				});
-			})
-			.finally(async () => await updateInitiativeNumber());
+		$initiativesQueries[1].refetch().then(() => {
+			$initiativesQueries[2]
+				.refetch()
+				.then((res) => {
+					columns.forEach((column) => {
+						column.items = res.data.results.filter(
+							(data: any) => data.is_ai_generated === false && data.status === column.value
+						);
+					});
+				})
+				.finally(async () => await updateInitiativeNumber());
+		});
 	};
 
 	const createInitiative = async (payload: any) => {
@@ -180,34 +181,6 @@
 				});
 			})
 			.finally(async () => await updateInitiativeNumber());
-	};
-
-	const editInitiative = async (
-		id: number,
-		description: string,
-		measures: string,
-		targets: string,
-		remarks: string,
-		initiative_number: number,
-		assignee_id?: number
-	) => {
-		const payload: Record<string, any> = {};
-		if (description !== undefined) payload.description = description;
-		if (measures !== undefined) payload.measures = measures;
-		if (targets !== undefined) payload.targets = targets;
-		if (remarks !== undefined) payload.remarks = remarks;
-		if (initiative_number !== undefined) payload.initiative_number = initiative_number;
-		if (assignee_id !== undefined) payload.assignee_id = assignee_id;
-		console.log(payload);
-		await axiosInstance.patch(`/tasks/initiatives/${id}/`, payload, {
-			headers: {
-				Authorization: `Bearer ${data.access}`
-			}
-		});
-		toast.success('Successfuly updated Initiatives');
-		$initiativesQueries[1].refetch();
-		open = false;
-		$initiativesQueries[2].refetch();
 	};
 
 	const updatedEditInitiative = async (id: number, payload: any) => {
@@ -270,15 +243,27 @@
 	const updateInitiativeNumber = async () => {
 		const updatePromises: any = [];
 
-		let counter = 1;
+		let task_ids: any = [];
+		let counters: any = [];
 		// Completed
 		columns[4].items.map((item: any) => {
-			item.initiative_number = counter;
+			let indexOf = task_ids.indexOf(item.task_id);
+
+			if (indexOf === -1) {
+				// New task_id, initialize it
+				task_ids.push(item.task_id);
+				counters.push(1); // Start counter at 1
+				indexOf = task_ids.length - 1; // Get the last index
+			}
+
+			const initiativeNumber = counters[indexOf]; // Get the current counter value
+			item.initiative_number = initiativeNumber;
+
 			updatePromises.push(
 				axiosInstance.patch(
 					`/tasks/initiatives/${item.id}/`,
 					{
-						initiative_number: counter
+						initiative_number: initiativeNumber
 					},
 					{
 						headers: {
@@ -287,16 +272,28 @@
 					}
 				)
 			);
-			counter++;
+
+			counters[indexOf] += 1;
 		});
 		// Delayed
 		columns[3].items.map((item: any) => {
-			item.initiative_number = counter;
+			let indexOf = task_ids.indexOf(item.task_id);
+
+			if (indexOf === -1) {
+				// New task_id, initialize it
+				task_ids.push(item.task_id);
+				counters.push(1); // Start counter at 1
+				indexOf = task_ids.length - 1; // Get the last index
+			}
+
+			const initiativeNumber = counters[indexOf]; // Get the current counter value
+			item.initiative_number = initiativeNumber;
+
 			updatePromises.push(
 				axiosInstance.patch(
 					`/tasks/initiatives/${item.id}/`,
 					{
-						initiative_number: counter
+						initiative_number: initiativeNumber
 					},
 					{
 						headers: {
@@ -305,16 +302,28 @@
 					}
 				)
 			);
-			counter++;
+
+			counters[indexOf] += 1;
 		});
 		// Track
 		columns[2].items.map((item: any) => {
-			item.initiative_number = counter;
+			let indexOf = task_ids.indexOf(item.task_id);
+
+			if (indexOf === -1) {
+				// New task_id, initialize it
+				task_ids.push(item.task_id);
+				counters.push(1); // Start counter at 1
+				indexOf = task_ids.length - 1; // Get the last index
+			}
+
+			const initiativeNumber = counters[indexOf]; // Get the current counter value
+			item.initiative_number = initiativeNumber;
+
 			updatePromises.push(
 				axiosInstance.patch(
 					`/tasks/initiatives/${item.id}/`,
 					{
-						initiative_number: counter
+						initiative_number: initiativeNumber
 					},
 					{
 						headers: {
@@ -323,16 +332,28 @@
 					}
 				)
 			);
-			counter++;
+
+			counters[indexOf] += 1;
 		});
 		// Scheduled
 		columns[1].items.map((item: any) => {
-			item.initiative_number = counter;
+			let indexOf = task_ids.indexOf(item.task_id);
+
+			if (indexOf === -1) {
+				// New task_id, initialize it
+				task_ids.push(item.task_id);
+				counters.push(1); // Start counter at 1
+				indexOf = task_ids.length - 1; // Get the last index
+			}
+
+			const initiativeNumber = counters[indexOf]; // Get the current counter value
+			item.initiative_number = initiativeNumber;
+
 			updatePromises.push(
 				axiosInstance.patch(
 					`/tasks/initiatives/${item.id}/`,
 					{
-						initiative_number: counter
+						initiative_number: initiativeNumber
 					},
 					{
 						headers: {
@@ -341,16 +362,28 @@
 					}
 				)
 			);
-			counter++;
+
+			counters[indexOf] += 1;
 		});
 		// Discontinued
 		columns[0].items.map((item: any) => {
-			item.initiative_number = counter;
+			let indexOf = task_ids.indexOf(item.task_id);
+
+			if (indexOf === -1) {
+				// New task_id, initialize it
+				task_ids.push(item.task_id);
+				counters.push(1); // Start counter at 1
+				indexOf = task_ids.length - 1; // Get the last index
+			}
+
+			const initiativeNumber = counters[indexOf]; // Get the current counter value
+			item.initiative_number = initiativeNumber;
+
 			updatePromises.push(
 				axiosInstance.patch(
 					`/tasks/initiatives/${item.id}/`,
 					{
-						initiative_number: counter
+						initiative_number: initiativeNumber
 					},
 					{
 						headers: {
@@ -359,7 +392,8 @@
 					}
 				)
 			);
-			counter++;
+
+			counters[indexOf] += 1;
 		});
 
 		try {
@@ -396,13 +430,22 @@
 	const selectedMembers: any = $state([]);
 
 	const toggleMemberSelection = (index: number) => {
-		const userId = members[index].user_id;
-		const userIndex = selectedMembers.indexOf(userId);
-
-		if (userIndex !== -1) {
-			selectedMembers.splice(userIndex, 1);
+		if (index === 999) {
+			const userIndex = selectedMembers.indexOf(999);
+			if (userIndex !== -1) {
+				selectedMembers.splice(userIndex, 1);
+			} else {
+				selectedMembers.push(index);
+			}
 		} else {
-			selectedMembers.push(userId);
+			const userId = members[index].user_id;
+			const userIndex = selectedMembers.indexOf(userId);
+
+			if (userIndex !== -1) {
+				selectedMembers.splice(userIndex, 1);
+			} else {
+				selectedMembers.push(userId);
+			}
 		}
 	};
 

@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import { Edit, Ellipsis, Plus, Target, Trash, User } from 'lucide-svelte';
-	import { getProfileColor, zIndex } from '$lib/utils';
+	import { getProfileColor, getReadinessStyles, zIndex } from '$lib/utils';
 	import { RnsViewEditDeleteDialog } from '.';
 	import type { Actions } from '$lib/types';
 	let { rns, members, update, ai, addToRns, deleteRns, role, index } = $props();
@@ -47,8 +47,8 @@
 		</div>
 		<div class="flex items-center justify-between">
 			<div class="flex flex-wrap items-center gap-2">
-				<Badge variant="secondary">Organizational</Badge>
-				<Badge variant="secondary">{rns.task_type === 1 ? 'Short' : 'Long'} Term</Badge>
+				<Badge class={`${getReadinessStyles(rns.readiness_type_rl_type)}`}>{rns.readiness_type_rl_type}</Badge>
+				<Badge class={`${rns.task_type === 1 ? 'bg-gray-700 hover:bg-gray-800' : 'bg-rose-700 hover:bg-rose-800'}`}>{rns.task_type === 1 ? 'Short' : 'Long'} Term</Badge>
 			</div>
 			{#if assignedMember}
 				<div
@@ -78,4 +78,5 @@
 	{ai}
 	{addToRns}
 	{index}
+	{role}
 />

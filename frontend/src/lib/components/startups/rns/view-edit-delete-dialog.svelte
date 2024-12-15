@@ -24,7 +24,8 @@
 		closeDialog,
 		ai = false,
 		addToRns,
-		index
+		index,
+		role
 	} = $props();
 
 	let rnsCopy = $state({ ...rns });
@@ -70,6 +71,11 @@
 	const deleteDialogOnOpenChange = () => {
 		deleteDialogOpen = !deleteDialogOnOpenChange;
 	};
+
+	const getLevel = (id: any) => {
+		if (id === 0) return '';
+		return levels.filter((level: any) => Number(level.id) === Number(id))[0].level;
+	};
 </script>
 
 <Dialog.Root bind:open {onOpenChange}>
@@ -104,9 +110,11 @@
 			</div>
 			<div class="flex h-fit flex-1 flex-col gap-3">
 				<div class="flex gap-3">
+					{#if role !== 'Startup'}
 					<Button size="sm" variant="destructive" onclick={() => (deleteDialogOpen = true)}
 						><Trash class="h-4 w-4" /> Delete</Button
 					>
+					{/if}
 					{#if ai}
 						<Button
 							size="sm"
@@ -143,9 +151,9 @@
 
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Target Level</p>
-									<Select.Root type="single" bind:value={rnsCopy.target_level_id}>
+									<Select.Root type="single" bind:value={rnsCopy.target_level_id} onValueChange={() => update(rnsCopy.id, {target_level_id: rnsCopy.target_level_id})}>
 										<Select.Trigger class="w-[200px] border-none"
-											>{rnsCopy.target_level_id}</Select.Trigger
+											>{getLevel(rnsCopy.target_level_id)}</Select.Trigger
 										>
 										<Select.Content class="border-none">
 											{#each levels as item}

@@ -9,7 +9,7 @@
 			<div class="flex h-full items-center justify-center">
 				<div class="flex flex-col items-center justify-center gap-3">
 					<div
-						class="flex h-[75px] w-[75px] items-center justify-center rounded-lg bg-flutter-blue text-3xl font-bold"
+						class="flex h-[65px] w-[65px] items-center justify-center rounded-lg bg-flutter-blue text-3xl font-bold"
 					>
 						{startup.name
 							.split(' ')
@@ -17,6 +17,7 @@
 							.join('')}
 					</div>
 					<h1>{startup.name}</h1>
+					<h1>Mentor: {startup?.mentors[0]?.first_name} {startup?.mentors[0]?.last_name}</h1>
 				</div>
 			</div>
 		</Card.Content>

@@ -564,13 +564,22 @@
 	const selectedMembers: any = $state([]);
 
 	const toggleMemberSelection = (index: number) => {
-		const userId = members[index].user_id;
-		const userIndex = selectedMembers.indexOf(userId);
-
-		if (userIndex !== -1) {
-			selectedMembers.splice(userIndex, 1);
+		if (index === 999) {
+			const userIndex = selectedMembers.indexOf(999);
+			if(userIndex !== -1) {
+				selectedMembers.splice(userIndex, 1);
+			} else {
+				selectedMembers.push(index)				
+			}
 		} else {
-			selectedMembers.push(userId);
+			const userId = members[index].user_id;
+			const userIndex = selectedMembers.indexOf(userId);
+
+			if (userIndex !== -1) {
+				selectedMembers.splice(userIndex, 1);
+			} else {
+				selectedMembers.push(userId);
+			}
 		}
 	};
 
@@ -697,15 +706,6 @@
 		</div>
 		{#if selectedFormat !== 'table'}
 			<div class="flex gap-2">
-				<TaskTypeFilter
-					statuses={[
-						{ name: 'Short Term', value: 1 },
-						{ name: 'Long Term', value: 2 },
-						{ name: 'All', value: 3 }
-					]}
-					status={taskType}
-					{updateTaskType}
-				/>
 				<ShowHideColumns {views} />
 			</div>
 		{/if}

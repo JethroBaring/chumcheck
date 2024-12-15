@@ -52,6 +52,14 @@
 				<h1 class="text-2xl font-semibold">Initiative #{rnsCopy.initiative_number}</h1>
 				<div class="flex h-[550px] flex-col gap-5 overflow-scroll">
 					<div class="flex flex-col gap-3">
+						<Label for="username">Task</Label>
+						<div class="text-justify">
+							{rnsCopy.task_id
+								? tasks.filter((task: any) => task.id === rnsCopy.task_id)[0].description
+								: ''}
+						</div>
+					</div>
+					<div class="flex flex-col gap-3">
 						<Label for="username">Description</Label>
 						{#if editDescription}
 							<Textarea rows={12} bind:value={rnsCopy.description} class="text-justify text-base" />
@@ -153,10 +161,10 @@
 					{#if ai}
 						<Button
 							size="sm"
-							onclick={ () => {
-								 addToInitiative(rnsCopy.id);
-								 closeDialog()
-							}}><Check class="h-4 w-4" /> Add to RNS</Button
+							onclick={() => {
+								addToInitiative(rnsCopy.id);
+								closeDialog();
+							}}><Check class="h-4 w-4" /> Add to Initiatives</Button
 						>
 					{/if}
 				</div>
@@ -191,7 +199,7 @@
 								</div>
 								<div class="flex h-9 items-center justify-between text-sm">
 									<p class="w-[130px]">Priority No.</p>
-									<p class="w-[200px] p-3">1</p>
+									<p class="w-[200px] p-3">{tasks.filter((task: any) => task.id === rnsCopy.task_id)[0].priority_number}</p>
 								</div>
 							</div>
 						</div>
@@ -213,22 +221,13 @@
 		<AlertDialog.Footer>
 			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
 			<AlertDialog.Action
-        class="bg-red-500 hover:bg-red-600"
-				onclick={ async() => {
+				class="bg-red-500 hover:bg-red-600"
+				onclick={async () => {
 					await deleteRns(rns.id, index);
-					deleteDialogOpen = false
-          closeDialog()
-        }}>Continue</AlertDialog.Action
+					deleteDialogOpen = false;
+					closeDialog();
+				}}>Continue</AlertDialog.Action
 			>
 		</AlertDialog.Footer>
 	</AlertDialog.Content>
 </AlertDialog.Root>
-
-<!-- <DeleteDialog
-	open={deleteDialogOpen}
-	onOpenChange={deleteDialogOnOpenChange}
-	{rns}
-	deleteAction={deleteRns}
-	name="Initiative"
-	{closeDialog}
-/> -->
