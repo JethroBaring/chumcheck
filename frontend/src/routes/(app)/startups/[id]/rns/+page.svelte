@@ -88,7 +88,19 @@
 			: []
 	);
 
-	const views = $derived(selectedTab === 'rns' ? columns : readiness);
+	const views = $derived(
+		selectedTab === 'rns'
+			? [
+					{
+						name: 'Long Term',
+						value: 999,
+						items: [],
+						show: true
+					},
+					...columns
+				]
+			: readiness
+	);
 
 	$effect(() => {
 		const searchParam = $page.url.searchParams.get('tab');
@@ -520,7 +532,7 @@
 				)
 			);
 			counter++;
-		})
+		});
 
 		try {
 			// Execute all update requests concurrently
@@ -534,20 +546,31 @@
 		}
 	};
 
-	let longTerms = $state([])
+	let longTerms = $state([]);
 
 	$effect(() => {
 		if (!isLoading) {
 			columns.forEach((column) => {
 				column.items = $rnsQueries[1].data.results
-					.filter((data: any) => data.is_ai_generated === false && data.status === column.value && data.task_type === 1)
+					.filter(
+						(data: any) =>
+							data.is_ai_generated === false && data.status === column.value && data.task_type === 1
+					)
 					.sort((a: any, b: any) => a.priority_number - b.priority_number);
 			});
 
-			longTerms = $rnsQueries[1].data.results.filter((data: any) => data.is_ai_generated === false && data.task_type === 2)
+			longTerms = $rnsQueries[1].data.results.filter(
+				(data: any) => data.is_ai_generated === false && data.task_type === 2
+			);
 		}
 	});
 
+	const showLongTerm = $derived(views[0].show)
+
+
+	$effect(() => {
+		console.log(showLongTerm)
+	})
 	const onOpenChange = () => {
 		open = !open;
 	};
@@ -566,10 +589,10 @@
 	const toggleMemberSelection = (index: number) => {
 		if (index === 999) {
 			const userIndex = selectedMembers.indexOf(999);
-			if(userIndex !== -1) {
+			if (userIndex !== -1) {
 				selectedMembers.splice(userIndex, 1);
 			} else {
-				selectedMembers.push(index)				
+				selectedMembers.push(index);
 			}
 		} else {
 			const userId = members[index].user_id;
@@ -637,7 +660,7 @@
 				<div class="flex">
 					{#each [1, 2] as item, index}
 						<Skeleton
-							class={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-background ${
+							class={`border-background flex h-9 w-9 items-center justify-center rounded-full border-2 ${
 								index !== 2 - 1 ? '-mr-1' : ''
 							} `}
 						>
@@ -646,22 +669,22 @@
 					{/each}
 				</div>
 			</div>
-			<div class="ml-auto bg-background">
+			<div class="bg-background ml-auto">
 				<Skeleton class="h-9 w-[90px]" />
 			</div>
 		</div>
 
 		<div class="grid h-full grid-cols-4 gap-5">
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
-			<div class="h-full w-full bg-background">
+			<div class="bg-background h-full w-full">
 				<Skeleton class="h-full" />
 			</div>
 		</div>
@@ -674,14 +697,14 @@
 	<div class="flex items-center justify-between">
 		<div class="flex gap-3">
 			<Can role={['Mentor', 'Manager as Mentor']} userRole={data.role}>
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<AITabs {selectedTab} name="rns" updateTab={updateRnsTab} />
 				</div>
 			</Can>
 			{#if selectedTab === 'rns'}
-				<div class="flex h-fit justify-between rounded-lg bg-background">
+				<div class="bg-background flex h-fit justify-between rounded-lg">
 					<Tabs.Root value={selectedFormat}>
-						<Tabs.List class="border bg-flutter-gray/20">
+						<Tabs.List class="bg-flutter-gray/20 border">
 							<Tabs.Trigger
 								class="flex items-center gap-1"
 								value="board"
@@ -727,7 +750,7 @@
 				/>
 			{:else}
 				<div class="h-fit w-full rounded-md border">
-					<Table.Root class="rounded-lg bg-background">
+					<Table.Root class="bg-background rounded-lg">
 						<Table.Header>
 							<Table.Row class="text-centery h-12">
 								<Table.Head class="pl-5">Type</Table.Head>
@@ -745,7 +768,9 @@
 										<Table.Cell class="">{item.description.substring(0, 100)}</Table.Cell>
 										<Table.Cell class="">{item.target_level_level}</Table.Cell>
 										<Table.Cell class=""
-											><Badge variant="secondary">{item.task_type === 1 ? 'Short' : 'Long'} Term</Badge
+											><Badge
+												class={`${item.task_type === 1 ? 'bg-gray-700 hover:bg-gray-800' : 'bg-rose-700 hover:bg-rose-800'}`}
+												>{item.task_type === 1 ? 'Short' : 'Long'} Term</Badge
 											></Table.Cell
 										>
 										<Table.Cell class=""

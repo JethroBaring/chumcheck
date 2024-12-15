@@ -29,13 +29,15 @@
 	const flipDurationMs = 300;
 </script>
 
-<Column name="Long Terms" showDialog={() => {}} updateStatus={() => {}} statusId={1} {role}>
-	{#each longTerms as item, index}
-		<div>
-			{@render card(item, false, index)}
-		</div>
-	{/each}
-</Column>
+{#if columns[0].show}
+	<Column name="Long Terms" showDialog={() => {}} updateStatus={() => {}} statusId={1} {role}>
+		{#each longTerms as item, index}
+			<div>
+				{@render card(item, false, index)}
+			</div>
+		{/each}
+	</Column>
+{/if}
 {#each columns as column, index}
 	{#if column.show}
 		<Column name={column.name} {showDialog} {updateStatus} statusId={column.value} {role}>
@@ -58,7 +60,9 @@
 						{#each column.items as item (item.id)}
 							<div
 								animate:flip={{ duration: flipDurationMs }}
-								class:hidden={(!selectedMembers.includes(item.assignee_id ? item.assignee_id : 999) &&
+								class:hidden={(!selectedMembers.includes(
+									item.assignee_id ? item.assignee_id : 999
+								) &&
 									selectedMembers.length !== 0) ||
 									(taskType !== 3 && item.task_type !== taskType)}
 							>
@@ -75,8 +79,9 @@
 						{#each column.items.slice().sort((a, b) => a.order - b.order) as item (item.id)}
 							<div
 								animate:flip={{ duration: flipDurationMs }}
-								class:hidden={!selectedMembers.includes(item.assignee_id ? item.assignee_id : 999) &&
-									selectedMembers.length !== 0}
+								class:hidden={!selectedMembers.includes(
+									item.assignee_id ? item.assignee_id : 999
+								) && selectedMembers.length !== 0}
 							>
 								{@render card(item, false, index)}
 							</div>

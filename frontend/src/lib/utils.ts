@@ -209,14 +209,14 @@ export const getPriorityStyles = (priority: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 
 	return priorityClasses[priority] || 'bg-gray-500 hover:bg-gray-600';
 };
 
-export const getReadinessStyles = (type: "Technology" | "Market" | "Acceptnace" | "Regulatory" | "Organizational" | "Investment") => {
+export const getReadinessStyles = (type: "Technology" | "Market" | "Acceptance" | "Regulatory" | "Organizational" | "Investment") => {
 	const readinessClasses = {
-			Technology: "bg-gray-700 hover:bg-gray-800",       // Neutral
+			Technology: "bg-sky-700 hover:bg-sky-800",       // Neutral
 			Market: "bg-cyan-700 hover:bg-cyan-800",          // Bright cyan
 			Acceptance: "bg-amber-700 hover:bg-amber-800",    // Amber
 			Regulatory: "bg-fuchsia-700 hover:bg-fuchsia-800", // Fuchsia
 			Organizational: "bg-emerald-700 hover:bg-emerald-800", // Emerald
-			Investment: "bg-slate-700 hover:bg-slate-800",    // Slate
+			Investment: "bg-green-700 hover:bg-green-800",    // Slate
 	};
 
 	// Default styles if type is unrecognized
