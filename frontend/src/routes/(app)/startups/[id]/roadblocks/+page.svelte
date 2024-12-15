@@ -389,7 +389,7 @@
 	{status}
 />
 
-{#snippet card(roadblocks: any)}
+{#snippet card(roadblocks: any, index: number)}
 	<RoadblocksCard
 		{roadblocks}
 		{members}
@@ -398,6 +398,7 @@
 		{addToRoadblocks}
 		deleteRoadblocks={deleteRoadblock}
 		role={data.role}
+		{index}
 	/>
 {/snippet}
 
@@ -552,6 +553,7 @@
 					ai={true}
 					{members}
 					role={data.role}
+					{index}
 				/>
 			{/each}
 		</div>

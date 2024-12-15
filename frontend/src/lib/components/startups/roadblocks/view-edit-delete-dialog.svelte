@@ -23,7 +23,8 @@
 		assignedMember,
 		closeDialog,
 		ai,
-		addToRoadblocks
+		addToRoadblocks,
+		index
 	} = $props();
 
 	let rnsCopy = $state({ ...rns });
@@ -99,8 +100,9 @@
 						><Trash class="h-4 w-4" /> Delete</Button
 					>
 					{#if ai}
-						<Button size="sm" onclick={() => {
-							addToRoadblocks(rnsCopy.id)
+						<Button size="sm" onclick={async () => {
+							await addToRoadblocks(rnsCopy.id)
+							closeDialog()
 						}}
 							><Check class="h-4 w-4" /> Add to RNS</Button
 						>
@@ -124,11 +126,25 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
-<DeleteDialog
-	open={deleteDialogOpen}
-	onOpenChange={deleteDialogOnOpenChange}
-	{rns}
-	deleteAction={deleteRns}
-	name="Roadblocks"
-	{closeDialog}
-/>
+<AlertDialog.Root bind:open={deleteDialogOpen} onOpenChange={deleteDialogOnOpenChange}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+			<AlertDialog.Description>
+				This action cannot be undone. This will permanently delete this Roadblocks.
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+			<AlertDialog.Action
+        class="bg-red-500 hover:bg-red-600"
+				onclick={ async() => {
+					await deleteRns(rns.id, index);
+					deleteDialogOpen = false
+          closeDialog()
+        }}>Continue</AlertDialog.Action
+			>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
+

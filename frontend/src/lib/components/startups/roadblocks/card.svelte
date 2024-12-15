@@ -7,7 +7,7 @@
 	import { getProfileColor, zIndex } from '$lib/utils';
 	import { RoadblocksCreateDialog, RoadblocksViewEditDialog } from '.';
 	import type { Actions } from '$lib/types';
-	let { roadblocks, members, update, ai, addToRoadblocks, deleteRoadblocks, role } = $props();
+	let { roadblocks, members, update, ai, addToRoadblocks, deleteRoadblocks, role, index } = $props();
 
 	let assignee = $state(roadblocks.assignee_id);
 
@@ -69,4 +69,5 @@
 	{closeDialog}
 	{ai}
 	{addToRoadblocks}
+	{index}
 />
