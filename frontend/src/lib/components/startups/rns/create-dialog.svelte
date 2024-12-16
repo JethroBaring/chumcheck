@@ -29,6 +29,7 @@
 		assignee_id: ''
 	});
 
+
 	const levels = $derived(
 		getReadinessLevels(
 			data.readiness_type_id
@@ -42,6 +43,11 @@
 				: 'Technology'
 		)
 	);
+
+	const getLevel = (id: any) => {
+		if (id === 0) return '';
+		return levels.filter((level: any) => Number(level.id) === Number(id))[0].level;
+	};
 
 </script>
 
@@ -89,7 +95,7 @@
 		<div class="flex flex-col gap-4">
 			<Label for="name">Target Level</Label>
 			<Select.Root type="single" bind:value={data.target_level_id}>
-				<Select.Trigger class="w-[50px]">{data.target_level_id}</Select.Trigger>
+				<Select.Trigger class="w-[50px]">{getLevel(data.target_level_id)}</Select.Trigger>
 				<Select.Content>
 					{#each levels as item}
 						<Select.Item value={`${item.id}`}>{item.level}</Select.Item>
