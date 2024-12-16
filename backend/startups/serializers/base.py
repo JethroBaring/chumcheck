@@ -30,16 +30,21 @@ class StartupContractedMemberBaseSerializer(serializers.ModelSerializer):
         model = startups_models.StartupContractedMember
         fields = ["id", "startup_id", "first_name", "last_name"]
 
+
 class MentorSerializer(serializers.ModelSerializer):
     class Meta:
         model = users_models.MentorUser
         fields = ["id", "first_name", "last_name", "email"]
 
+
 class StartupBaseSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(source="user", read_only=True)
     members = serializers.SerializerMethodField(method_name="_members")
-    contracted_members = serializers.SerializerMethodField(method_name="_contracted_members")
+    contracted_members = serializers.SerializerMethodField(
+        method_name="_contracted_members"
+    )
     mentors = serializers.SerializerMethodField(method_name="_mentors")  # Add this line
+
     class Meta:
         model = startups_models.Startup
         fields = [
@@ -58,16 +63,18 @@ class StartupBaseSerializer(serializers.ModelSerializer):
             "leader_last_name",
             "leader_email",
             "contracted_members",
-            "mentors"
+            "mentors",
         ]
 
     @swagger_serializer_method(StartupMemberBaseSerializer())
     def _members(self, startup):
         return StartupMemberBaseSerializer(startup.members.all(), many=True).data
-    
+
     @swagger_serializer_method(StartupContractedMemberBaseSerializer())
     def _contracted_members(self, startup):
-        return StartupContractedMemberBaseSerializer(startup.contracted_members.all(), many=True).data
+        return StartupContractedMemberBaseSerializer(
+            startup.contracted_members.all(), many=True
+        ).data
 
     @swagger_serializer_method(MentorSerializer())  # Use your serializer for mentors
     def _mentors(self, startup):
@@ -136,7 +143,7 @@ class StartupReadinessLevelBaseSerializer(serializers.ModelSerializer):
     readiness_type = serializers.CharField(
         source="readiness_level.readiness_type.get_rl_type_display", read_only=True
     )
-    remark = serializers.CharField(required=False)
+    remark = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = startups_models.StartupReadinessLevel
@@ -146,7 +153,7 @@ class StartupReadinessLevelBaseSerializer(serializers.ModelSerializer):
             "readiness_level_id",
             "readiness_level",
             "readiness_type",
-            "remark"
+            "remark",
         ]
 
 
@@ -220,7 +227,7 @@ class CohortBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = startups_models.Cohort
         fields = ["id", "name", "startup_count"]
-    
+
     def get_startup_count(self, obj):
         return obj.startups.count()
 
@@ -242,7 +249,7 @@ class ProgressReportResponseSerializer(StartupBaseSerializer):
                 "readiness_type_rl_type",
                 "target_level_level",
                 "initiatives",
-                "is_ai_generated"
+                "is_ai_generated",
             ]
 
     class ProgressReportRoadblockSerializer(
